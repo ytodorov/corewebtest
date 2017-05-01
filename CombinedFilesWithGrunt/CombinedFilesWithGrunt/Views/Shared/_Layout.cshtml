@@ -8,6 +8,8 @@
     <environment names="Development">
         @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />*@
         @*<link rel="stylesheet" href="~/css/site.css" />*@
+        <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.1.223/styles/kendo.common.min.css" />
+        <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.1.223/styles/kendo.metro.min.css" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
     <environment names="Staging,Production">
@@ -69,5 +71,7 @@
     </environment>
 
     @RenderSection("Scripts", required: false)
+
+    @Html.Kendo().DeferredScripts()
 </body>
 </html>

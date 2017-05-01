@@ -6,6 +6,8 @@
     // An array of relative input file paths. Globbing patterns supported
     "inputFiles": [
       "wwwroot/css/bootstrap.css",
+      //"wwwroot/css/kendo.common.min.css",
+      //"wwwroot/css/kendo.metro.min.css",
       "wwwroot/css/site.css"
     ]
 
@@ -16,6 +18,9 @@
     "inputFiles": [
       "wwwroot/lib/jquery/dist/jquery.js",
       "wwwroot/lib/bootstrap/dist/js/bootstrap.js",
+      "wwwroot/js/jszip.min.js",
+      "wwwroot/js/kendo.all.min.js",
+      "wwwroot/js/kendo.aspnetmvc.min.js",
       "wwwroot/js/site.js"
     ],
     // Optionally specify minification options
