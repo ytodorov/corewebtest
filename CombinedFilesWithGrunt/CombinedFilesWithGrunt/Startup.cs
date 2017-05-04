@@ -86,6 +86,10 @@ namespace CombinedFilesWithGrunt
                     const int durationInSeconds = 60 * 60 * 240;
                     ctx.Context.Response.Headers[HeaderNames.CacheControl] =
                         "public,max-age=" + durationInSeconds;
+                    var file = ctx.File.PhysicalPath;
+                    var file2 = ctx.File.Name;
+                    // filter by js or css
+                    ctx.Context.Response.Headers[HeaderNames.Vary] = "Accept-Encoding";
                 }
             });
 
