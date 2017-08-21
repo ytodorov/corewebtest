@@ -2,6 +2,17 @@
     ViewData["Title"] = "Pdf to Excel";
 }
 
+<script type="text/javascript">
+    function onError(e) {
+        // An array with information about the uploaded files
+        var files = e.files;
+
+        if (e.operation == "upload") {
+            alert("Failed to upload " + files.length + " files");
+        }
+    }
+</script>
+
 <form method="post" action='@Url.Action("Submit")'>
     <div class="demo-section k-content">
         @(Html.Kendo().Upload()
@@ -9,8 +20,10 @@
             .Async(a => a
                 .Save("ChunkSave", "Upload")
                 .Remove("Remove", "Upload")
+                
                 //.ChunkSize(2000)
             )
+            .Events(e => e.Error("onError"))
             //.Directory(true)
             //.DirectoryDrop(true)
             .Deferred()
