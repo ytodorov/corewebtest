@@ -52,6 +52,13 @@ namespace DimoPdfToExcelWeb.Controllers
 
         public ActionResult ChunkSave(IEnumerable<IFormFile> files, string metaData)
         {
+            string dirPath = Path.Combine(HostingEnvironment.WebRootPath, "App_Data");
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+            }
+                
+
             if (metaData == null)
             {
                 return Save(files);
