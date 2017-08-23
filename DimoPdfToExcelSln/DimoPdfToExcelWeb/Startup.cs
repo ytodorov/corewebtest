@@ -91,48 +91,7 @@ namespace DimoPdfToExcelWeb
             // Configure Kendo UI
             app.UseKendo(env);
 
-
-            string dirPath = Path.Combine(env.WebRootPath, "Files", "I-O Distribution Key.xlsx");
-            FileInfo fileDistributionInfo = new FileInfo(dirPath);
-
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-
-            if (fileDistributionInfo.Exists)
-            {
-                using (ExcelPackage package = new ExcelPackage(fileDistributionInfo))
-                {
-                    for (int page = 1; page <= 2; page++)
-                    {
-                        ExcelWorksheet currentSheet = package.Workbook.Worksheets[page];
-
-                        for (int i = 1; i <= 113; i++)
-                        {
-                            // Проверка за бял цвят
-                            if (string.IsNullOrEmpty(currentSheet.Cells[i, 1].Style.Fill.BackgroundColor.Rgb))
-                            {
-                                // Проверка за невалиден ред
-                                if (!string.IsNullOrWhiteSpace(currentSheet.Cells[i, 1].Value?.ToString()) &&
-                                    !string.IsNullOrWhiteSpace(currentSheet.Cells[i, 3].Value?.ToString()))
-                                {
-                                    var inputValue = currentSheet.Cells[i, 1].Value.ToString().Substring(0, 3);
-                                    var goesTo = currentSheet.Cells[i, 3].Value.ToString();
-                                    if (page == 1)
-                                    {
-                                        Mappings.BsDict.Add(inputValue, goesTo);
-                                    }
-                                    else if (page == 2)
-                                    {
-                                        Mappings.PlDict.Add(inputValue, goesTo);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                   
-                    
-                }
-            }
+            Utils.PopulateMappingDictionaries(env);
         }
     }
 }

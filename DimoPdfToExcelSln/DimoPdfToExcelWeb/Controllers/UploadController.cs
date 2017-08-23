@@ -120,7 +120,7 @@ namespace DimoPdfToExcelWeb.Controllers
                             lastPhysicalPath = physicalPath;
                         }
 
-                        ParsePdf(physicalPath);
+                        //var parsedPdf =  Utils.ParsePdf(physicalPath);
 
 
                     }
@@ -137,47 +137,6 @@ namespace DimoPdfToExcelWeb.Controllers
 
         }
 
-        private void ParsePdf(string physicalPath)
-        {
-            using (Stream stream = System.IO.File.OpenRead(physicalPath))
-            {
-                // Load the input file.
-                PdfFixedDocument document = new PdfFixedDocument(stream);
-
-                PdfRgbColor penColor = new PdfRgbColor();
-                PdfPen pen = new PdfPen(penColor, 0.5);
-                Random rnd = new Random();
-                byte[] rgb = new byte[3];
-
-
-                StringBuilder sb = new StringBuilder();
-
-                foreach (var page in document.Pages)
-                {
-                    PdfContentExtractor ce = new PdfContentExtractor(page);
-                    PdfTextFragmentCollection tfc = ce.ExtractTextFragments();
-                    for (int i = 0; i < tfc.Count; i++)
-                    {
-
-                        var text = tfc[i].Text;
-                        sb.AppendLine(text);
-
-                        foreach (var entry in Mappings.BsDict)
-                        {
-                            if (text.Equals(entry.Key + "."))
-                            {
-
-                            }
-                        }
-                    }
-                }
-
-                var textFromPdf = sb.ToString();
-
-
-                // Do your work with the document inside the using statement.
-            }
-        }
 
         public ActionResult Remove(string[] fileNames)
         {
@@ -207,47 +166,63 @@ namespace DimoPdfToExcelWeb.Controllers
         public IActionResult Export()
         {
             string sWebRootFolder = HostingEnvironment.WebRootPath;
-            string sFileName = @"demo.xlsx";
-            string URL = string.Format("{0}://{1}/{2}", Request.Scheme, Request.Host, sFileName);
-            FileInfo file = new FileInfo(Path.Combine(sWebRootFolder, sFileName));
-            if (file.Exists)
+
+            FileInfo fileEmptyOutput = new FileInfo(Path.Combine(sWebRootFolder, "Files", "OUTPUT.xlsm"));
+            if (!fileEmptyOutput.Exists)
             {
-                file.Delete();
-                file = new FileInfo(Path.Combine(sWebRootFolder, sFileName));
+                throw new ApplicationException("Няма го файла OUTPUT.xlsm в папка Files");
             }
-            using (ExcelPackage package = new ExcelPackage(file))
+
+            FileInfo fileInfoOutput = new FileInfo(Path.Combine(sWebRootFolder, "OutputFiles", $"OUTPUT_{DateTime.Now.Ticks}.xlsm"));
+
+            fileEmptyOutput.CopyTo(fileInfoOutput.FullName);
+
+            //using (fileInfoOutput.Create())
+            //{
+
+            //}
+
+            using (ExcelPackage package = new ExcelPackage(fileEmptyOutput))
             {
-                // add a new worksheet to the empty workbook
-                ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Employee");
-                //First add the headers
-                worksheet.Cells[1, 1].Value = "ID";
-                worksheet.Cells[1, 2].Value = "Name";
-                worksheet.Cells[1, 3].Value = "Gender";
-                worksheet.Cells[1, 4].Value = "Salary (in $)";
+                ////add a new worksheet to the empty workbook
+                //ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Employee");
+                ////First add the headers
+                //worksheet.Cells[1, 1].Value = "ID";
+                //worksheet.Cells[1, 2].Value = "Name";
+                //worksheet.Cells[1, 3].Value = "Gender";
+                //worksheet.Cells[1, 4].Value = "Salary (in $)";
 
-                //Add values
-                worksheet.Cells["A2"].Value = 1000;
-                worksheet.Cells["B2"].Value = "Jon";
-                worksheet.Cells["C2"].Value = "M";
-                worksheet.Cells["D2"].Value = 5000;
+                ////Add values
+                //worksheet.Cells["A2"].Value = 1000;
+                //worksheet.Cells["B2"].Value = "Jon";
+                //worksheet.Cells["C2"].Value = "M";
+                //worksheet.Cells["D2"].Value = 5000;
 
-                worksheet.Cells["A3"].Value = 1001;
-                worksheet.Cells["B3"].Value = "Graham";
-                worksheet.Cells["C3"].Value = "M";
-                worksheet.Cells["D3"].Value = 10000;
+                //worksheet.Cells["A3"].Value = 1001;
+                //worksheet.Cells["B3"].Value = "Graham";
+                //worksheet.Cells["C3"].Value = "M";
+                //worksheet.Cells["D3"].Value = 10000;
 
-                worksheet.Cells["A4"].Value = 1002;
-                worksheet.Cells["B4"].Value = "Jenny";
-                worksheet.Cells["C4"].Value = "F";
-                worksheet.Cells["D4"].Value = 5000;
+                //worksheet.Cells["A4"].Value = 1002;
+                //worksheet.Cells["B4"].Value = "Jenny";
+                //worksheet.Cells["C4"].Value = "F";
+                //worksheet.Cells["D4"].Value = 5000;
 
-                package.Save(); //Save the workbook.
+                //package.Save(); //Save the workbook.
+
+                var parsedPdf = Utils.ParsePdf(lastPhysicalPath);
+
+
+                package.SaveAs(fileInfoOutput);
             }
-            var result = PhysicalFile(Path.Combine(sWebRootFolder, sFileName), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+           
+
+            var result = PhysicalFile(fileInfoOutput.FullName, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
             Response.Headers["Content-Disposition"] = new ContentDispositionHeaderValue("attachment")
             {
-                FileName = file.Name
+                FileName = fileInfoOutput.Name
             }.ToString();
 
             return result;
