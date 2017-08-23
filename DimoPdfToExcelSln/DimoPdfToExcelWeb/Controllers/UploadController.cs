@@ -12,6 +12,7 @@ using Xfinium.Pdf;
 using Xfinium.Pdf.Graphics;
 using Xfinium.Pdf.Content;
 using OfficeOpenXml;
+using DimoPdfToExcelWeb.BusinessLogic;
 
 namespace DimoPdfToExcelWeb.Controllers
 {
@@ -119,37 +120,7 @@ namespace DimoPdfToExcelWeb.Controllers
                             lastPhysicalPath = physicalPath;
                         }
 
-                        using (Stream stream = System.IO.File.OpenRead(physicalPath))
-                        {
-                            // Load the input file.
-                            PdfFixedDocument document = new PdfFixedDocument(stream);
-
-                            PdfRgbColor penColor = new PdfRgbColor();
-                            PdfPen pen = new PdfPen(penColor, 0.5);
-                            Random rnd = new Random();
-                            byte[] rgb = new byte[3];
-
-                            PdfContentExtractor ce = new PdfContentExtractor(document.Pages[0]);
-                            PdfTextFragmentCollection tfc = ce.ExtractTextFragments();
-                            for (int i = 0; i < tfc.Count; i++)
-                            {
-                                rnd.NextBytes(rgb);
-                                penColor.R = rgb[0];
-                                penColor.G = rgb[1];
-                                penColor.B = rgb[2];
-
-                                PdfPath boundingPath = new PdfPath();
-                                boundingPath.StartSubpath(tfc[i].FragmentCorners[0].X, tfc[i].FragmentCorners[0].Y);
-                                boundingPath.AddLineTo(tfc[i].FragmentCorners[1].X, tfc[i].FragmentCorners[1].Y);
-                                boundingPath.AddLineTo(tfc[i].FragmentCorners[2].X, tfc[i].FragmentCorners[2].Y);
-                                boundingPath.AddLineTo(tfc[i].FragmentCorners[3].X, tfc[i].FragmentCorners[3].Y);
-                                boundingPath.CloseSubpath();
-
-                                document.Pages[0].Graphics.DrawPath(pen, boundingPath);
-                            }
-
-                            // Do your work with the document inside the using statement.
-                        }
+                        ParsePdf(physicalPath);
 
 
                     }
@@ -164,6 +135,48 @@ namespace DimoPdfToExcelWeb.Controllers
             return Content("");
 
 
+        }
+
+        private void ParsePdf(string physicalPath)
+        {
+            using (Stream stream = System.IO.File.OpenRead(physicalPath))
+            {
+                // Load the input file.
+                PdfFixedDocument document = new PdfFixedDocument(stream);
+
+                PdfRgbColor penColor = new PdfRgbColor();
+                PdfPen pen = new PdfPen(penColor, 0.5);
+                Random rnd = new Random();
+                byte[] rgb = new byte[3];
+
+
+                StringBuilder sb = new StringBuilder();
+
+                foreach (var page in document.Pages)
+                {
+                    PdfContentExtractor ce = new PdfContentExtractor(page);
+                    PdfTextFragmentCollection tfc = ce.ExtractTextFragments();
+                    for (int i = 0; i < tfc.Count; i++)
+                    {
+
+                        var text = tfc[i].Text;
+                        sb.AppendLine(text);
+
+                        foreach (var entry in Mappings.BsDict)
+                        {
+                            if (text.Equals(entry.Key + "."))
+                            {
+
+                            }
+                        }
+                    }
+                }
+
+                var textFromPdf = sb.ToString();
+
+
+                // Do your work with the document inside the using statement.
+            }
         }
 
         public ActionResult Remove(string[] fileNames)
