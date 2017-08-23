@@ -57,6 +57,62 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                 }
             }
+
+            var test1 = Mappings.BsDict;
+            var test2 = Mappings.PlDict;
+
+            foreach (var item in Mappings.BsDict)
+            {
+                if (!Mappings.ExcelBsTitles.Contains(item.Value))
+                {
+                    Mappings.ExcelBsTitles.Add(item.Value);
+                }
+            }
+
+            foreach (var item in Mappings.PlDict)
+            {
+                if (!Mappings.ExcelPlTitles.Contains(item.Value))
+                {
+                    Mappings.ExcelPlTitles.Add(item.Value);
+                }
+            }
+        }
+
+        public static ExcelInputData GetExcelValues(ParsedPdfResult parsedPdfResult)
+        {
+            // balance
+            ExcelInputData result = new ExcelInputData();
+            result.BsValues = new Dictionary<string, int>();
+            foreach (var title in Mappings.ExcelBsTitles)
+            {
+                var sum = 0;
+                foreach (var map in Mappings.BsDict)
+                {
+                    if (map.Value.Equals(title, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var val = parsedPdfResult.DictWithValuesBS[map.Key];
+                        sum += val;
+                    }
+                }
+                result.BsValues.Add(title, sum);
+            }
+
+            result.PlValues = new Dictionary<string, int>();
+            foreach (var title in Mappings.ExcelPlTitles)
+            {
+                var sum = 0;
+                foreach (var map in Mappings.PlDict)
+                {
+                    if (map.Value.Equals(title, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var val = parsedPdfResult.DictWithValuesPL[map.Key];
+                        sum += val;
+                    }
+                }
+                result.PlValues.Add(title, sum);
+            }
+
+            return result;
         }
 
         public static ParsedPdfResult ParsePdf(string physicalPath)
@@ -104,6 +160,11 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                     {
 
                         var text = tfc[i].Text;
+
+                        if (text == "081.")
+                        {
+
+                        }
                         
                         sb.AppendLine(text);
 
@@ -114,15 +175,19 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                                 if (allStringFragmentsToCount.Contains(text))
                                 {
                                     var keyBS = entry.Key;
-                                    var valueBsString = tfc[i + 5]?.Text?.Replace(" ", "");
-
-                                    if (int.TryParse(valueBsString, out int val))
-                                    {
-                                        if (!parsedPdfResult.DictWithValuesPL.ContainsKey(keyBS))
+                                    //var valueBsString = tfc[i + 5]?.Text?.Replace(" ", "");
+                                    var intToAdd = GetCorrectValueFromPdfRow(i, tfc);
+                                    //if (int.TryParse(valueBsString, out int val))
+                                    //{
+                                    if (!parsedPdfResult.DictWithValuesPL.ContainsKey(keyBS))
                                         {
-                                            parsedPdfResult.DictWithValuesPL.Add(keyBS, val);
+                                            parsedPdfResult.DictWithValuesPL.Add(keyBS, intToAdd);
                                         }
-                                    }
+                                    //}
+                                    //else
+                                    //{
+                                    //    throw new ApplicationException($"Не може да се парсне към число {valueBsString}");
+                                    //}
                                 }
                             }
                         }
@@ -133,15 +198,17 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                             if (text.Equals(entry.Key + "."))
                             {
                                 var keyBS = entry.Key;
-                                var valueBsString = tfc[i + 5]?.Text?.Replace(" ", "");
+                                //var valueBsString = tfc[i + 5]?.Text?.Replace(" ", "");
 
-                                if (int.TryParse(valueBsString, out int val))
-                                {
+                                var intToAdd = GetCorrectValueFromPdfRow(i, tfc);
+
+                                //if (int.TryParse(valueBsString, out int val))
+                                //{
                                     if (!parsedPdfResult.DictWithValuesBS.ContainsKey(keyBS))
                                     {
-                                        parsedPdfResult.DictWithValuesBS.Add(keyBS, val);
+                                        parsedPdfResult.DictWithValuesBS.Add(keyBS, intToAdd);
                                     }                                   
-                                }
+                                //}
                             }
                         }
 
@@ -169,5 +236,31 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 // Do your work with the document inside the using statement.
             }
         }
+
+        private static int GetCorrectValueFromPdfRow(int numberInCollection, PdfTextFragmentCollection tfc)
+        {
+            // Проверяваме следващите 10 записа за втория целочислен запис
+
+            int successfulParsedNumbers = 0;
+            for (int i = 1; i < 10; i++)
+            {
+                var currentFragment = tfc[numberInCollection + i];
+
+                var text = currentFragment.Text?.Replace(" ", "");
+
+                if (int.TryParse(text, out int dummy))
+                {
+                    successfulParsedNumbers++;
+                }
+                if (successfulParsedNumbers == 2)
+                {
+                    return dummy;
+                }
+            }
+
+            return 0;
+        }
+
+
     }
 }

@@ -176,11 +176,7 @@ namespace DimoPdfToExcelWeb.Controllers
             FileInfo fileInfoOutput = new FileInfo(Path.Combine(sWebRootFolder, "OutputFiles", $"OUTPUT_{DateTime.Now.Ticks}.xlsm"));
 
             fileEmptyOutput.CopyTo(fileInfoOutput.FullName);
-
-            //using (fileInfoOutput.Create())
-            //{
-
-            //}
+                
 
             using (ExcelPackage package = new ExcelPackage(fileEmptyOutput))
             {
@@ -211,7 +207,46 @@ namespace DimoPdfToExcelWeb.Controllers
                 //package.Save(); //Save the workbook.
 
                 var parsedPdf = Utils.ParsePdf(lastPhysicalPath);
+                var excelInputData = Utils.GetExcelValues(parsedPdf);
+                ExcelRange cellsBS = package.Workbook.Worksheets[1].Cells;
+                foreach (var item in excelInputData.BsValues)
+                {
+                    var key = item.Key;
+                    var value = item.Value;
+                    // find cell
+                    for (int i = 1; i < 200; i++)
+                    {
+                        for (int j = 1; j < 50; j++)
+                        {
+                            var currentCell = cellsBS[i, j];
+                            if (currentCell?.Text?.ToUpperInvariant()?.Contains(key.ToUpperInvariant()) == true)
+                            {
+                                var cellToSetValue = cellsBS[$"D{i}"];
+                                cellToSetValue.Value = value;
+                            }
+                        }
+                    }
+                }
 
+                ExcelRange cellsPL = package.Workbook.Worksheets[2].Cells;
+                foreach (var item in excelInputData.PlValues)
+                {
+                    var key = item.Key;
+                    var value = item.Value;
+                    // find cell
+                    for (int i = 1; i < 200; i++)
+                    {
+                        for (int j = 1; j < 50; j++)
+                        {
+                            var currentCell = cellsPL[i, j];
+                            if (currentCell?.Text?.ToUpperInvariant()?.Contains(key.ToUpperInvariant()) == true)
+                            {
+                                var cellToSetValue = cellsPL[$"D{i}"];
+                                cellToSetValue.Value = value;
+                            }
+                        }
+                    }
+                }
 
                 package.SaveAs(fileInfoOutput);
             }
