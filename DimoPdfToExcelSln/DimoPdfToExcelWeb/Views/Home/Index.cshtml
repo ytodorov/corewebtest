@@ -18,7 +18,7 @@
             .done(function (text) {
                 $("#divDebugInfo")
                     .show()
-                    //.text(text);
+                    .html(text);
             });
     }
 
@@ -26,6 +26,7 @@
 
 <div class="k-block k-info-colored">Please upload INPUT EXAMPLE 1.pdf and click 'Download Excel' button.</div>
 <hr />
+
 <form method="post" action='@Url.Action("Submit")'>
     <div class="demo-section k-content">
         @(Html.Kendo().Upload()
@@ -55,7 +56,7 @@
     .Deferred()
     )
 <div id="divDebugInfo" style="display:none">
-    @(Html.Kendo().Grid<FinancialRow>()
+    @*@(Html.Kendo().Grid<FinancialRow>()
             .Name("gridBs")
             .Columns(columns =>
             {
@@ -76,5 +77,5 @@
             )
 
             .Deferred()
-    )
+    )*@
 </div>

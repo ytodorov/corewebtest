@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using DimoPdfToExcelWeb.Models;
+using System.Text;
+using DimoPdfToExcelWeb.BusinessLogic;
 
 namespace DimoPdfToExcelWeb.Controllers
 {
@@ -36,7 +38,50 @@ namespace DimoPdfToExcelWeb.Controllers
 
         public IActionResult DebugInfo()
         {
-            var result = Json($"This is from {DateTime.Now}");
+            StringBuilder sb = new StringBuilder();
+
+            var bsRows = Mappings.BsRows;
+
+            var bsGr = bsRows.GroupBy(b => b.GoesTo);
+
+            foreach (var g in bsGr)
+            {
+                sb.Append(g.Key);
+                sb.Append("<br />");
+                double sum = 0;
+
+                foreach (var item in g)
+                {
+                    sb.Append(item);
+                    sum += item.CurrentYear;
+                    sb.Append("<br />");
+                }
+                sb.Append($"Sum: {sum}");
+                sb.Append("<br />");
+                sb.Append("<br />");
+            }
+            var plRows = Mappings.PlRows;
+            var plGr = plRows.GroupBy(b => b.GoesTo);
+
+            foreach (var g in plGr)
+            {
+                sb.Append(g.Key);
+                sb.Append("<br />");
+                double sum = 0;
+
+                foreach (var item in g)
+                {
+                    sb.Append(item);
+                    sum += item.CurrentYear;
+                    sb.Append("<br />");
+                }
+                sb.Append($"Sum: {sum}");
+                sb.Append("<br />");
+                sb.Append("<br />");
+            }
+
+            var str = sb.ToString();
+            var result = Json(str);
             return result;
         }
     }
