@@ -18,7 +18,7 @@
             .done(function (text) {
                 $("#divDebugInfo")
                     .show()
-                    .text(text);
+                    //.text(text);
             });
     }
 
@@ -54,4 +54,27 @@
 @(Html.Kendo().Button().Name("btnShowDebugInfo").Content("Show Info").Events(e => e.Click("btnShowDebugInfoClick"))
     .Deferred()
     )
-<div id="divDebugInfo" class="k-block k-info-colored" style="display:none" ></div>
+<div id="divDebugInfo" style="display:none">
+    @(Html.Kendo().Grid<FinancialRow>()
+            .Name("gridBs")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.Number).Width(100);
+                columns.Bound(c => c.Name);
+                columns.Bound(c => c.GoesTo);
+                columns.Bound(c => c.CurrentYear).Width(100);
+            })
+            //.HtmlAttributes(new { style = "height: 550px;" })
+            .Scrollable()
+            .Groupable()
+            .Sortable()
+            .Filterable()
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .Read(read => read.Action("BsRows_Read", "Grid"))
+                .PageSize(2000)
+            )
+
+            .Deferred()
+    )
+</div>
