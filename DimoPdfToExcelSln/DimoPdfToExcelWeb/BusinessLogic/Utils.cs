@@ -39,14 +39,23 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                                     !string.IsNullOrWhiteSpace(currentSheet.Cells[i, 3].Value?.ToString()))
                                 {
                                     var inputValue = currentSheet.Cells[i, 1].Value.ToString().Substring(0, 3);
+                                    var hungName = currentSheet.Cells[i, 1].Value.ToString().Substring(5);
                                     var goesTo = currentSheet.Cells[i, 3].Value.ToString();
+                                    FinancialRow fr = new FinancialRow();
+                                    fr.Number = inputValue;
+                                    fr.Name = hungName;
+                                    fr.GoesTo = goesTo;
                                     if (page == 1)
                                     {
                                         Mappings.BsDict.Add(inputValue, goesTo);
+                                        fr.Type = "BS";
+                                        Mappings.BsRows.Add(fr);
                                     }
                                     else if (page == 2)
                                     {
                                         Mappings.PlDict.Add(inputValue, goesTo);
+                                        fr.Type = "PL";
+                                        Mappings.PlRows.Add(fr);
                                     }
                                 }
                             }
@@ -58,8 +67,8 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 }
             }
 
-            var test1 = Mappings.BsDict;
-            var test2 = Mappings.PlDict;
+            var bsDict = Mappings.BsDict;
+            var plDict = Mappings.PlDict;
 
             foreach (var item in Mappings.BsDict)
             {
@@ -76,6 +85,14 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                     Mappings.ExcelPlTitles.Add(item.Value);
                 }
             }
+
+            var excelBsTitles = Mappings.ExcelBsTitles;
+            var excelPlTitles = Mappings.ExcelPlTitles;
+
+            var bsRows = Mappings.BsRows;
+            var plRows = Mappings.PlRows;
+
+
         }
 
         public static ExcelInputData GetExcelValues(ParsedPdfResult parsedPdfResult)
@@ -231,6 +248,31 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 }
 
                 var textFromPdf = sb.ToString();
+
+                foreach (var bsRow in Mappings.BsRows)
+                {
+                    foreach (var item in parsedPdfResult.DictWithValuesBS)
+                    {
+                        if (bsRow.Number.Equals(item.Key, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            bsRow.CurrentYear = item.Value;
+                        }
+                    }
+                }
+
+                foreach (var plRow in Mappings.PlRows)
+                {
+                    foreach (var item in parsedPdfResult.DictWithValuesPL)
+                    {
+                        if (plRow.Number.Equals(item.Key, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            plRow.CurrentYear = item.Value;
+                        }
+                    }
+                }
+
+                var bsRows = Mappings.BsRows;
+                var plRows = Mappings.PlRows;
 
                 return parsedPdfResult;
                 // Do your work with the document inside the using statement.
