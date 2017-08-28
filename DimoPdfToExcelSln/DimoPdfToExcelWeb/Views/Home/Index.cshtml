@@ -11,6 +11,17 @@
             alert("Failed to upload " + files.length + " files");
         }
     }
+
+    function btnShowDebugInfoClick(e) {
+
+        var jqxhr = $.ajax("/Home/DebugInfo")
+            .done(function (text) {
+                $("#divDebugInfo")
+                    .show()
+                    .text(text);
+            });
+    }
+
 </script>
 
 <div class="k-block k-info-colored">Please upload INPUT EXAMPLE 1.pdf and click 'Download Excel' button.</div>
@@ -23,8 +34,8 @@
             .Async(a => a
                 .Save("ChunkSave", "Upload")
                 .Remove("Remove", "Upload")
-                
-                //.ChunkSize(2000)
+
+            //.ChunkSize(2000)
             )
             .Validation(v => v.AllowedExtensions("pdf"))
             .Events(e => e.Error("onError"))
@@ -32,14 +43,15 @@
             //.DirectoryDrop(true)
             .Deferred()
         )
-        @*<p style="padding-top: 1em; text-align: right">
-            <input type="submit" value="Submit" class="k-button" />
-        </p>*@
-
-        @*@Html.ActionLink("Download Excel", "Upload", "Excel")*@
         <hr />
         <a asp-controller="Upload" class="k-button"
            asp-action="Excel">Download Excel</a>
 
+     
     </div>
 </form>
+<hr />
+@(Html.Kendo().Button().Name("btnShowDebugInfo").Content("Show Info").Events(e => e.Click("btnShowDebugInfoClick"))
+    .Deferred()
+    )
+<div id="divDebugInfo" class="k-block k-info-colored" style="display:none" ></div>

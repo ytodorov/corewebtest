@@ -33,5 +33,11 @@ namespace DimoPdfToExcelWeb.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        public IActionResult DebugInfo()
+        {
+            var result = Json($"This is from {DateTime.Now}");
+            return result;
+        }
     }
 }
