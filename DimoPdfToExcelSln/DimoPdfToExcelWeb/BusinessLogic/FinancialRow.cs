@@ -14,7 +14,9 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
         public string Name { get; set; }
 
-        public string GoesTo { get; set; }
+        public string GoesToRowTitle { get; set; }
+
+        public int GoesToRowNumber { get; set; }
 
         public double PreviousYear { get; set; }
 
@@ -22,7 +24,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
         public override string ToString()
         {
-            string result = $"{Type} {Number} {Name} --goes to-- {GoesTo} {PreviousYear} {CurrentYear}";
+            string result = $"{Type} {Number} {Name} --goes to-- {GoesToRowNumber}.{GoesToRowTitle} {PreviousYear} {CurrentYear}";
             return result;
         }
     }

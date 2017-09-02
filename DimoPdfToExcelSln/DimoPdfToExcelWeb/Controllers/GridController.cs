@@ -15,14 +15,14 @@ namespace DimoPdfToExcelWeb.Controllers
     {
         public ActionResult BsRows_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var bsRows = Mappings.BsRows;
+            var bsRows = Mappings.HungarianBsRows;
             var result = Json(bsRows.ToDataSourceResult(request));
             return result;
         }
 
         public ActionResult PlRows_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var plRows = Mappings.PlRows;
+            var plRows = Mappings.HungarianPlRows;
             var result = Json(plRows.ToDataSourceResult(request));
             return result;
         }

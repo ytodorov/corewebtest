@@ -40,9 +40,9 @@ namespace DimoPdfToExcelWeb.Controllers
         {
             StringBuilder sb = new StringBuilder();
 
-            var bsRows = Mappings.BsRows;
+            var bsRows = Mappings.HungarianBsRows;
 
-            var bsGr = bsRows.GroupBy(b => b.GoesTo);
+            var bsGr = bsRows.GroupBy(b => b.GoesToRowTitle);
 
             foreach (var g in bsGr)
             {
@@ -60,8 +60,8 @@ namespace DimoPdfToExcelWeb.Controllers
                 sb.Append("<br />");
                 sb.Append("<br />");
             }
-            var plRows = Mappings.PlRows;
-            var plGr = plRows.GroupBy(b => b.GoesTo);
+            var plRows = Mappings.HungarianPlRows;
+            var plGr = plRows.GroupBy(b => b.GoesToRowTitle);
 
             foreach (var g in plGr)
             {

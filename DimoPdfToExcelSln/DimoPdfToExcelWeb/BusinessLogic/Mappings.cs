@@ -18,9 +18,9 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
         public static List<string> ExcelPlTitles { get; set; } = new List<string>();
 
-        public static List<FinancialRow> BsRows { get; set; } = new List<FinancialRow>();
+        public static List<FinancialRow> HungarianBsRows { get; set; } = new List<FinancialRow>();
 
-        public static List<FinancialRow> PlRows { get; set; } = new List<FinancialRow>();
+        public static List<FinancialRow> HungarianPlRows { get; set; } = new List<FinancialRow>();
 
 
     }

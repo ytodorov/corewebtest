@@ -14,9 +14,10 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 {
     public class Utils
     {
-        public static void PopulateMappingDictionaries(IHostingEnvironment env)
+        public static void PopulateMappingDictionaries(string dirWithFiles)
         {
-            string dirPath = Path.Combine(env.WebRootPath, "Files", "I-O Distribution Key.xlsx");
+             
+            string dirPath = Path.Combine(dirWithFiles, "Files", "I-O Distribution Key.xlsx");
             FileInfo fileDistributionInfo = new FileInfo(dirPath);
 
             Dictionary<string, string> dict = new Dictionary<string, string>();
@@ -40,22 +41,28 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                                 {
                                     var inputValue = currentSheet.Cells[i, 1].Value.ToString().Substring(0, 3);
                                     var hungName = currentSheet.Cells[i, 1].Value.ToString().Substring(5);
-                                    var goesTo = currentSheet.Cells[i, 3].Value.ToString();
+                                    var goesTo = currentSheet.Cells[i, 2].Value.ToString();
+                                    var goesToRowNumberString = currentSheet.Cells[i, 3]?.Value?.ToString();
                                     FinancialRow fr = new FinancialRow();
                                     fr.Number = inputValue;
                                     fr.Name = hungName;
-                                    fr.GoesTo = goesTo;
+                                    fr.GoesToRowTitle = goesTo;
+                                    if (int.TryParse(goesToRowNumberString, out int goesToRowNumberInt))
+                                    {
+                                        fr.GoesToRowNumber = goesToRowNumberInt;
+                                    }
+
                                     if (page == 1)
                                     {
                                         Mappings.BsDict.Add(inputValue, goesTo);
                                         fr.Type = "BS";
-                                        Mappings.BsRows.Add(fr);
+                                        Mappings.HungarianBsRows.Add(fr);
                                     }
                                     else if (page == 2)
                                     {
                                         Mappings.PlDict.Add(inputValue, goesTo);
                                         fr.Type = "PL";
-                                        Mappings.PlRows.Add(fr);
+                                        Mappings.HungarianPlRows.Add(fr);
                                     }
                                 }
                             }
@@ -89,8 +96,8 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             var excelBsTitles = Mappings.ExcelBsTitles;
             var excelPlTitles = Mappings.ExcelPlTitles;
 
-            var bsRows = Mappings.BsRows;
-            var plRows = Mappings.PlRows;
+            var bsRows = Mappings.HungarianBsRows;
+            var plRows = Mappings.HungarianPlRows;
 
 
         }
@@ -249,7 +256,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                 var textFromPdf = sb.ToString();
 
-                foreach (var bsRow in Mappings.BsRows)
+                foreach (var bsRow in Mappings.HungarianBsRows)
                 {
                     foreach (var item in parsedPdfResult.DictWithValuesBS)
                     {
@@ -260,7 +267,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                     }
                 }
 
-                foreach (var plRow in Mappings.PlRows)
+                foreach (var plRow in Mappings.HungarianPlRows)
                 {
                     foreach (var item in parsedPdfResult.DictWithValuesPL)
                     {
@@ -271,8 +278,8 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                     }
                 }
 
-                var bsRows = Mappings.BsRows;
-                var plRows = Mappings.PlRows;
+                var bsRows = Mappings.HungarianBsRows;
+                var plRows = Mappings.HungarianPlRows;
 
                 return parsedPdfResult;
                 // Do your work with the document inside the using statement.
