@@ -215,6 +215,16 @@ namespace DimoPdfToExcelWeb.Controllers
                     string cellName = $"D{finRow.Key}";
                     cellsBS[cellName].Value = finRow.Value;
                 }
+
+                ExcelRange cellsPl = package.Workbook.Worksheets[2].Cells;
+
+                foreach (var finRow in excelInputData.PlValues)
+                {
+                    string cellName = $"D{finRow.Key}";
+                    cellsPl[cellName].Value = finRow.Value;
+                }
+
+
                 //foreach (var item in excelInputData.BsValues)
                 //{
                 //    var key = item.Key;
