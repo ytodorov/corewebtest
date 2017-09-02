@@ -7,9 +7,12 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 {
     public class ExcelInputData
     {
-        public Dictionary<string, int> BsValues { get; set; } = new Dictionary<string, int>();
+        /// <summary>
+        /// excel row number / sum
+        /// </summary>
+        public Dictionary<int, int> BsValues { get; set; } = new Dictionary<int, int>();
 
-        public Dictionary<string, int> PlValues { get; set; } = new Dictionary<string, int>();
+        public Dictionary<int, int> PlValues { get; set; } = new Dictionary<int, int>();
 
 
     }
