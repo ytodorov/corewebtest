@@ -14,6 +14,12 @@ namespace UnitTests
             var wwwRootFolder = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot");
             Utils.PopulateMappingDictionaries(wwwRootFolder);
             Assert.NotEmpty(Mappings.HungarianBsRows);
+
+            foreach (var row in Mappings.HungarianBsRows)
+            {
+                Assert.False(row.GoesToRowNumber == 0);                
+            }
+
         }
     }
 }
