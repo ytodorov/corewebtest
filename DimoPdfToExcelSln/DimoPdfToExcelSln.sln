@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DimoPdfToExcelWeb", "DimoPdfToExcelWeb\DimoPdfToExcelWeb.csproj", "{D99A1407-660A-4752-981B-E7F4071CDC85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{722DC1D4-4E73-46B8-831F-FD7DA847E1E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{722DC1D4-4E73-46B8-831F-FD7DA847E1E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using System.IO;
 using OfficeOpenXml;
 using DimoPdfToExcelWeb.BusinessLogic;
+using Newtonsoft.Json.Serialization;
 
 namespace DimoPdfToExcelWeb
 {
@@ -26,7 +27,8 @@ namespace DimoPdfToExcelWeb
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvc()
+                   .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver()); ;
 
             services.Configure<GzipCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Optimal);
             services.AddResponseCompression(options =>

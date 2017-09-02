@@ -56,26 +56,30 @@
     .Deferred()
     )
 <div id="divDebugInfo" style="display:none">
-    @*@(Html.Kendo().Grid<FinancialRow>()
+   
+</div>
+
+@(Html.Kendo().Grid<FinancialRow>()
             .Name("gridBs")
             .Columns(columns =>
             {
                 columns.Bound(c => c.Number).Width(100);
                 columns.Bound(c => c.Name);
-                columns.Bound(c => c.GoesTo);
+                columns.Bound(c => c.GoesToRowNumber).Width(50);
                 columns.Bound(c => c.CurrentYear).Width(100);
             })
-            //.HtmlAttributes(new { style = "height: 550px;" })
+            .HtmlAttributes(new { style = "height: 550px;" })
             .Scrollable()
             .Groupable()
             .Sortable()
             .Filterable()
+
             .DataSource(dataSource => dataSource
                 .Ajax()
                 .Read(read => read.Action("BsRows_Read", "Grid"))
                 .PageSize(2000)
+                .ServerOperation(false)
             )
 
             .Deferred()
-    )*@
-</div>
+)
