@@ -177,37 +177,14 @@ namespace DimoPdfToExcelWeb.Controllers
 
             fileEmptyOutput.CopyTo(fileInfoOutput.FullName);
                 
-
             using (ExcelPackage package = new ExcelPackage(fileEmptyOutput))
             {
-                ////add a new worksheet to the empty workbook
-                //ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Employee");
-                ////First add the headers
-                //worksheet.Cells[1, 1].Value = "ID";
-                //worksheet.Cells[1, 2].Value = "Name";
-                //worksheet.Cells[1, 3].Value = "Gender";
-                //worksheet.Cells[1, 4].Value = "Salary (in $)";
-
-                ////Add values
-                //worksheet.Cells["A2"].Value = 1000;
-                //worksheet.Cells["B2"].Value = "Jon";
-                //worksheet.Cells["C2"].Value = "M";
-                //worksheet.Cells["D2"].Value = 5000;
-
-                //worksheet.Cells["A3"].Value = 1001;
-                //worksheet.Cells["B3"].Value = "Graham";
-                //worksheet.Cells["C3"].Value = "M";
-                //worksheet.Cells["D3"].Value = 10000;
-
-                //worksheet.Cells["A4"].Value = 1002;
-                //worksheet.Cells["B4"].Value = "Jenny";
-                //worksheet.Cells["C4"].Value = "F";
-                //worksheet.Cells["D4"].Value = 5000;
-
-                //package.Save(); //Save the workbook.
-
                 var parsedPdf = Utils.ParseHungarianPdf(lastPhysicalPath);
                 var excelInputData = Utils.GetExcelValues(parsedPdf);
+
+                var a = Mappings.HungarianBsRows;
+                var b = Mappings.HungarianPlRows;
+
                 ExcelRange cellsBS = package.Workbook.Worksheets[1].Cells;
 
                 foreach (var finRow in excelInputData.BsValues)
@@ -224,46 +201,8 @@ namespace DimoPdfToExcelWeb.Controllers
                     cellsPl[cellName].Value = finRow.Value;
                 }
 
-
-                //foreach (var item in excelInputData.BsValues)
-                //{
-                //    var key = item.Key;
-                //    var value = item.Value;
-                //    // find cell
-                //    for (int i = 1; i < 200; i++)
-                //    {
-                //        for (int j = 1; j < 50; j++)
-                //        {
-                //            var currentCell = cellsBS[i, j];
-                //            if (currentCell?.Text?.ToUpperInvariant()?.Contains(key.ToUpperInvariant()) == true)
-                //            {
-                //                var cellToSetValue = cellsBS[$"D{i}"];
-                //                cellToSetValue.Value = value;
-                //            }
-                //        }
-                //    }
-                //}
-
                 ExcelRange cellsPL = package.Workbook.Worksheets[2].Cells;
-                //foreach (var item in excelInputData.PlValues)
-                //{
-                //    var key = item.Key;
-                //    var value = item.Value;
-                //    // find cell
-                //    for (int i = 1; i < 200; i++)
-                //    {
-                //        for (int j = 1; j < 50; j++)
-                //        {
-                //            var currentCell = cellsPL[i, j];
-                //            if (currentCell?.Text?.ToUpperInvariant()?.Contains(key.ToUpperInvariant()) == true)
-                //            {
-                //                var cellToSetValue = cellsPL[$"D{i}"];
-                //                cellToSetValue.Value = value;
-                //            }
-                //        }
-                //    }
-                //}
-
+                
                 package.SaveAs(fileInfoOutput);
             }
 

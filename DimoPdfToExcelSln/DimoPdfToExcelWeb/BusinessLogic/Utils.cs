@@ -17,7 +17,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
         public static void PopulateMappingDictionaries(string dirWithFiles)
         {
 
-            string dirPath = Path.Combine(dirWithFiles, "Files", "I-O Distribution Key.xlsx");
+            string dirPath = Path.Combine(dirWithFiles, "Files", "HungarianDistributionKeys.xlsx");
             FileInfo fileDistributionInfo = new FileInfo(dirPath);
 
             Dictionary<string, string> dict = new Dictionary<string, string>();
@@ -54,13 +54,11 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                                     if (page == 1)
                                     {
-                                        Mappings.BsDict.Add(inputValue, goesTo);
                                         fr.Type = "BS";
                                         Mappings.HungarianBsRows.Add(fr);
                                     }
                                     else if (page == 2)
                                     {
-                                        Mappings.PlDict.Add(inputValue, goesTo);
                                         fr.Type = "PL";
                                         Mappings.HungarianPlRows.Add(fr);
                                     }
@@ -73,32 +71,9 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                 }
             }
-
-            var bsDict = Mappings.BsDict;
-            var plDict = Mappings.PlDict;
-
-            foreach (var item in Mappings.BsDict)
-            {
-                if (!Mappings.ExcelBsTitles.Contains(item.Value))
-                {
-                    Mappings.ExcelBsTitles.Add(item.Value);
-                }
-            }
-
-            foreach (var item in Mappings.PlDict)
-            {
-                if (!Mappings.ExcelPlTitles.Contains(item.Value))
-                {
-                    Mappings.ExcelPlTitles.Add(item.Value);
-                }
-            }
-
-            var excelBsTitles = Mappings.ExcelBsTitles;
-            var excelPlTitles = Mappings.ExcelPlTitles;
-
+            
             var bsRows = Mappings.HungarianBsRows;
             var plRows = Mappings.HungarianPlRows;
-
 
         }
 
@@ -123,37 +98,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             {
                 var sum = (int)group.Sum(g => g.CurrentYear);
                 result.PlValues.Add(group.Key, sum);
-            }
-
-            //foreach (var title in Mappings.ExcelBsTitles)
-            //{
-            //    var sum = 0;
-            //    foreach (var map in Mappings.BsDict)
-            //    {
-            //        if (map.Value.Equals(title, StringComparison.InvariantCultureIgnoreCase))
-            //        {
-            //            var val = parsedPdfResult.DictWithValuesBS[map.Key];
-            //            sum += val;
-            //        }
-            //    }
-            //    result.BsValues.Add(title, sum);
-            //}
-
-        
-            //foreach (var title in Mappings.ExcelPlTitles)
-            //{
-            //    var sum = 0;
-            //    foreach (var map in Mappings.PlDict)
-            //    {
-            //        if (map.Value.Equals(title, StringComparison.InvariantCultureIgnoreCase))
-            //        {
-            //            var val = parsedPdfResult.DictWithValuesPL[map.Key];
-            //            sum += val;
-            //        }
-            //    }
-            //    result.PlValues.Add(title, sum);
-            //}
-
+            }           
             return result;
         }
 
@@ -191,6 +136,9 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                 List<string> allStringFragmentsToCount = new List<string>();
 
+                var bsRows = Mappings.HungarianBsRows;
+                var plRows = Mappings.HungarianPlRows;
+
                 foreach (var page in document.Pages)
                 {
                     PdfContentExtractor ce = new PdfContentExtractor(page);
@@ -203,26 +151,40 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                         var text = tfc[i].Text;
 
-                        if (text == "081.")
+                        if (text == "006.")
                         {
 
                         }
 
                         sb.AppendLine(text);
 
-                        var bsDict = Mappings.BsDict;
-                        var plDict = Mappings.PlDict;
+                       
 
-                        foreach (var entry in Mappings.PlDict)
+                        foreach (var entry in Mappings.HungarianPlRows)
                         {
-                            if (text.Equals(entry.Key + "."))
+                            if (text.Equals(entry.Number + "."))
                             {
                                 if (allStringFragmentsToCount.Contains(text))
                                 {
-                                    var keyBS = entry.Key;
-                                    int intToAdd = GetCorrectValueFromPdfRow(i, tfc);
+                                    var keyBS = entry.Number;
 
-                                    
+                                    //var index = Mappings.HungarianBsRows.IndexOf(entry);
+                                    //var nextNumber = "";
+                                    //if (index < Mappings.HungarianPlRows.Count - 1)
+                                    //{
+                                    //    var nextEntry = Mappings.HungarianPlRows[index + 1];
+                                    //    nextNumber = nextEntry.Number;
+                                    //}
+
+                                    int intToAdd = GetCorrectValueFromPdfRow(i, tfc, entry.Number);
+
+
+                                    //var finRow = Mappings.HungarianPlRows.FirstOrDefault(h => h.Number == entry.Number);
+                                    //if (finRow != null)
+                                    //{
+                                    //    finRow.CurrentYear = intToAdd;
+                                    //}
+                                    entry.CurrentYear = intToAdd;
 
                                     if (!parsedPdfResult.DictWithValuesPL.ContainsKey(keyBS))
                                     {
@@ -233,18 +195,29 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                         }
 
 
-                        foreach (var entry in Mappings.BsDict)
+                        foreach (var entry in Mappings.HungarianBsRows)
                         {
-                            if (text.Equals(entry.Key + "."))
+                            if (text.Equals(entry.Number + "."))
                             {
-                                var keyBS = entry.Key;
-                                var intToAdd = GetCorrectValueFromPdfRow(i, tfc);
+                                var keyBS = entry.Number;
 
-                                var finRow = Mappings.HungarianBsRows.FirstOrDefault(h => h.Number == entry.Key);
-                                if (finRow != null)
-                                {
-                                    finRow.CurrentYear = intToAdd;
-                                }
+                                //var index = Mappings.HungarianBsRows.IndexOf(entry);
+                                //var nextNumber = "";
+                                //if (index < Mappings.HungarianBsRows.Count - 1)
+                                //{
+                                //    var nextEntry = Mappings.HungarianBsRows[index + 1];
+                                //    nextNumber = nextEntry.Number;
+                                //}
+
+
+                                var intToAdd = GetCorrectValueFromPdfRow(i, tfc, entry.Number);
+
+                                //var finRow = Mappings.HungarianBsRows.FirstOrDefault(h => h.Number == entry.Number);
+                                //if (finRow != null)
+                                //{
+                                //    finRow.CurrentYear = intToAdd;
+                                //}
+                                entry.CurrentYear = intToAdd;
 
                                 if (!parsedPdfResult.DictWithValuesBS.ContainsKey(keyBS))
                                 {
@@ -295,17 +268,27 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                     }
                 }
 
-                var bsRows = Mappings.HungarianBsRows;
-                var plRows = Mappings.HungarianPlRows;
+           
 
                 return parsedPdfResult;
                 // Do your work with the document inside the using statement.
             }
         }
 
-        private static int GetCorrectValueFromPdfRow(int numberInCollection, PdfTextFragmentCollection tfc)
+        private static int GetCorrectValueFromPdfRow(int numberInCollection, PdfTextFragmentCollection tfc, string currentNumberString)
         {
             // Проверяваме следващите 10 записа за втория целочислен запис
+
+            string nextNumberString = "";
+            if(int.TryParse(currentNumberString, out int currentNumberInt))
+            {
+                nextNumberString = (currentNumberInt + 1).ToString("D3");
+            }
+            else
+            {
+
+            }
+
 
             int successfulParsedNumbers = 0;
             for (int i = 1; i < 10; i++)
@@ -321,6 +304,14 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 if (successfulParsedNumbers == 2)
                 {
                     return dummy;
+                }
+                if (!string.IsNullOrEmpty(nextNumberString))
+                {
+                    if (text.ToUpperInvariant().Trim().Equals((nextNumberString + ".").ToUpperInvariant().Trim(),
+                        StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return 0;
+                    }
                 }
             }
 
