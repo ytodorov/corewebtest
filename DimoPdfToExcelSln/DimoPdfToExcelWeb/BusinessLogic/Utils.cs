@@ -164,15 +164,16 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                                 {
                                     var keyBS = entry.Number;
 
-                                    int intToAdd = GetCorrectValueFromPdfRow(i, tfc, entry.Number);
+                                    var intToAdd = GetCorrectValueFromPdfRow(i, tfc, entry.Number);
                                                                     
-                                    entry.CurrentYear = intToAdd;
+                                    entry.CurrentYear = intToAdd.CurrentYear;
 
                                     if (!parsedPdfResult.DictWithValuesPL.Any(k => k.Number == keyBS))
                                     {
                                         ParsedPdfRow parsedPdfRow = new ParsedPdfRow();
                                         parsedPdfRow.Number = keyBS;
-                                        parsedPdfRow.CurrentYear = intToAdd;
+                                        parsedPdfRow.CurrentYear = intToAdd.CurrentYear;
+                                        parsedPdfRow.PreviousYear = intToAdd.PreviousYear;
                                         parsedPdfResult.DictWithValuesPL.Add(parsedPdfRow);
                                     }
                                 }
@@ -188,13 +189,14 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                                 var intToAdd = GetCorrectValueFromPdfRow(i, tfc, entry.Number);
                                                               
-                                entry.CurrentYear = intToAdd;
+                                entry.CurrentYear = intToAdd.CurrentYear;
 
                                 if (!parsedPdfResult.DictWithValuesBS.Any(k => k.Number == keyBS))
                                 {
                                     ParsedPdfRow parsedPdfRow = new ParsedPdfRow();
                                     parsedPdfRow.Number = keyBS;
-                                    parsedPdfRow.CurrentYear = intToAdd;
+                                    parsedPdfRow.CurrentYear = intToAdd.CurrentYear;
+                                    parsedPdfRow.PreviousYear = intToAdd.PreviousYear;
                                     parsedPdfResult.DictWithValuesBS.Add(parsedPdfRow);
                                 }
                             }
@@ -216,6 +218,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                         if (bsRow.Number.Equals(item.Number, StringComparison.InvariantCultureIgnoreCase))
                         {
                             bsRow.CurrentYear = item.CurrentYear;
+                            bsRow.PreviousYear = item.PreviousYear;
                         }
                     }
                 }
@@ -227,6 +230,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                         if (plRow.Number.Equals(item.Number, StringComparison.InvariantCultureIgnoreCase))
                         {
                             plRow.CurrentYear = item.CurrentYear;
+                            plRow.PreviousYear = item.PreviousYear;
                         }
                     }
                 }
@@ -235,8 +239,10 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             }
         }
 
-        private static int GetCorrectValueFromPdfRow(int numberInCollection, PdfTextFragmentCollection tfc, string currentNumberString)
+        private static ParsedPdfRow GetCorrectValueFromPdfRow(int numberInCollection, PdfTextFragmentCollection tfc, string currentNumberString)
         {
+            ParsedPdfRow parsedPdfRow = new ParsedPdfRow();
+            parsedPdfRow.Number = currentNumberString;
             // Проверяваме следващите 10 записа за втория целочислен запис
 
             string nextNumberString = "";
@@ -260,22 +266,29 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 if (int.TryParse(text, out int dummy))
                 {
                     successfulParsedNumbers++;
+                    if (successfulParsedNumbers == 1)
+                    {
+                        parsedPdfRow.PreviousYear = dummy;
+                    }
                 }
                 if (successfulParsedNumbers == 2)
                 {
-                    return dummy;
+                    parsedPdfRow.CurrentYear = dummy;
+                    //return dummy;
+                    break;
                 }
                 if (!string.IsNullOrEmpty(nextNumberString))
                 {
                     if (text.ToUpperInvariant().Trim().Equals((nextNumberString + ".").ToUpperInvariant().Trim(),
                         StringComparison.InvariantCultureIgnoreCase))
                     {
-                        return 0;
+                        //return 0;
+                        break;
                     }
                 }
             }
 
-            return 0;
+            return parsedPdfRow;
         }
 
 
