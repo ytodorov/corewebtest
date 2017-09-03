@@ -144,8 +144,6 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                     PdfContentExtractor ce = new PdfContentExtractor(page);
                     PdfTextFragmentCollection tfc = ce.ExtractTextFragments();
 
-
-
                     for (int i = 0; i < tfc.Count; i++)
                     {
 
@@ -158,8 +156,6 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                         sb.AppendLine(text);
 
-                       
-
                         foreach (var entry in Mappings.HungarianPlRows)
                         {
                             if (text.Equals(entry.Number + "."))
@@ -168,27 +164,16 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                                 {
                                     var keyBS = entry.Number;
 
-                                    //var index = Mappings.HungarianBsRows.IndexOf(entry);
-                                    //var nextNumber = "";
-                                    //if (index < Mappings.HungarianPlRows.Count - 1)
-                                    //{
-                                    //    var nextEntry = Mappings.HungarianPlRows[index + 1];
-                                    //    nextNumber = nextEntry.Number;
-                                    //}
-
                                     int intToAdd = GetCorrectValueFromPdfRow(i, tfc, entry.Number);
-
-
-                                    //var finRow = Mappings.HungarianPlRows.FirstOrDefault(h => h.Number == entry.Number);
-                                    //if (finRow != null)
-                                    //{
-                                    //    finRow.CurrentYear = intToAdd;
-                                    //}
+                                                                    
                                     entry.CurrentYear = intToAdd;
 
-                                    if (!parsedPdfResult.DictWithValuesPL.ContainsKey(keyBS))
+                                    if (!parsedPdfResult.DictWithValuesPL.Any(k => k.Number == keyBS))
                                     {
-                                        parsedPdfResult.DictWithValuesPL.Add(keyBS, intToAdd);
+                                        ParsedPdfRow parsedPdfRow = new ParsedPdfRow();
+                                        parsedPdfRow.Number = keyBS;
+                                        parsedPdfRow.CurrentYear = intToAdd;
+                                        parsedPdfResult.DictWithValuesPL.Add(parsedPdfRow);
                                     }
                                 }
                             }
@@ -201,27 +186,16 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                             {
                                 var keyBS = entry.Number;
 
-                                //var index = Mappings.HungarianBsRows.IndexOf(entry);
-                                //var nextNumber = "";
-                                //if (index < Mappings.HungarianBsRows.Count - 1)
-                                //{
-                                //    var nextEntry = Mappings.HungarianBsRows[index + 1];
-                                //    nextNumber = nextEntry.Number;
-                                //}
-
-
                                 var intToAdd = GetCorrectValueFromPdfRow(i, tfc, entry.Number);
-
-                                //var finRow = Mappings.HungarianBsRows.FirstOrDefault(h => h.Number == entry.Number);
-                                //if (finRow != null)
-                                //{
-                                //    finRow.CurrentYear = intToAdd;
-                                //}
+                                                              
                                 entry.CurrentYear = intToAdd;
 
-                                if (!parsedPdfResult.DictWithValuesBS.ContainsKey(keyBS))
+                                if (!parsedPdfResult.DictWithValuesBS.Any(k => k.Number == keyBS))
                                 {
-                                    parsedPdfResult.DictWithValuesBS.Add(keyBS, intToAdd);
+                                    ParsedPdfRow parsedPdfRow = new ParsedPdfRow();
+                                    parsedPdfRow.Number = keyBS;
+                                    parsedPdfRow.CurrentYear = intToAdd;
+                                    parsedPdfResult.DictWithValuesBS.Add(parsedPdfRow);
                                 }
                             }
                         }
@@ -230,29 +204,18 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                     }
 
-                }
-
-                int totalBs = 0;
-                foreach (var item in parsedPdfResult.DictWithValuesBS)
-                {
-                    totalBs += item.Value;
-                }
-
-                int totalPl = 0;
-                foreach (var item in parsedPdfResult.DictWithValuesPL)
-                {
-                    totalPl += item.Value;
-                }
+                }              
 
                 var textFromPdf = sb.ToString();
 
+                // Това трябва да го има
                 foreach (var bsRow in Mappings.HungarianBsRows)
                 {
                     foreach (var item in parsedPdfResult.DictWithValuesBS)
                     {
-                        if (bsRow.Number.Equals(item.Key, StringComparison.InvariantCultureIgnoreCase))
+                        if (bsRow.Number.Equals(item.Number, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            bsRow.CurrentYear = item.Value;
+                            bsRow.CurrentYear = item.CurrentYear;
                         }
                     }
                 }
@@ -261,17 +224,14 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 {
                     foreach (var item in parsedPdfResult.DictWithValuesPL)
                     {
-                        if (plRow.Number.Equals(item.Key, StringComparison.InvariantCultureIgnoreCase))
+                        if (plRow.Number.Equals(item.Number, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            plRow.CurrentYear = item.Value;
+                            plRow.CurrentYear = item.CurrentYear;
                         }
                     }
                 }
 
-           
-
-                return parsedPdfResult;
-                // Do your work with the document inside the using statement.
+                return parsedPdfResult;              
             }
         }
 
