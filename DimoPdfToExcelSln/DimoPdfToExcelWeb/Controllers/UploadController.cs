@@ -165,50 +165,12 @@ namespace DimoPdfToExcelWeb.Controllers
 
         public IActionResult Export()
         {
-            string sWebRootFolder = HostingEnvironment.WebRootPath;
+            string sWebRootFolder = HostingEnvironment.WebRootPath;          
 
-            //Utils.Get
+            // Decide country File type
 
-            //FileInfo fileEmptyOutput = new FileInfo(Path.Combine(sWebRootFolder, "Files", "OUTPUT.xlsm"));
-            //if (!fileEmptyOutput.Exists)
-            //{
-            //    throw new ApplicationException("Няма го файла OUTPUT.xlsm в папка Files");
-            //}
 
-            //FileInfo fileInfoOutput = new FileInfo(Path.Combine(sWebRootFolder, "OutputFiles", $"OUTPUT_{DateTime.Now.Ticks}.xlsm"));
-
-            //fileEmptyOutput.CopyTo(fileInfoOutput.FullName);
-                
-            //using (ExcelPackage package = new ExcelPackage(fileEmptyOutput))
-            //{
-            //    var parsedPdf = Utils.ParseHungarianPdf(lastPhysicalPath);
-            //    var excelInputData = Utils.GetExcelValues(parsedPdf);
-
-            //    var a = Mappings.HungarianBsRows;
-            //    var b = Mappings.HungarianPlRows;
-
-            //    ExcelRange cellsBS = package.Workbook.Worksheets[1].Cells;
-
-            //    foreach (var finRow in excelInputData.BsValues)
-            //    {
-            //        string cellName = $"D{finRow.Key}";
-            //        cellsBS[cellName].Value = finRow.Value;
-            //    }
-
-            //    ExcelRange cellsPl = package.Workbook.Worksheets[2].Cells;
-
-            //    foreach (var finRow in excelInputData.PlValues)
-            //    {
-            //        string cellName = $"D{finRow.Key}";
-            //        cellsPl[cellName].Value = finRow.Value;
-            //    }
-
-            //    ExcelRange cellsPL = package.Workbook.Worksheets[2].Cells;
-                
-            //    package.SaveAs(fileInfoOutput);
-            //}
-
-            string outputExcelFilePath = Utils.GetExcelOutputFilePath(sWebRootFolder, lastPhysicalPath);
+            string outputExcelFilePath = Utils.GetExcelOutputFilePath(sWebRootFolder, lastPhysicalPath, CountryFileTypes.Hungarian);
            
 
             var result = PhysicalFile(outputExcelFilePath, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");

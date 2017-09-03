@@ -21,12 +21,20 @@ namespace UnitTests
             Utils.PopulateHungarianMappingDictionaries(wwwRootFolder);
             var result = Utils.ParseHungarianPdf(path);
 
-            var outputPath = Utils.GetExcelOutputFilePath(wwwRootFolder, path);
+            var outputPath = Utils.GetExcelOutputFilePath(wwwRootFolder, path, CountryFileTypes.Hungarian);
+        }
 
-            ExcelPackage p = new ExcelPackage(new FileInfo(outputPath));
-         
+        [Fact]
+        public void ParseSerbianPdfTest()
+        {
+            var rootSolution = new DirectoryInfo(Environment.CurrentDirectory).Parent.Parent.Parent.Parent.FullName;
+            var path = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot", "Files", "SerbianBalanceSheet1.pdf");
 
-            Process.Start(outputPath);
+            var wwwRootFolder = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot");
+            Utils.PopulateSerbianMappingDictionaries(wwwRootFolder);
+            var result = Utils.ParseSerbianPdf(path);
+
+            var outputPath = Utils.GetExcelOutputFilePath(wwwRootFolder, path, CountryFileTypes.Serbian);
         }
     }
 }

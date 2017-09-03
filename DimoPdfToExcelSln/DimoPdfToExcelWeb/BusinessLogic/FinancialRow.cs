@@ -24,7 +24,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
         public override string ToString()
         {
-            string result = $"{Type} {Number} {Name} --goes to-- {GoesToRowNumber}.{GoesToRowTitle} {PreviousYear} {CurrentYear}";
+            string result = $"{Type} {Number} {Name} --goes to row:{GoesToRowNumber} prev:{PreviousYear} curr:{CurrentYear}";
             return result;
         }
     }
