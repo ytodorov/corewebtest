@@ -14,7 +14,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 {
     public class Utils
     {
-        public static void PopulateMappingDictionaries(string dirWithFiles)
+        public static void PopulateHungarianMappingDictionaries(string dirWithFiles)
         {
 
             string dirPath = Path.Combine(dirWithFiles, "Files", "HungarianDistributionKeys.xlsx");
@@ -74,6 +74,73 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             
             var bsRows = Mappings.HungarianBsRows;
             var plRows = Mappings.HungarianPlRows;
+
+        }
+
+        public static void PopulateSerbianMappingDictionaries(string dirWithFiles)
+        {
+
+            string dirPath = Path.Combine(dirWithFiles, "Files", "SerbianDistributionKeys.xlsx");
+            FileInfo fileDistributionInfo = new FileInfo(dirPath);
+
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+
+            if (fileDistributionInfo.Exists)
+            {
+                using (ExcelPackage package = new ExcelPackage(fileDistributionInfo))
+                {
+                    for (int page = 1; page <= 2; page++)
+                    {
+                        ExcelWorksheet currentSheet = package.Workbook.Worksheets[page];
+
+                        for (int i = 1; i <= 150; i++)
+                        {
+                            // Проверка за бял цвят
+                            if (string.IsNullOrEmpty(currentSheet.Cells[i, 1].Style.Fill.BackgroundColor.Rgb))
+                            {
+                                // Проверка за невалиден ред
+                                if (!string.IsNullOrWhiteSpace(currentSheet.Cells[i, 1].Value?.ToString()) &&
+                                    !string.IsNullOrWhiteSpace(currentSheet.Cells[i, 3].Value?.ToString()))
+                                {
+                                    var inputValue = currentSheet.Cells[i, 2]?.Value?.ToString();
+                                    var name = currentSheet.Cells[i, 1].Value.ToString();
+                                    //var goesTo = currentSheet.Cells[i, 2].Value.ToString();
+                                    var goesToRowNumberString = currentSheet.Cells[i, 3]?.Value?.ToString();
+                                    FinancialRow fr = new FinancialRow();
+                                    fr.Number = inputValue;
+                                    fr.Name = name;
+                                    //fr.GoesToRowTitle = goesTo;
+                                    if (int.TryParse(goesToRowNumberString, out int goesToRowNumberInt))
+                                    {
+                                        fr.GoesToRowNumber = goesToRowNumberInt;
+                                    }
+                                    else
+                                    {
+                                        continue;
+                                    }
+
+                                    if (page == 1)
+                                    {
+                                        fr.Type = "BS";
+                                        Mappings.SerbianBsRows.Add(fr);
+                                    }
+                                    else if (page == 2)
+                                    {
+                                        fr.Type = "PL";
+                                        Mappings.SerbianPlRows.Add(fr);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+
+                }
+            }
+
+            var bsRows = Mappings.SerbianBsRows;
+            var plRows = Mappings.SerbianPlRows;
 
         }
 

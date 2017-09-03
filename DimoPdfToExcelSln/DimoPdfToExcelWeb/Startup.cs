@@ -93,7 +93,7 @@ namespace DimoPdfToExcelWeb
             // Configure Kendo UI
             app.UseKendo(env);
 
-            Utils.PopulateMappingDictionaries(env.WebRootPath);
+            Utils.PopulateHungarianMappingDictionaries(env.WebRootPath);
 
             
         }
