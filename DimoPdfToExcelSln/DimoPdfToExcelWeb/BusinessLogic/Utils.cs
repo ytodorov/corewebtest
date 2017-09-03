@@ -169,6 +169,50 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             return result;
         }
 
+        public static string GetExcelOutputFilePath(string rootFolder, string pdfFilePath)
+        {
+            FileInfo fileEmptyOutput = new FileInfo(Path.Combine(rootFolder, "Files", "OUTPUT.xlsm"));
+            if (!fileEmptyOutput.Exists)
+            {
+                throw new ApplicationException("Няма го файла OUTPUT.xlsm в папка Files");
+            }
+
+            FileInfo fileInfoOutput = new FileInfo(Path.Combine(rootFolder, "OutputFiles", $"OUTPUT_{DateTime.Now.Ticks}.xlsm"));
+
+            fileEmptyOutput.CopyTo(fileInfoOutput.FullName);
+
+            using (ExcelPackage package = new ExcelPackage(fileEmptyOutput))
+            {
+                var parsedPdf = Utils.ParseHungarianPdf(pdfFilePath);
+                var excelInputData = Utils.GetExcelValues(parsedPdf);
+
+                var a = Mappings.HungarianBsRows;
+                var b = Mappings.HungarianPlRows;
+
+                ExcelRange cellsBS = package.Workbook.Worksheets[1].Cells;
+
+                foreach (var finRow in excelInputData.BsValues)
+                {
+                    string cellName = $"D{finRow.Key}";
+                    cellsBS[cellName].Value = finRow.Value;
+                }
+
+                ExcelRange cellsPl = package.Workbook.Worksheets[2].Cells;
+
+                foreach (var finRow in excelInputData.PlValues)
+                {
+                    string cellName = $"D{finRow.Key}";
+                    cellsPl[cellName].Value = finRow.Value;
+                }
+
+                ExcelRange cellsPL = package.Workbook.Worksheets[2].Cells;
+
+                package.SaveAs(fileInfoOutput);
+
+                return fileInfoOutput.FullName;
+            }
+        }
+
         public static ParsedPdfResult ParseHungarianPdf(string physicalPath)
         {
             using (Stream stream = File.OpenRead(physicalPath))

@@ -167,52 +167,55 @@ namespace DimoPdfToExcelWeb.Controllers
         {
             string sWebRootFolder = HostingEnvironment.WebRootPath;
 
-            FileInfo fileEmptyOutput = new FileInfo(Path.Combine(sWebRootFolder, "Files", "OUTPUT.xlsm"));
-            if (!fileEmptyOutput.Exists)
-            {
-                throw new ApplicationException("Няма го файла OUTPUT.xlsm в папка Files");
-            }
+            //Utils.Get
 
-            FileInfo fileInfoOutput = new FileInfo(Path.Combine(sWebRootFolder, "OutputFiles", $"OUTPUT_{DateTime.Now.Ticks}.xlsm"));
+            //FileInfo fileEmptyOutput = new FileInfo(Path.Combine(sWebRootFolder, "Files", "OUTPUT.xlsm"));
+            //if (!fileEmptyOutput.Exists)
+            //{
+            //    throw new ApplicationException("Няма го файла OUTPUT.xlsm в папка Files");
+            //}
 
-            fileEmptyOutput.CopyTo(fileInfoOutput.FullName);
+            //FileInfo fileInfoOutput = new FileInfo(Path.Combine(sWebRootFolder, "OutputFiles", $"OUTPUT_{DateTime.Now.Ticks}.xlsm"));
+
+            //fileEmptyOutput.CopyTo(fileInfoOutput.FullName);
                 
-            using (ExcelPackage package = new ExcelPackage(fileEmptyOutput))
-            {
-                var parsedPdf = Utils.ParseHungarianPdf(lastPhysicalPath);
-                var excelInputData = Utils.GetExcelValues(parsedPdf);
+            //using (ExcelPackage package = new ExcelPackage(fileEmptyOutput))
+            //{
+            //    var parsedPdf = Utils.ParseHungarianPdf(lastPhysicalPath);
+            //    var excelInputData = Utils.GetExcelValues(parsedPdf);
 
-                var a = Mappings.HungarianBsRows;
-                var b = Mappings.HungarianPlRows;
+            //    var a = Mappings.HungarianBsRows;
+            //    var b = Mappings.HungarianPlRows;
 
-                ExcelRange cellsBS = package.Workbook.Worksheets[1].Cells;
+            //    ExcelRange cellsBS = package.Workbook.Worksheets[1].Cells;
 
-                foreach (var finRow in excelInputData.BsValues)
-                {
-                    string cellName = $"D{finRow.Key}";
-                    cellsBS[cellName].Value = finRow.Value;
-                }
+            //    foreach (var finRow in excelInputData.BsValues)
+            //    {
+            //        string cellName = $"D{finRow.Key}";
+            //        cellsBS[cellName].Value = finRow.Value;
+            //    }
 
-                ExcelRange cellsPl = package.Workbook.Worksheets[2].Cells;
+            //    ExcelRange cellsPl = package.Workbook.Worksheets[2].Cells;
 
-                foreach (var finRow in excelInputData.PlValues)
-                {
-                    string cellName = $"D{finRow.Key}";
-                    cellsPl[cellName].Value = finRow.Value;
-                }
+            //    foreach (var finRow in excelInputData.PlValues)
+            //    {
+            //        string cellName = $"D{finRow.Key}";
+            //        cellsPl[cellName].Value = finRow.Value;
+            //    }
 
-                ExcelRange cellsPL = package.Workbook.Worksheets[2].Cells;
+            //    ExcelRange cellsPL = package.Workbook.Worksheets[2].Cells;
                 
-                package.SaveAs(fileInfoOutput);
-            }
+            //    package.SaveAs(fileInfoOutput);
+            //}
 
+            string outputExcelFilePath = Utils.GetExcelOutputFilePath(sWebRootFolder, lastPhysicalPath);
            
 
-            var result = PhysicalFile(fileInfoOutput.FullName, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            var result = PhysicalFile(outputExcelFilePath, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
             Response.Headers["Content-Disposition"] = new ContentDispositionHeaderValue("attachment")
             {
-                FileName = fileInfoOutput.Name
+                FileName = Path.GetFileName(outputExcelFilePath)
             }.ToString();
 
             return result;

@@ -23,7 +23,6 @@ namespace UnitTests
             {
                 Assert.False(row.GoesToRowNumber == 0);
             }
-
         }
 
         [Fact]
