@@ -10,9 +10,9 @@ namespace DimoPdfToExcelWeb.BusinessLogic
         /// <summary>
         /// excel row number / sum
         /// </summary>
-        public Dictionary<int, int> BsValues { get; set; } = new Dictionary<int, int>();
+        public List<ExcellOutputRowData> BsValues { get; set; } = new List<ExcellOutputRowData>();
 
-        public Dictionary<int, int> PlValues { get; set; } = new Dictionary<int, int>();
+        public List<ExcellOutputRowData> PlValues { get; set; } = new List<ExcellOutputRowData>();
 
 
     }

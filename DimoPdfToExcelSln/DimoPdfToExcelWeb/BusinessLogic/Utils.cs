@@ -148,23 +148,42 @@ namespace DimoPdfToExcelWeb.BusinessLogic
         {
             // balance
             ExcelInputData result = new ExcelInputData();
-            result.BsValues = new Dictionary<int, int>();
-            result.PlValues = new Dictionary<int, int>();
+            result.BsValues = new List<ExcellOutputRowData>();
+            result.PlValues = new List<ExcellOutputRowData>();
 
             var bsGroup = bsRows.GroupBy(h => h.GoesToRowNumber);
 
             foreach (var group in bsGroup)
             {
-                var sum = (int)group.Sum(g => g.CurrentYear);
-                result.BsValues.Add(group.Key, sum);
+                
+                var sumCurrentYear = (int)group.Sum(g => g.CurrentYear);
+                var sumPreviousYear = (int)group.Sum(g => g.PreviousYear);
+                ExcellOutputRowData excellOutputRowData = new ExcellOutputRowData()
+                {
+                    RowNumber = group.Key,
+                    CurrentYear = sumCurrentYear,
+                    PreviousYear = sumPreviousYear
+                };
+
+                result.BsValues.Add(excellOutputRowData);
+
+                //var sumPreviousYear = (int)group.Sum(g => g.PreviousYear);
+                //result.BsValues.Add(group.Key, sumCurrentYear);
             }
 
             var plGroup = plRows.GroupBy(h => h.GoesToRowNumber);
 
             foreach (var group in plGroup)
             {
-                var sum = (int)group.Sum(g => g.CurrentYear);
-                result.PlValues.Add(group.Key, sum);
+                var sumCurrentYear = (int)group.Sum(g => g.CurrentYear);
+                var sumPreviousYear = (int)group.Sum(g => g.PreviousYear);
+                ExcellOutputRowData excellOutputRowData = new ExcellOutputRowData()
+                {
+                    RowNumber = group.Key,
+                    CurrentYear = sumCurrentYear,
+                    PreviousYear = sumPreviousYear
+                };
+                result.PlValues.Add(excellOutputRowData);
             }
             return result;
         }
@@ -201,16 +220,22 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                 foreach (var finRow in excelInputData.BsValues)
                 {
-                    string cellName = $"D{finRow.Key}";
-                    cellsBS[cellName].Value = finRow.Value;
+                    string cellNameCurrentYear = $"D{finRow.RowNumber}";
+                    string cellNamePrevoiusYear = $"G{finRow.RowNumber}";
+                    cellsBS[cellNameCurrentYear].Value = finRow.CurrentYear;
+                    cellsBS[cellNamePrevoiusYear].Value = finRow.PreviousYear;
+
+
                 }
 
                 ExcelRange cellsPl = package.Workbook.Worksheets[2].Cells;
 
                 foreach (var finRow in excelInputData.PlValues)
                 {
-                    string cellName = $"D{finRow.Key}";
-                    cellsPl[cellName].Value = finRow.Value;
+                    string cellNameCurrentYear = $"D{finRow.RowNumber}";
+                    string cellNamePrevoiusYear = $"G{finRow.RowNumber}";
+                    cellsPl[cellNameCurrentYear].Value = finRow.CurrentYear;
+                    cellsPl[cellNamePrevoiusYear].Value = finRow.PreviousYear;
                 }
 
                 ExcelRange cellsPL = package.Workbook.Worksheets[2].Cells;
