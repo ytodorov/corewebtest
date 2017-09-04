@@ -155,7 +155,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
             foreach (var group in bsGroup)
             {
-                
+
                 var sumCurrentYear = (int)group.Sum(g => g.CurrentYear);
                 var sumPreviousYear = (int)group.Sum(g => g.PreviousYear);
                 ExcellOutputRowData excellOutputRowData = new ExcellOutputRowData()
@@ -246,9 +246,9 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             }
         }
 
-        public static ParsedPdfResult ParseHungarianPdf(string physicalPath)
+        public static ParsedPdfResult ParseHungarianPdf(string pdfFileFullPhysicalPath)
         {
-            using (Stream stream = File.OpenRead(physicalPath))
+            using (Stream stream = File.OpenRead(pdfFileFullPhysicalPath))
             {
                 // Load the input file.
                 PdfFixedDocument document = new PdfFixedDocument(stream);
@@ -377,9 +377,9 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             }
         }
 
-        public static ParsedPdfResult ParseSerbianPdf(string physicalPath)
+        public static ParsedPdfResult ParseSerbianPdf(string pdfFileFullPhysicalPath)
         {
-            using (Stream stream = File.OpenRead(physicalPath))
+            using (Stream stream = File.OpenRead(pdfFileFullPhysicalPath))
             {
                 // Load the input file.
                 PdfFixedDocument document = new PdfFixedDocument(stream);
@@ -505,6 +505,57 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 }
 
                 return parsedPdfResult;
+            }
+        }
+
+        public static CompanyPdfMetaData GetCompanyPdfMetaData(string pdfFileFullPhysicalPath, CountryFileTypes countryFileType)
+        {
+            using (Stream stream = File.OpenRead(pdfFileFullPhysicalPath))
+            {
+                CompanyPdfMetaData result = new CompanyPdfMetaData();
+                PdfFixedDocument document = new PdfFixedDocument(stream);
+
+                StringBuilder sb = new StringBuilder();
+
+                ParsedPdfResult parsedPdfResult = new ParsedPdfResult();
+
+                Dictionary<string, bool> dictAddedInBs = new Dictionary<string, bool>();
+
+                StringBuilder companyStringFragments = new StringBuilder();
+                PdfPage firstPage = document.Pages.FirstOrDefault();
+
+                PdfContentExtractor ce = new PdfContentExtractor(firstPage);
+                PdfTextFragmentCollection tfc = ce.ExtractTextFragments();
+
+                switch (countryFileType)
+                {
+                    case CountryFileTypes.Hungarian:
+                        for (int i = 0; i < tfc.Count; i++)
+                        {
+                            var text = tfc[i].Text;
+                            if (text.ToUpperInvariant().Contains("(Nyilvántartási szám:".ToUpperInvariant()))
+                            {
+                                break;
+                            }
+                            if (i != 0)
+                            {
+                                companyStringFragments.Append(" ");
+                            }
+                            companyStringFragments.Append(text);
+
+                        }
+                        string companyName = companyStringFragments.ToString();
+                        result.CompanyName = companyName;
+                        break;
+                    case CountryFileTypes.Serbian:
+                        break;
+                    default:
+                        break;
+                }
+
+              
+
+                return result;
             }
         }
 

@@ -36,5 +36,19 @@ namespace UnitTests
 
             var outputPath = Utils.GetExcelOutputFilePath(wwwRootFolder, path, CountryFileTypes.Serbian);
         }
+
+        [Fact]
+        public void GetCompanyPdfMetaDataHungarianTest()
+        {
+            var rootSolution = new DirectoryInfo(Environment.CurrentDirectory).Parent.Parent.Parent.Parent.FullName;
+            var path = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot", "Files", "Hungarian1.pdf");
+
+            var wwwRootFolder = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot");
+            Utils.PopulateSerbianMappingDictionaries(wwwRootFolder);
+
+            var res = Utils.GetCompanyPdfMetaData(path, CountryFileTypes.Hungarian);
+
+            Assert.False(string.IsNullOrEmpty(res.CompanyName), "Името на компанията не може да е празен стринг!");
+        }
     }
 }
