@@ -5,15 +5,11 @@ using Xunit;
 
 namespace UnitTests
 {
-    public class UnitTest1
+    public class ParseDistributionKeysTests : UnitTestBase
     {
         [Fact]
         public void ParseHungarianMappingFileTest()
         {
-            var rootSolution = new DirectoryInfo(Environment.CurrentDirectory).Parent.Parent.Parent.Parent.FullName;
-            var wwwRootFolder = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot");
-            Utils.PopulateHungarianMappingDictionaries(wwwRootFolder);
-            
             foreach (var row in Mappings.HungarianBsRows)
             {
                 Assert.False(row.GoesToRowNumber == 0);                
@@ -28,10 +24,6 @@ namespace UnitTests
         [Fact]
         public void ParseSerbianMappingFileTest()
         {
-            var rootSolution = new DirectoryInfo(Environment.CurrentDirectory).Parent.Parent.Parent.Parent.FullName;
-            var wwwRootFolder = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot");
-            Utils.PopulateSerbianMappingDictionaries(wwwRootFolder);
-
             foreach (var row in Mappings.SerbianBsRows)
             {
                 Assert.False(row.GoesToRowNumber == 0);

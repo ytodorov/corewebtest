@@ -9,65 +9,34 @@ using Xunit;
 
 namespace UnitTests
 {
-    public class UtilsTests
+    public class UtilsTests : UnitTestBase
     {
         [Fact]
         public void ParseHungarianPdfTest()
         {
-            var rootSolution = new DirectoryInfo(Environment.CurrentDirectory).Parent.Parent.Parent.Parent.FullName;
-            var path = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot", "Files", "Hungarian1.pdf");
-
-            var wwwRootFolder = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot");
-            Utils.PopulateHungarianMappingDictionaries(wwwRootFolder);
-            var result = Utils.ParseHungarianPdf(path);
-
-            var outputPath = Utils.GetExcelOutputFilePath(wwwRootFolder, path);
+            foreach (var path in HungarianFileNames)
+            {
+                var result = Utils.ParseHungarianPdf(path);
+                var outputPath = Utils.GetExcelOutputFilePath(WwwRootFolder, path);
+            }
         }
 
         [Fact]
         public void ParseSerbianPdfTest()
         {
-            var rootSolution = new DirectoryInfo(Environment.CurrentDirectory).Parent.Parent.Parent.Parent.FullName;
-            var path = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot", "Files", "SerbianBalanceSheet1.pdf");
-
-            var wwwRootFolder = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot");
-            Utils.PopulateSerbianMappingDictionaries(wwwRootFolder);
-            var result = Utils.ParseSerbianPdf(path);
-
-            var outputPath = Utils.GetExcelOutputFilePath(wwwRootFolder, path);
+            foreach (var path in SerbianFileNames)
+            {
+                var result = Utils.ParseSerbianPdf(path);
+                var outputPath = Utils.GetExcelOutputFilePath(WwwRootFolder, path);
+            }
         }
 
         [Fact]
-        public void GetCompanyPdfMetaDataHungarianTest()
+        public void GetCompanyPdfMetaDataTest()
         {
-            List<string> hungarianFileNames = new List<string>()
+            foreach (var fullFileName in AllFileNames)
             {
-                "Hungarian1", "Hungarian2", "SerbianBalanceSheet1", "SerbianProfitAndLoss1"
-            };
-
-            foreach (var hungarianFileName in hungarianFileNames)
-            {
-                var rootSolution = new DirectoryInfo(Environment.CurrentDirectory).Parent.Parent.Parent.Parent.FullName;
-                var path = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot", "Files", $"{hungarianFileName}.pdf");
-
-                var wwwRootFolder = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot");
-                //Utils.PopulateSerbianMappingDictionaries(wwwRootFolder);
-
-                CompanyPdfMetaData res = null;
-
-                if (hungarianFileName.ToUpperInvariant().Contains("hungarian".ToUpperInvariant()))
-                {
-                    res = Utils.GetCompanyPdfMetaData(path);
-                    var type = Utils.GetCountryFileTypesFromPdfFile(path);
-                    Assert.Equal(CountryFileTypes.Hungarian, type);
-
-                }
-                else if (hungarianFileName.ToUpperInvariant().Contains("serbian".ToUpperInvariant()))
-                {
-                    res = Utils.GetCompanyPdfMetaData(path);
-                    var type = Utils.GetCountryFileTypesFromPdfFile(path);
-                    Assert.Equal(CountryFileTypes.Serbian, type);
-                }
+                CompanyPdfMetaData res = Utils.GetCompanyPdfMetaData(fullFileName);
 
                 Assert.False(string.IsNullOrEmpty(res.CompanyName), "Името на компанията не може да е празен стринг!");
                 Assert.False(string.IsNullOrEmpty(res.CompanyRegistrationNumber), "CompanyRegistrationNumber не може да е празен стринг!");
@@ -75,6 +44,22 @@ namespace UnitTests
 
                 Assert.True(res.StartPeriodOfReport.Date != new DateTime().Date, "StartPeriodOfReport");
                 Assert.True(res.EndPeriodOfReport.Date != new DateTime().Date, "EndPeriodOfReport");
+            }
+        }
+
+        [Fact]
+        public void GetCountryFileTypesFromPdfFileTest()
+        {
+            foreach (var fullFileName in HungarianFileNames)
+            {
+                var type = Utils.GetCountryFileTypesFromPdfFile(fullFileName);
+                Assert.Equal(CountryFileTypes.Hungarian, type);
+            }
+
+            foreach (var fullFileName in SerbianFileNames)
+            {
+                var type = Utils.GetCountryFileTypesFromPdfFile(fullFileName);
+                Assert.Equal(CountryFileTypes.Serbian, type);
             }
         }
     }
