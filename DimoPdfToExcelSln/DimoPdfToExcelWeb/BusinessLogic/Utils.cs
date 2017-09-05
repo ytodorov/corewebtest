@@ -704,17 +704,19 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                                 if (!previousText.ToUpperInvariant().Contains("за период од".ToUpperInvariant())) // Balance sheet
                                 {
                                     string stringDate = tfc[i]?.Text?.Replace("на дан", "").Replace("године", "").Trim();
-                                    var serbianCulture = new CultureInfo("Cy-sr-SP");
+                                    var serbianCulture = new CultureInfo("sr-Cyrl");
                                     DateTime.TryParse(stringDate, serbianCulture, DateTimeStyles.None, out DateTime endDate);
                                     DateTime startDate = new DateTime(endDate.Year, 1, 1);
 
                                     result.StartPeriodOfReport = startDate;
                                     result.EndPeriodOfReport = endDate;
+
+                                    var all = CultureInfo.GetCultures(CultureTypes.AllCultures);
                                 }
                                 else // Profit and loss
                                 {
                                     string[] parts = text?.Replace("на дан", "").Replace("године", "").Trim().Split("до");
-                                    var serbianCulture = new CultureInfo("Cy-sr-SP");
+                                    var serbianCulture = new CultureInfo("sr-Cyrl");
 
                                     DateTime.TryParse(parts[0].Trim(), serbianCulture, DateTimeStyles.None, out DateTime startDate);
                                     DateTime.TryParse(parts[1].Trim(), serbianCulture, DateTimeStyles.None, out DateTime endDate);
