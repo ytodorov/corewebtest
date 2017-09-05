@@ -42,7 +42,7 @@ namespace UnitTests
         {
             List<string> hungarianFileNames = new List<string>()
             {
-                "Hungarian1", "Hungarian2"
+                "Hungarian1", "Hungarian2", "SerbianBalanceSheet1", "SerbianProfitAndLoss1"
             };
 
             foreach (var hungarianFileName in hungarianFileNames)
@@ -51,9 +51,18 @@ namespace UnitTests
                 var path = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot", "Files", $"{hungarianFileName}.pdf");
 
                 var wwwRootFolder = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot");
-                Utils.PopulateSerbianMappingDictionaries(wwwRootFolder);
+                //Utils.PopulateSerbianMappingDictionaries(wwwRootFolder);
 
-                var res = Utils.GetCompanyPdfMetaData(path, CountryFileTypes.Hungarian);
+                CompanyPdfMetaData res = null;
+
+                if (hungarianFileName.ToUpperInvariant().Contains("hungarian".ToUpperInvariant()))
+                {
+                    res = Utils.GetCompanyPdfMetaData(path, CountryFileTypes.Hungarian);
+                }
+                else if (hungarianFileName.ToUpperInvariant().Contains("serbian".ToUpperInvariant()))
+                {
+                    res = Utils.GetCompanyPdfMetaData(path, CountryFileTypes.Serbian);
+                }
 
                 Assert.False(string.IsNullOrEmpty(res.CompanyName), "Името на компанията не може да е празен стринг!");
                 Assert.False(string.IsNullOrEmpty(res.CompanyRegistrationNumber), "CompanyRegistrationNumber не може да е празен стринг!");
@@ -62,9 +71,6 @@ namespace UnitTests
                 Assert.True(res.StartPeriodOfReport.Date != new DateTime().Date, "StartPeriodOfReport");
                 Assert.True(res.EndPeriodOfReport.Date != new DateTime().Date, "EndPeriodOfReport");
             }
-           
-
-
         }
     }
 }

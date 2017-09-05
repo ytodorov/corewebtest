@@ -566,7 +566,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                                 string rowTaxNumber = text.Substring(lastIndexOfColon + 1, firstIndexOfBracket - lastIndexOfColon - 1);
                                 string taxNumber = rowTaxNumber.Replace(" ", string.Empty);
                                 result.CompanyTaxNumber = taxNumber;
-                                break;                                
+                                break;
                             }
                         }
 
@@ -597,12 +597,71 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                         break;
                     case CountryFileTypes.Serbian:
+                        for (int i = 0; i < tfc.Count; i++)
+                        {
+                            //Матични број
+                            var text = tfc[i].Text;
+                            if (text.ToUpperInvariant().Contains("Матични број".ToUpperInvariant()))
+                            {
+                                result.CompanyRegistrationNumber = tfc[i + 1]?.Text;
+                                continue;
+                            }
+                            if (text.ToUpperInvariant().Contains("Шифра делатности".ToUpperInvariant()))
+                            {
+                                result.ActivityCode = tfc[i + 1]?.Text;
+                                continue;
+                            }
+                            if (text.ToUpperInvariant().Contains("ПИБ".ToUpperInvariant()))
+                            {
+                                result.CompanyTaxNumber = tfc[i + 1]?.Text;
+                                continue;
+                            }
+                            if (text.ToUpperInvariant().Contains("Назив".ToUpperInvariant()))
+                            {
+                                result.CompanyName = tfc[i + 1]?.Text;
+                                continue;
+                            }
+                            if (text.ToUpperInvariant().Contains("Седиште".ToUpperInvariant()))
+                            {
+                                result.HeadOfficeAddress = tfc[i + 1]?.Text;
+                                continue;
+                            }
+                            if (text.ToUpperInvariant().Contains("године".ToUpperInvariant())) // Balance sheet
+                            {
+                                string rowDate = tfc[i]?.Text;
+
+                                string previousText = tfc[i - 1]?.Text;
+
+                                if (!previousText.ToUpperInvariant().Contains("за период од".ToUpperInvariant())) // Balance sheet
+                                {
+                                    string stringDate = tfc[i]?.Text?.Replace("на дан", "").Replace("године", "").Trim();
+                                    var serbianCulture = new CultureInfo("Cy-sr-SP");
+                                    DateTime.TryParse(stringDate, serbianCulture, DateTimeStyles.None, out DateTime endDate);
+                                    DateTime startDate = new DateTime(endDate.Year, 1, 1);
+
+                                    result.StartPeriodOfReport = startDate;
+                                    result.EndPeriodOfReport = endDate;
+                                }
+                                else // Profit and loss
+                                {
+                                    string[] parts = text?.Replace("на дан", "").Replace("године", "").Trim().Split("до");
+                                    var serbianCulture = new CultureInfo("Cy-sr-SP");
+
+                                    DateTime.TryParse(parts[0].Trim(), serbianCulture, DateTimeStyles.None, out DateTime startDate);
+                                    DateTime.TryParse(parts[1].Trim(), serbianCulture, DateTimeStyles.None, out DateTime endDate);
+
+                                    result.StartPeriodOfReport = startDate;
+                                    result.EndPeriodOfReport = endDate;
+                                    continue;
+                                }
+                            }
+                        }
                         break;
                     default:
                         break;
                 }
 
-              
+
 
                 return result;
             }

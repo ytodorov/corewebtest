@@ -13,6 +13,10 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
         public string CompanyTaxNumber { get; set; }
 
+        public string ActivityCode { get; set; }
+
+        public string HeadOfficeAddress { get; set; }
+
         public DateTime StartPeriodOfReport { get; set; }
 
         public DateTime EndPeriodOfReport { get; set; }
