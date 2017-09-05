@@ -172,8 +172,9 @@ namespace DimoPdfToExcelWeb.Controllers
             string outputExcelFilePath = Utils.GetExcelOutputFilePath(sWebRootFolder, lastPhysicalPath);
            
 
-            var result = PhysicalFile(outputExcelFilePath, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-
+            //var result = PhysicalFile(outputExcelFilePath, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            //	application/vnd.ms-excel.sheet.macroEnabled.12
+            var result = PhysicalFile(outputExcelFilePath, "application/vnd.ms-excel.sheet.macroEnabled.12");
             Response.Headers["Content-Disposition"] = new ContentDispositionHeaderValue("attachment")
             {
                 FileName = Path.GetFileName(outputExcelFilePath)

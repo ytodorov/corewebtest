@@ -201,10 +201,10 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             CompanyPdfMetaData companyPdfMetaData = GetCompanyPdfMetaData(pdfFilePath);
 
             string outputFileName = $"OUTPUT_{companyPdfMetaData.CompanyRegistrationNumber}_{companyPdfMetaData.CompanyTaxNumber}_{DateTime.Now.Ticks}.xlsm";
-            
 
 
-            
+
+
 
             var invalidChars = Path.GetInvalidPathChars();
             foreach (var invalidChar in invalidChars)
@@ -218,7 +218,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
             using (ExcelPackage package = new ExcelPackage(fileEmptyOutput))
             {
-                
+
                 ExcelInputData excelInputData = null;
                 if (countryFileType == CountryFileTypes.Hungarian)
                 {
@@ -443,11 +443,22 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                 StringBuilder sb = new StringBuilder();
 
+                StringBuilder sbFirstPage = new StringBuilder();
+                PdfContentExtractor ceFirstPage = new PdfContentExtractor(document.Pages.FirstOrDefault());
+                PdfTextFragmentCollection tfcFirstPage = ceFirstPage.ExtractTextFragments();
+                for (int i = 0; i < tfcFirstPage.Count; i++)
+                {
+                    sbFirstPage.AppendLine(tfcFirstPage[i].Text);
+                }
+                string firstPageText = sbFirstPage.ToString();
+
                 ParsedPdfResult parsedPdfResult = new ParsedPdfResult();
 
                 Dictionary<string, bool> dictAddedInBs = new Dictionary<string, bool>();
 
                 List<string> allStringFragments = new List<string>();
+
+
 
                 foreach (var page in document.Pages)
                 {
@@ -481,16 +492,15 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                         }
 
                         sb.AppendLine(text);
-
-                        foreach (var entry in Mappings.SerbianPlRows)
+                        if (firstPageText.ToUpperInvariant().Contains("БИЛАНС УСПЕХА".ToUpperInvariant())) // Profit and loss
                         {
-                            if (text.Equals(entry.Number))
+                            foreach (var entry in Mappings.SerbianPlRows)
                             {
-                                if (allStringFragmentsToCount.Contains(text))
+                                if (text.Equals(entry.Number))
                                 {
                                     var keyBS = entry.Number;
 
-                                    var intToAdd = GetCorrectValueFromSerbianPdfRow(i, tfc, entry.Number);
+                                    var intToAdd = GetCorrectValueFromSerbianPdfRow(i, tfc, entry.Number, false);
 
                                     entry.CurrentYear = intToAdd.CurrentYear;
 
@@ -506,30 +516,31 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                             }
                         }
 
-
-                        foreach (var entry in Mappings.SerbianBsRows)
+                        if (firstPageText.ToUpperInvariant().Contains("БИЛАНС СТАЊА".ToUpperInvariant())) // BalanceSheet
                         {
-                            if (text.Equals(entry.Number))
+                            foreach (var entry in Mappings.SerbianBsRows)
                             {
-                                var keyBS = entry.Number;
-
-                                var intToAdd = GetCorrectValueFromSerbianPdfRow(i, tfc, entry.Number);
-
-                                entry.CurrentYear = intToAdd.CurrentYear;
-
-                                if (!parsedPdfResult.DictWithValuesBS.Any(k => k.Number == keyBS))
+                                if (text.Equals(entry.Number))
                                 {
-                                    ParsedPdfRow parsedPdfRow = new ParsedPdfRow();
-                                    parsedPdfRow.Number = keyBS;
-                                    parsedPdfRow.CurrentYear = intToAdd.CurrentYear;
-                                    parsedPdfRow.PreviousYear = intToAdd.PreviousYear;
-                                    parsedPdfResult.DictWithValuesBS.Add(parsedPdfRow);
+                                    var keyBS = entry.Number;
+
+                                    var intToAdd = GetCorrectValueFromSerbianPdfRow(i, tfc, entry.Number, true);
+
+                                    entry.CurrentYear = intToAdd.CurrentYear;
+
+                                    if (!parsedPdfResult.DictWithValuesBS.Any(k => k.Number == keyBS))
+                                    {
+                                        ParsedPdfRow parsedPdfRow = new ParsedPdfRow();
+                                        parsedPdfRow.Number = keyBS;
+                                        parsedPdfRow.CurrentYear = intToAdd.CurrentYear;
+                                        parsedPdfRow.PreviousYear = intToAdd.PreviousYear;
+                                        parsedPdfResult.DictWithValuesBS.Add(parsedPdfRow);
+                                    }
                                 }
                             }
+
+                            allStringFragmentsToCount.Add(text);
                         }
-
-                        allStringFragmentsToCount.Add(text);
-
                     }
 
                 }
@@ -725,7 +736,8 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             }
         }
 
-        private static ParsedPdfRow GetCorrectValueFromSerbianPdfRow(int numberInCollection, PdfTextFragmentCollection tfc, string currentNumberString)
+        private static ParsedPdfRow GetCorrectValueFromSerbianPdfRow(int numberInCollection,
+            PdfTextFragmentCollection tfc, string currentNumberString, bool isBalanceSheet)
         {
             //if (numberInCollection + 3 < tfc.Count)
 
@@ -764,16 +776,30 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             {
                 if (fr != null)
                 {
-                    if (Math.Abs(fr.FragmentCorners[1].Y - rowNumberFr.FragmentCorners[1].Y) < 10)
+                    if (Math.Abs(fr.FragmentCorners[1].Y - rowNumberFr.FragmentCorners[1].Y) < 10) // Проверка дали са на същия ред
                     {
                         // current year
-                        if (Math.Abs(fr.FragmentCorners[1].X - 401) < 20)
+                        if (isBalanceSheet)
                         {
-                            currentYear = fr?.Text;
+                            if (Math.Abs(fr.FragmentCorners[1].X - 401) < 20)
+                            {
+                                currentYear = fr?.Text;
+                            }
+                            else if (Math.Abs(fr.FragmentCorners[1].X - 482) < 20)
+                            {
+                                previousYear = fr?.Text;
+                            }
                         }
-                        else if (Math.Abs(fr.FragmentCorners[1].X - 482) < 20)
+                        else
                         {
-                            previousYear = fr?.Text;
+                            if (Math.Abs(fr.FragmentCorners[1].X - 465.69) < 20)
+                            {
+                                currentYear = fr?.Text;
+                            }
+                            else if (Math.Abs(fr.FragmentCorners[1].X - 563.94) < 20)
+                            {
+                                previousYear = fr?.Text;
+                            }
                         }
                     }
                 }
