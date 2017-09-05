@@ -189,35 +189,59 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             return result;
         }
 
-        public static string GetExcelOutputFilePath(string rootFolder, string pdfFilePath, CountryFileTypes countryFileType)
+        public static string GetExcelOutputFilePath(string rootFolder, string pdfFilePath)
         {
+            CountryFileTypes countryFileType = Utils.GetCountryFileTypesFromPdfFile(pdfFilePath);
             FileInfo fileEmptyOutput = new FileInfo(Path.Combine(rootFolder, "Files", "OUTPUT.xlsm"));
             if (!fileEmptyOutput.Exists)
             {
                 throw new ApplicationException("Няма го файла OUTPUT.xlsm в папка Files");
             }
 
-            FileInfo fileInfoOutput = new FileInfo(Path.Combine(rootFolder, "OutputFiles", $"OUTPUT_{DateTime.Now.Ticks}.xlsm"));
+            CompanyPdfMetaData companyPdfMetaData = GetCompanyPdfMetaData(pdfFilePath);
 
-            fileEmptyOutput.CopyTo(fileInfoOutput.FullName);
+            string outputFileName = $"OUTPUT_{companyPdfMetaData.CompanyRegistrationNumber}_{companyPdfMetaData.CompanyTaxNumber}_{DateTime.Now.Ticks}.xlsm";
+            
+
+
+            
+
+            var invalidChars = Path.GetInvalidPathChars();
+            foreach (var invalidChar in invalidChars)
+            {
+                outputFileName = outputFileName.Replace(invalidChar.ToString(), "");
+            }
+            string outputFilePath = Path.Combine(rootFolder, "OutputFiles", outputFileName);
+            FileInfo fileInfoOutput = new FileInfo(outputFilePath);
+
+            fileEmptyOutput.CopyTo(fileInfoOutput.FullName, true);
 
             using (ExcelPackage package = new ExcelPackage(fileEmptyOutput))
             {
-                var parsedPdf = Utils.ParseHungarianPdf(pdfFilePath);
+                
                 ExcelInputData excelInputData = null;
                 if (countryFileType == CountryFileTypes.Hungarian)
                 {
-                    excelInputData = Utils.GetExcelValues(Mappings.HungarianBsRows, Mappings.HungarianPlRows);
+                    var parsedPdf = ParseHungarianPdf(pdfFilePath);
+                    excelInputData = GetExcelValues(Mappings.HungarianBsRows, Mappings.HungarianPlRows);
                 }
                 else if (countryFileType == CountryFileTypes.Serbian)
                 {
+                    var parsedPdf = ParseSerbianPdf(pdfFilePath);
                     excelInputData = GetExcelValues(Mappings.SerbianBsRows, Mappings.SerbianPlRows);
                 }
 
-                var a = Mappings.HungarianBsRows;
-                var b = Mappings.HungarianPlRows;
-
                 ExcelRange cellsBS = package.Workbook.Worksheets[1].Cells;
+
+                string balanceSheetDateCellName = "D4";
+                string fiscalYearMonthCellName = "D5";
+
+                var testVal = cellsBS[balanceSheetDateCellName]?.GetValue<DateTime>();
+                var testVal2 = cellsBS[fiscalYearMonthCellName]?.Text;
+
+                cellsBS[balanceSheetDateCellName].Value = companyPdfMetaData.EndPeriodOfReport.Date;
+                cellsBS[fiscalYearMonthCellName].Value = companyPdfMetaData.EndPeriodOfReport.Year;
+
 
                 foreach (var finRow in excelInputData.BsValues)
                 {
@@ -225,8 +249,6 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                     string cellNamePrevoiusYear = $"G{finRow.RowNumber}";
                     cellsBS[cellNameCurrentYear].Value = finRow.CurrentYear;
                     cellsBS[cellNamePrevoiusYear].Value = finRow.PreviousYear;
-
-
                 }
 
                 ExcelRange cellsPl = package.Workbook.Worksheets[2].Cells;
@@ -543,8 +565,10 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             }
         }
 
-        public static CompanyPdfMetaData GetCompanyPdfMetaData(string pdfFileFullPhysicalPath, CountryFileTypes countryFileType)
+        public static CompanyPdfMetaData GetCompanyPdfMetaData(string pdfFileFullPhysicalPath)
         {
+            CountryFileTypes countryFileType = Utils.GetCountryFileTypesFromPdfFile(pdfFileFullPhysicalPath);
+
             using (Stream stream = File.OpenRead(pdfFileFullPhysicalPath))
             {
                 CompanyPdfMetaData result = new CompanyPdfMetaData();

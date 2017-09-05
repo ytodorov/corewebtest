@@ -94,8 +94,8 @@ namespace DimoPdfToExcelWeb
             app.UseKendo(env);
 
             Utils.PopulateHungarianMappingDictionaries(env.WebRootPath);
+            Utils.PopulateSerbianMappingDictionaries(env.WebRootPath);
 
-            
         }
     }
 }

@@ -21,7 +21,7 @@ namespace UnitTests
             Utils.PopulateHungarianMappingDictionaries(wwwRootFolder);
             var result = Utils.ParseHungarianPdf(path);
 
-            var outputPath = Utils.GetExcelOutputFilePath(wwwRootFolder, path, CountryFileTypes.Hungarian);
+            var outputPath = Utils.GetExcelOutputFilePath(wwwRootFolder, path);
         }
 
         [Fact]
@@ -34,7 +34,7 @@ namespace UnitTests
             Utils.PopulateSerbianMappingDictionaries(wwwRootFolder);
             var result = Utils.ParseSerbianPdf(path);
 
-            var outputPath = Utils.GetExcelOutputFilePath(wwwRootFolder, path, CountryFileTypes.Serbian);
+            var outputPath = Utils.GetExcelOutputFilePath(wwwRootFolder, path);
         }
 
         [Fact]
@@ -57,14 +57,14 @@ namespace UnitTests
 
                 if (hungarianFileName.ToUpperInvariant().Contains("hungarian".ToUpperInvariant()))
                 {
-                    res = Utils.GetCompanyPdfMetaData(path, CountryFileTypes.Hungarian);
+                    res = Utils.GetCompanyPdfMetaData(path);
                     var type = Utils.GetCountryFileTypesFromPdfFile(path);
                     Assert.Equal(CountryFileTypes.Hungarian, type);
 
                 }
                 else if (hungarianFileName.ToUpperInvariant().Contains("serbian".ToUpperInvariant()))
                 {
-                    res = Utils.GetCompanyPdfMetaData(path, CountryFileTypes.Serbian);
+                    res = Utils.GetCompanyPdfMetaData(path);
                     var type = Utils.GetCountryFileTypesFromPdfFile(path);
                     Assert.Equal(CountryFileTypes.Serbian, type);
                 }
