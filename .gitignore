@@ -254,3 +254,6 @@ paket-files/
 # ignore outputdata Yordan
 /DimoPdfToExcelSln/DimoPdfToExcelWeb/wwwroot/OutputFiles/
 
+# ignore App_Data Yordan
+/DimoPdfToExcelSln/DimoPdfToExcelWeb/wwwroot/App_Data/
+
