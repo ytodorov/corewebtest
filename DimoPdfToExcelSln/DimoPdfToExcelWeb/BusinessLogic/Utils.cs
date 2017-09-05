@@ -2,6 +2,7 @@
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -546,6 +547,54 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                         }
                         string companyName = companyStringFragments.ToString();
                         result.CompanyName = companyName;
+
+                        for (int i = 0; i < tfc.Count; i++)
+                        {
+                            var text = tfc[i].Text;
+                            if (text.ToUpperInvariant().Contains("(Nyilvántartási szám:".ToUpperInvariant()))
+                            {
+                                int firstIndexOfColon = text.IndexOf(":");
+                                int firstIndexOfComma = text.IndexOf(",");
+
+                                string rowRegistrationNumber = text.Substring(firstIndexOfColon + 1, firstIndexOfComma - firstIndexOfColon - 1);
+                                string registrationNumber = rowRegistrationNumber.Replace(" ", string.Empty);
+                                result.CompanyRegistrationNumber = registrationNumber;
+
+                                int lastIndexOfColon = text.LastIndexOf(":");
+                                int firstIndexOfBracket = text.LastIndexOf(")");
+
+                                string rowTaxNumber = text.Substring(lastIndexOfColon + 1, firstIndexOfBracket - lastIndexOfColon - 1);
+                                string taxNumber = rowTaxNumber.Replace(" ", string.Empty);
+                                result.CompanyTaxNumber = taxNumber;
+                                break;                                
+                            }
+                        }
+
+                        for (int i = 0; i < tfc.Count; i++)
+                        {
+                            var text = tfc[i].Text;
+                            if (text.ToUpperInvariant().Contains("időszakra vonatkozó".ToUpperInvariant()))
+                            {
+                                string rowPeroidText = tfc[i - 1]?.Text;
+
+                                string firstHalfRow = rowPeroidText.Split('-')[0].Trim();
+                                string secondHalfRaw = rowPeroidText.Split('-')[1].Trim();
+
+                                var hungarianCulture = new CultureInfo("hu-HU");
+
+                                DateTime.TryParse(firstHalfRow, hungarianCulture, DateTimeStyles.None, out DateTime startDate);
+                                DateTime.TryParse(secondHalfRaw, hungarianCulture, DateTimeStyles.None, out DateTime endDate);
+
+                                result.StartPeriodOfReport = startDate;
+                                result.EndPeriodOfReport = endDate;
+                                break;
+
+                            }
+                        }
+
+
+
+
                         break;
                     case CountryFileTypes.Serbian:
                         break;

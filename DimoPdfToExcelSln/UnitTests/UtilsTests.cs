@@ -40,15 +40,31 @@ namespace UnitTests
         [Fact]
         public void GetCompanyPdfMetaDataHungarianTest()
         {
-            var rootSolution = new DirectoryInfo(Environment.CurrentDirectory).Parent.Parent.Parent.Parent.FullName;
-            var path = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot", "Files", "Hungarian1.pdf");
+            List<string> hungarianFileNames = new List<string>()
+            {
+                "Hungarian1", "Hungarian2"
+            };
 
-            var wwwRootFolder = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot");
-            Utils.PopulateSerbianMappingDictionaries(wwwRootFolder);
+            foreach (var hungarianFileName in hungarianFileNames)
+            {
+                var rootSolution = new DirectoryInfo(Environment.CurrentDirectory).Parent.Parent.Parent.Parent.FullName;
+                var path = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot", "Files", $"{hungarianFileName}.pdf");
 
-            var res = Utils.GetCompanyPdfMetaData(path, CountryFileTypes.Hungarian);
+                var wwwRootFolder = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot");
+                Utils.PopulateSerbianMappingDictionaries(wwwRootFolder);
 
-            Assert.False(string.IsNullOrEmpty(res.CompanyName), "Името на компанията не може да е празен стринг!");
+                var res = Utils.GetCompanyPdfMetaData(path, CountryFileTypes.Hungarian);
+
+                Assert.False(string.IsNullOrEmpty(res.CompanyName), "Името на компанията не може да е празен стринг!");
+                Assert.False(string.IsNullOrEmpty(res.CompanyRegistrationNumber), "CompanyRegistrationNumber не може да е празен стринг!");
+                Assert.False(string.IsNullOrEmpty(res.CompanyTaxNumber), "CompanyTaxNumber не може да е празен стринг!");
+
+                Assert.True(res.StartPeriodOfReport.Date != new DateTime().Date, "StartPeriodOfReport");
+                Assert.True(res.EndPeriodOfReport.Date != new DateTime().Date, "EndPeriodOfReport");
+            }
+           
+
+
         }
     }
 }
