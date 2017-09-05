@@ -7,7 +7,8 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 {
     public enum CountryFileTypes
     {
-        Hungarian = 0,
-        Serbian = 1
+        Undefined = 0,
+        Hungarian = 1,
+        Serbian = 2
     }
 }

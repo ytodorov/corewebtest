@@ -165,12 +165,13 @@ namespace DimoPdfToExcelWeb.Controllers
 
         public IActionResult Export()
         {
-            string sWebRootFolder = HostingEnvironment.WebRootPath;          
+            string sWebRootFolder = HostingEnvironment.WebRootPath;
 
             // Decide country File type
 
+            var countryType = Utils.GetCountryFileTypesFromPdfFile(lastPhysicalPath);
 
-            string outputExcelFilePath = Utils.GetExcelOutputFilePath(sWebRootFolder, lastPhysicalPath, CountryFileTypes.Hungarian);
+            string outputExcelFilePath = Utils.GetExcelOutputFilePath(sWebRootFolder, lastPhysicalPath, countryType);
            
 
             var result = PhysicalFile(outputExcelFilePath, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");

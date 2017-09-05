@@ -378,6 +378,40 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             }
         }
 
+        public static CountryFileTypes GetCountryFileTypesFromPdfFile(string pdfFileFullPhysicalPath)
+        {
+            using (Stream stream = File.OpenRead(pdfFileFullPhysicalPath))
+            {
+                // Load the input file.
+                PdfFixedDocument document = new PdfFixedDocument(stream);
+
+                StringBuilder sb = new StringBuilder();
+
+                PdfContentExtractor ce = new PdfContentExtractor(document.Pages.FirstOrDefault());
+                PdfTextFragmentCollection tfc = ce.ExtractTextFragments();
+
+                for (int i = 0; i < tfc.Count; i++)
+                {
+                    sb.AppendLine(tfc[i].Text);
+                }
+
+                string allText = sb.ToString().ToUpperInvariant();
+
+                CountryFileTypes result = CountryFileTypes.Undefined;
+
+                if (allText.Contains("Попуњава правно лице".ToUpperInvariant()))
+                {
+                    result = CountryFileTypes.Serbian;
+                }
+                else if (allText.Contains("Nyilvántartási szám".ToUpperInvariant()))
+                {
+                    result = CountryFileTypes.Hungarian;
+                }
+
+                return result;
+            }
+        }
+
         public static ParsedPdfResult ParseSerbianPdf(string pdfFileFullPhysicalPath)
         {
             using (Stream stream = File.OpenRead(pdfFileFullPhysicalPath))

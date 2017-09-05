@@ -58,10 +58,15 @@ namespace UnitTests
                 if (hungarianFileName.ToUpperInvariant().Contains("hungarian".ToUpperInvariant()))
                 {
                     res = Utils.GetCompanyPdfMetaData(path, CountryFileTypes.Hungarian);
+                    var type = Utils.GetCountryFileTypesFromPdfFile(path);
+                    Assert.Equal(CountryFileTypes.Hungarian, type);
+
                 }
                 else if (hungarianFileName.ToUpperInvariant().Contains("serbian".ToUpperInvariant()))
                 {
                     res = Utils.GetCompanyPdfMetaData(path, CountryFileTypes.Serbian);
+                    var type = Utils.GetCountryFileTypesFromPdfFile(path);
+                    Assert.Equal(CountryFileTypes.Serbian, type);
                 }
 
                 Assert.False(string.IsNullOrEmpty(res.CompanyName), "Името на компанията не може да е празен стринг!");
