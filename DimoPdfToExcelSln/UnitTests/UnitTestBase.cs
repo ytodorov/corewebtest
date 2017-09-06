@@ -10,6 +10,7 @@ namespace UnitTests
     {
         public List<string> HungarianFileNames { get; set; } = new List<string>();
         public List<string> SerbianFileNames { get; set; } = new List<string>();
+        public List<string> CroatiaFileNames { get; set; } = new List<string>();
 
         public List<string> AllFileNames { get; set; } = new List<string>();
 
@@ -36,6 +37,10 @@ namespace UnitTests
                     if (fileName.ToUpperInvariant().Contains("serbian".ToUpperInvariant()))
                     {
                         SerbianFileNames.Add(fullFilePath);
+                    }
+                    if (fileName.ToUpperInvariant().Contains("croatian".ToUpperInvariant()))
+                    {
+                        CroatiaFileNames.Add(fullFilePath);
                     }
                 }
             }

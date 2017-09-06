@@ -32,6 +32,16 @@ namespace UnitTests
         }
 
         [Fact]
+        public void ParseCroatiaPdfTest()
+        {
+            foreach (var path in CroatiaFileNames)
+            {
+                var result = Utils.ParseCroatiaPdf(path);
+                var outputPath = Utils.GetExcelOutputFilePath(WwwRootFolder, path);
+            }
+        }
+
+        [Fact]
         public void GetCompanyPdfMetaDataTest()
         {
             foreach (var fullFileName in AllFileNames)

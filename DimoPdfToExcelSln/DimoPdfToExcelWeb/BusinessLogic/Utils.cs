@@ -437,11 +437,52 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             }
         }
 
+        public static ParsedPdfResult ParseCroatiaPdf(string pdfFileFullPhysicalPath)
+        {
+            using (Stream stream = File.OpenRead(pdfFileFullPhysicalPath))
+            {
+                PdfFixedDocument document = new PdfFixedDocument(stream);
+
+                StringBuilder sb = new StringBuilder();
+
+                StringBuilder sbFirstPage = new StringBuilder();
+                PdfContentExtractor ceFirstPage = new PdfContentExtractor(document.Pages.FirstOrDefault());
+                PdfTextFragmentCollection tfcFirstPage = ceFirstPage.ExtractTextFragments();
+                for (int i = 0; i < tfcFirstPage.Count; i++)
+                {
+                    sbFirstPage.AppendLine(tfcFirstPage[i].Text);
+                }
+                string firstPageText = sbFirstPage.ToString();
+
+                ParsedPdfResult parsedPdfResult = new ParsedPdfResult();
+
+                parsedPdfResult.BsRows.AddRange(Mappings.GetFreshList(Mappings.CroatiaBsRows));
+                parsedPdfResult.PlRows.AddRange(Mappings.GetFreshList(Mappings.CroatiaPlRows));
+
+                Dictionary<string, bool> dictAddedInBs = new Dictionary<string, bool>();
+
+                List<string> allStringFragments = new List<string>();
+
+                foreach (var page in document.Pages)
+                {
+                    PdfContentExtractor ce = new PdfContentExtractor(page);
+                    PdfTextFragmentCollection tfc = ce.ExtractTextFragments();
+
+                    for (int i = 0; i < tfc.Count; i++)
+                    {
+                        allStringFragments.Add(tfc[i].Text);
+                    }
+                }
+
+                return null;
+
+            }
+        }
+
         public static ParsedPdfResult ParseSerbianPdf(string pdfFileFullPhysicalPath)
         {
             using (Stream stream = File.OpenRead(pdfFileFullPhysicalPath))
             {
-                // Load the input file.
                 PdfFixedDocument document = new PdfFixedDocument(stream);
 
                 StringBuilder sb = new StringBuilder();
