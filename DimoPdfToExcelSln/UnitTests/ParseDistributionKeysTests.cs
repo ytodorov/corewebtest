@@ -33,7 +33,20 @@ namespace UnitTests
             {
                 Assert.False(row.GoesToRowNumber == 0);
             }
+        }
 
+        [Fact]
+        public void ParseCroatianMappingFileTest()
+        {
+            foreach (var row in Mappings.CroatiaBsRows)
+            {
+                Assert.False(row.GoesToRowNumber == 0);
+            }
+
+            foreach (var row in Mappings.CroatiaPlRows)
+            {
+                Assert.False(row.GoesToRowNumber == 0);
+            }
         }
     }
 }

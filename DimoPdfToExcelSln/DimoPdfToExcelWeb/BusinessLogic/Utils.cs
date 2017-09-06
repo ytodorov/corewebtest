@@ -145,6 +145,73 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
         }
 
+        public static void PopulateCroatianMappingDictionaries(string dirWithFiles)
+        {
+
+            string dirPath = Path.Combine(dirWithFiles, "Files", "CroatianDistributionKeys.xlsx");
+            FileInfo fileDistributionInfo = new FileInfo(dirPath);
+
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+
+            if (fileDistributionInfo.Exists)
+            {
+                using (ExcelPackage package = new ExcelPackage(fileDistributionInfo))
+                {
+                    for (int page = 1; page <= 2; page++)
+                    {
+                        ExcelWorksheet currentSheet = package.Workbook.Worksheets[page];
+
+                        for (int i = 2; i <= 150; i++)
+                        {
+                            // Проверка за бял цвят
+                            if (string.IsNullOrEmpty(currentSheet.Cells[i, 1].Style.Fill.BackgroundColor.Rgb))
+                            {
+                                // Проверка за невалиден ред
+                                if (!string.IsNullOrWhiteSpace(currentSheet.Cells[i, 1].Value?.ToString()) &&
+                                    !string.IsNullOrWhiteSpace(currentSheet.Cells[i, 2].Value?.ToString()))
+                                {
+                                    var inputValue = currentSheet.Cells[i, 2]?.Value?.ToString();
+                                    var name = currentSheet.Cells[i, 1].Value.ToString();
+                                    var goesToRowNumberString = currentSheet.Cells[i, 2]?.Value?.ToString();
+                                    FinancialRow fr = new FinancialRow();
+                                    string number = name.Split(".")[0];
+                                    fr.Number = number;
+                                    fr.Name = name;
+                                    //fr.GoesToRowTitle = goesTo;
+                                    if (int.TryParse(goesToRowNumberString, out int goesToRowNumberInt))
+                                    {
+                                        fr.GoesToRowNumber = goesToRowNumberInt;
+                                    }
+                                    else
+                                    {
+                                        continue;
+                                    }
+
+                                    if (page == 1)
+                                    {
+                                        fr.Type = "BS";
+                                        Mappings.CroatiaBsRows.Add(fr);
+                                    }
+                                    else if (page == 2)
+                                    {
+                                        fr.Type = "PL";
+                                        Mappings.CroatiaPlRows.Add(fr);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+
+                }
+            }
+
+            var bsRows = Mappings.SerbianBsRows;
+            var plRows = Mappings.SerbianPlRows;
+
+        }
+
         public static ExcelInputData GetExcelValues(List<FinancialRow> bsRows, List<FinancialRow> plRows)
         {
             // balance

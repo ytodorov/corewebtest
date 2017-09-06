@@ -51,6 +51,7 @@ namespace UnitTests
             WwwRootFolder = Path.Combine(rootSolution, "DimoPdfToExcelWeb", "wwwroot");
             Utils.PopulateHungarianMappingDictionaries(WwwRootFolder);
             Utils.PopulateSerbianMappingDictionaries(WwwRootFolder);
+            Utils.PopulateCroatianMappingDictionaries(WwwRootFolder);
 
         }
     }
