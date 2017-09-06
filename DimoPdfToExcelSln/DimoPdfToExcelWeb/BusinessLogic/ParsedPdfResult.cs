@@ -7,15 +7,15 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 {
     public class ParsedPdfResult
     {
-        public List<ParsedPdfRow> DictWithValuesBS { get; set; }
-        public List<ParsedPdfRow> DictWithValuesPL { get; set; }
+        public List<ParsedPdfRow> DictWithValuesBS { get; set; } = new List<ParsedPdfRow>();
+        public List<ParsedPdfRow> DictWithValuesPL { get; set; } = new List<ParsedPdfRow>();
+
+        public List<FinancialRow> BsRows { get; set; } = new List<FinancialRow>();
+
+        public List<FinancialRow> PlRows { get; set; } = new List<FinancialRow>();
 
         public ParsedPdfResult()
         {
-            DictWithValuesBS = new List<ParsedPdfRow>();
-
-            DictWithValuesPL = new List<ParsedPdfRow>();
         }
-
     }
 }

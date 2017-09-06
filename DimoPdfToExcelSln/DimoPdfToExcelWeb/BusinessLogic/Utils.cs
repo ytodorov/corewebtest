@@ -223,12 +223,12 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 if (countryFileType == CountryFileTypes.Hungarian)
                 {
                     var parsedPdf = ParseHungarianPdf(pdfFilePath);
-                    excelInputData = GetExcelValues(Mappings.HungarianBsRows, Mappings.HungarianPlRows);
+                    excelInputData = GetExcelValues(parsedPdf.BsRows, parsedPdf.PlRows);
                 }
                 else if (countryFileType == CountryFileTypes.Serbian)
                 {
                     var parsedPdf = ParseSerbianPdf(pdfFilePath);
-                    excelInputData = GetExcelValues(Mappings.SerbianBsRows, Mappings.SerbianPlRows);
+                    excelInputData = GetExcelValues(parsedPdf.BsRows, parsedPdf.PlRows);
                 }
 
                 ExcelRange cellsBS = package.Workbook.Worksheets[1].Cells;
@@ -280,6 +280,9 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                 ParsedPdfResult parsedPdfResult = new ParsedPdfResult();
 
+                parsedPdfResult.BsRows.AddRange(Mappings.GetFreshList(Mappings.HungarianBsRows));
+                parsedPdfResult.PlRows.AddRange(Mappings.GetFreshList(Mappings.HungarianPlRows));
+
                 Dictionary<string, bool> dictAddedInBs = new Dictionary<string, bool>();
 
                 List<string> allStringFragments = new List<string>();
@@ -297,8 +300,8 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                 List<string> allStringFragmentsToCount = new List<string>();
 
-                var bsRows = Mappings.HungarianBsRows;
-                var plRows = Mappings.HungarianPlRows;
+                var bsRows = parsedPdfResult.BsRows;
+                var plRows = parsedPdfResult.PlRows;
 
                 foreach (var page in document.Pages)
                 {
@@ -317,7 +320,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                         sb.AppendLine(text);
 
-                        foreach (var entry in Mappings.HungarianPlRows)
+                        foreach (var entry in parsedPdfResult.PlRows)
                         {
                             if (text.Equals(entry.Number + "."))
                             {
@@ -342,7 +345,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                         }
 
 
-                        foreach (var entry in Mappings.HungarianBsRows)
+                        foreach (var entry in parsedPdfResult.BsRows)
                         {
                             if (text.Equals(entry.Number + "."))
                             {
@@ -372,7 +375,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 var textFromPdf = sb.ToString();
 
                 // Това трябва да го има
-                foreach (var bsRow in Mappings.HungarianBsRows)
+                foreach (var bsRow in parsedPdfResult.BsRows)
                 {
                     foreach (var item in parsedPdfResult.DictWithValuesBS)
                     {
@@ -384,7 +387,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                     }
                 }
 
-                foreach (var plRow in Mappings.HungarianPlRows)
+                foreach (var plRow in parsedPdfResult.PlRows)
                 {
                     foreach (var item in parsedPdfResult.DictWithValuesPL)
                     {
@@ -454,6 +457,9 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                 ParsedPdfResult parsedPdfResult = new ParsedPdfResult();
 
+                parsedPdfResult.BsRows.AddRange(Mappings.GetFreshList(Mappings.SerbianBsRows));
+                parsedPdfResult.PlRows.AddRange(Mappings.GetFreshList(Mappings.SerbianPlRows));
+
                 Dictionary<string, bool> dictAddedInBs = new Dictionary<string, bool>();
 
                 List<string> allStringFragments = new List<string>();
@@ -473,8 +479,8 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                 List<string> allStringFragmentsToCount = new List<string>();
 
-                var bsRows = Mappings.SerbianBsRows;
-                var plRows = Mappings.SerbianPlRows;
+                var bsRows = parsedPdfResult.BsRows;
+                var plRows = parsedPdfResult.PlRows;
 
                 foreach (var page in document.Pages)
                 {
@@ -494,7 +500,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                         sb.AppendLine(text);
                         if (firstPageText.ToUpperInvariant().Contains("БИЛАНС УСПЕХА".ToUpperInvariant())) // Profit and loss
                         {
-                            foreach (var entry in Mappings.SerbianPlRows)
+                            foreach (var entry in parsedPdfResult.PlRows)
                             {
                                 if (text.Equals(entry.Number))
                                 {
@@ -518,7 +524,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                         if (firstPageText.ToUpperInvariant().Contains("БИЛАНС СТАЊА".ToUpperInvariant())) // BalanceSheet
                         {
-                            foreach (var entry in Mappings.SerbianBsRows)
+                            foreach (var entry in parsedPdfResult.BsRows)
                             {
                                 if (text.Equals(entry.Number))
                                 {
@@ -548,7 +554,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 var textFromPdf = sb.ToString();
 
                 // Това трябва да го има
-                foreach (var bsRow in Mappings.SerbianBsRows)
+                foreach (var bsRow in parsedPdfResult.BsRows)
                 {
                     foreach (var item in parsedPdfResult.DictWithValuesBS)
                     {
@@ -560,7 +566,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                     }
                 }
 
-                foreach (var plRow in Mappings.SerbianPlRows)
+                foreach (var plRow in parsedPdfResult.PlRows)
                 {
                     foreach (var item in parsedPdfResult.DictWithValuesPL)
                     {

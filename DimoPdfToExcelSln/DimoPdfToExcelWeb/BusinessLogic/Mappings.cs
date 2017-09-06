@@ -13,6 +13,15 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
         public static List<FinancialRow> SerbianPlRows { get; set; } = new List<FinancialRow>();
 
-
+        public static List<FinancialRow> GetFreshList(List<FinancialRow> source)
+        {
+            List<FinancialRow> result = new List<FinancialRow>();
+            foreach (var item in source)
+            {
+                var newItem = item.Clone() as FinancialRow;
+                result.Add(newItem);
+            }
+            return result;
+        }
     }
 }

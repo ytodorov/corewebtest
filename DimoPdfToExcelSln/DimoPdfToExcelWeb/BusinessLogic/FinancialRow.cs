@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DimoPdfToExcelWeb.BusinessLogic
 {
-    public class FinancialRow
+    public class FinancialRow : ICloneable
     {
         // BS or PL
         public string Type { get; set; }
@@ -21,6 +21,12 @@ namespace DimoPdfToExcelWeb.BusinessLogic
         public double PreviousYear { get; set; }
 
         public double CurrentYear { get; set; }
+
+        public object Clone()
+        {
+            var res = base.MemberwiseClone();
+            return res;
+        }
 
         public override string ToString()
         {
