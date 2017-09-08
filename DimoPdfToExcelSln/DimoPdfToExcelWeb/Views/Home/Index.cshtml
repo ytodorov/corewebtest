@@ -59,6 +59,34 @@
    
 </div>*@
 
+@(Html.Kendo().Grid<AzureCloudFileViewModel>()
+            .Name("gridFs")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.DirectoryName).Width(50);
+                columns.Bound(c => c.FileName).Width(100);
+                columns.Bound(c => c.Extension).Width(50);
+                columns.Bound(c => c.Length).Width(100);
+            })
+            .Groupable()
+            .Sortable()
+            .Filterable()
+            .ToolBar(t =>
+            {
+                t.Excel();
+                t.Pdf();
+            })
+            .Pageable(s => s.Refresh(true))
+
+            .DataSource(dataSource => dataSource
+                .Ajax()                
+                .Read(read => read.Action("AzureFiles_Read", "Grid"))
+                .PageSize(2000)
+                .ServerOperation(false)
+            )
+            .Deferred()
+)
+<hr />
 @(Html.Kendo().Grid<FinancialRow>()
             .Name("gridBs")
             .Columns(columns =>
@@ -69,8 +97,6 @@
                 columns.Bound(c => c.GoesToRowTitle).Width(100);
                 columns.Bound(c => c.CurrentYear).Width(50);
             })
-            //.HtmlAttributes(new { style = "height: 550px;" })
-            //.Scrollable()
             .Groupable()
             .Sortable()
             .Filterable()
@@ -88,6 +114,5 @@
                 .PageSize(2000)
                 .ServerOperation(false)
             )
-
             .Deferred()
 )

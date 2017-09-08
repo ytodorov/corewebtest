@@ -100,21 +100,47 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
         public static List<CloudFile> ListAllFiles()
         {
-            CloudFileDirectory cloudFileDirectory = GetCloudDirectoryShare();
-            FileContinuationToken fct = new FileContinuationToken();
-
-            FileResultSegment fileResultSegment = cloudFileDirectory.ListFilesAndDirectoriesSegmentedAsync(fct).Result;
-
-            List<IListFileItem> list = fileResultSegment.Results.ToList();
+            var dirs = new List<CloudFileDirectory>();
+            CloudFileDirectory inputDirectory = GetCloudDirectoryShare();
+            dirs.Add(inputDirectory);
+            CloudFileDirectory outputDirectory = GetCloudDirectoryShare(false);
+            dirs.Add(outputDirectory);
             List<CloudFile> cloudFileList = new List<CloudFile>();
-            foreach (var l in list)
+            foreach (CloudFileDirectory cloudFileDirectory in dirs)
             {
-                CloudFile cf = l as CloudFile;
-                if (cf != null)
+                FileContinuationToken fct = new FileContinuationToken();
+
+                FileResultSegment fileResultSegment = cloudFileDirectory.ListFilesAndDirectoriesSegmentedAsync(fct).Result;
+
+                List<IListFileItem> list = fileResultSegment.Results.ToList();
+           
+                foreach (var l in list)
                 {
-                    cloudFileList.Add(cf);
-                }                
+                    CloudFile cf = l as CloudFile;
+                    if (cf != null)
+                    {
+                        cloudFileList.Add(cf);
+                    }
+                    else
+                    {
+                        CloudFileDirectory cfd = l as CloudFileDirectory;
+                        if (cfd != null)
+                        {
+                            var subFiles = cfd.ListFilesAndDirectoriesSegmentedAsync(fct).Result.Results.ToList();
+                            foreach (var sunItem in subFiles)
+                            {
+                                var dummy = sunItem as CloudFile;
+                                if (dummy != null)
+                                {
+                                    cloudFileList.Add(dummy);
+                                }
+                            }
+                        }
+                    }
+                }
             }
+
+           
             return cloudFileList;
         }
 
