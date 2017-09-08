@@ -43,7 +43,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
             // Create a CloudFileClient object for credentialed access to Azure File storage.
             CloudFileClient fileClient = cloudStorageAccount.CreateCloudFileClient();
-
+            
             // Get a reference to the file share we created previously.
             CloudFileShare share = fileClient.GetShareReference("dimo");
             var boolResult = share.CreateIfNotExistsAsync().Result;
@@ -73,18 +73,28 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
         public static void UploadFile(string directoryName, string fileNameWithExtension, string path)
         {
-            CloudFileDirectory cloudFileDirectory = GetCloudDirectoryShare();
+            var invalidChars = Path.GetInvalidFileNameChars();
 
-            CloudFile cloudFileShare = cloudFileDirectory.GetFileReference(fileNameWithExtension);
-            var boolResult = cloudFileShare.DeleteIfExistsAsync().Result;
+            foreach (var invalidChar in invalidChars)
+            {
+                directoryName = directoryName.Replace(invalidChar.ToString(), string.Empty);
+                fileNameWithExtension = fileNameWithExtension.Replace(invalidChar.ToString(), string.Empty);
+            }
+
+            CloudFileDirectory rootFileDirectory = GetCloudDirectoryShare();
+
+            CloudFileDirectory companyCloudDirectory = rootFileDirectory.GetDirectoryReference(directoryName);
+            var boolResult = companyCloudDirectory.CreateIfNotExistsAsync().Result;
+            CloudFile cloudFileShare = companyCloudDirectory.GetFileReference(fileNameWithExtension);
+            boolResult = cloudFileShare.DeleteIfExistsAsync().Result;
             cloudFileShare.UploadFromFileAsync(path).Wait();
         }
 
         public static void DeleteFile(string directoryName, string fileNameWithExtension, string path)
         {
-            CloudFileDirectory cloudFileDirectory = GetCloudDirectoryShare();
-
-            CloudFile cloudFileShare = cloudFileDirectory.GetFileReference(fileNameWithExtension);
+            CloudFileDirectory rootFileDirectory = GetCloudDirectoryShare();
+            CloudFileDirectory companyCloudDirectory = rootFileDirectory.GetDirectoryReference(directoryName);
+            CloudFile cloudFileShare = companyCloudDirectory.GetFileReference(fileNameWithExtension);
             var boolResult = cloudFileShare.DeleteIfExistsAsync().Result;
         }
 
@@ -106,8 +116,6 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 }                
             }
             return cloudFileList;
-
-
         }
 
 

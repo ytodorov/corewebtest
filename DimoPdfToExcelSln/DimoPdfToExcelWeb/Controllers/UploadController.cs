@@ -13,6 +13,7 @@ using Xfinium.Pdf.Graphics;
 using Xfinium.Pdf.Content;
 using OfficeOpenXml;
 using DimoPdfToExcelWeb.BusinessLogic;
+using System.Globalization;
 
 namespace DimoPdfToExcelWeb.Controllers
 {
@@ -107,8 +108,9 @@ namespace DimoPdfToExcelWeb.Controllers
                         // Some browsers send file names with full path.
                         // We are only interested in the file name.
                         var fileName = Path.GetFileName(fileContent.FileName.Trim('"'));
+                     
                         var physicalPath = Path.Combine(HostingEnvironment.WebRootPath, "App_Data", fileName);
-
+                        var extension = Path.GetExtension(physicalPath);
 
 
                         // The files are not actually saved in this demo
@@ -120,8 +122,10 @@ namespace DimoPdfToExcelWeb.Controllers
                             lastPhysicalPath = physicalPath;
                         }
 
-                        //var parsedPdf =  Utils.ParsePdf(physicalPath);
+                        CompanyPdfMetaData cpmd = Utils.GetCompanyPdfMetaData(physicalPath);
+                        string fileNameInAzure = $"From {cpmd.StartPeriodOfReport.Day}_{cpmd.StartPeriodOfReport.Month}_{cpmd.StartPeriodOfReport.Year} to {cpmd.EndPeriodOfReport.Day}_{cpmd.EndPeriodOfReport.Month}_{cpmd.EndPeriodOfReport.Year}{extension}";
 
+                        AzureFilesUtils.UploadFile(cpmd.CompanyName, fileNameInAzure, physicalPath);
 
                     }
                 }
@@ -170,7 +174,10 @@ namespace DimoPdfToExcelWeb.Controllers
             // Decide country File type
 
             string outputExcelFilePath = Utils.GetExcelOutputFilePath(sWebRootFolder, lastPhysicalPath);
-           
+
+            CompanyPdfMetaData cpmd = Utils.GetCompanyPdfMetaData(lastPhysicalPath);
+            string fileNameInAzure = $"From {cpmd.StartPeriodOfReport.Day}_{cpmd.StartPeriodOfReport.Month}_{cpmd.StartPeriodOfReport.Year} to {cpmd.EndPeriodOfReport.Day}_{cpmd.EndPeriodOfReport.Month}_{cpmd.EndPeriodOfReport.Year}.xlsm";
+            AzureFilesUtils.UploadFile(cpmd.CompanyName, fileNameInAzure, outputExcelFilePath);
 
             //var result = PhysicalFile(outputExcelFilePath, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             //	application/vnd.ms-excel.sheet.macroEnabled.12
