@@ -515,6 +515,11 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 StringBuilder sbFirstPage = new StringBuilder();
                 PdfContentExtractor ceFirstPage = new PdfContentExtractor(document.Pages.FirstOrDefault());
                 PdfTextFragmentCollection tfcFirstPage = ceFirstPage.ExtractTextFragments();
+
+                var images = ceFirstPage.ExtractImages(true);
+
+                var asdasd = ceFirstPage.ExtractVisualObjects(true, true);
+
                 for (int i = 0; i < tfcFirstPage.Count; i++)
                 {
                     sbFirstPage.AppendLine(tfcFirstPage[i].Text);
@@ -523,13 +528,13 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                 ParsedPdfResult parsedPdfResult = new ParsedPdfResult();
 
-                
+
 
                 return parsedPdfResult;
             }
         }
 
-                public static ParsedPdfResult ParseCroatiaPdf(string pdfFileFullPhysicalPath)
+        public static ParsedPdfResult ParseCroatiaPdf(string pdfFileFullPhysicalPath)
         {
             using (Stream stream = File.OpenRead(pdfFileFullPhysicalPath))
             {

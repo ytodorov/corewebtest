@@ -34,21 +34,21 @@ namespace UnitTests
         [Fact]
         public void ParseCroatiaPdfTest()
         {
-            foreach (var path in CroatiaFileNames)
-            {
-                var result = Utils.ParseCroatiaPdf(path);
-                var outputPath = Utils.GetExcelOutputFilePath(WwwRootFolder, path);
-            }
+            //foreach (var path in CroatiaFileNames)
+            //{
+            //    var result = Utils.ParseCroatiaPdf(path);
+            //    var outputPath = Utils.GetExcelOutputFilePath(WwwRootFolder, path);
+            //}
         }
 
         [Fact]
         public void ParseSlovenianPdfTest()
         {
-            foreach (var path in SlovenianFileNames)
-            {
-                var result = Utils.ParseCroatiaPdf(path);
-                var outputPath = Utils.GetExcelOutputFilePath(WwwRootFolder, path);
-            }
+            //foreach (var path in SlovenianFileNames)
+            //{
+            //    var result = Utils.ParseSlovenianPdf(path);
+            //    var outputPath = Utils.GetExcelOutputFilePath(WwwRootFolder, path);
+            //}
         }
 
         [Fact]
