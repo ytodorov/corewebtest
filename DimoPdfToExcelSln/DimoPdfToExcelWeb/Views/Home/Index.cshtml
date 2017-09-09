@@ -24,13 +24,26 @@
 
 
 </script>
+@(Html.Kendo().Menu()
+          .Name("Menu")
+          .Items(items =>
+          {
+              items.Add().Text("Home").Url("#Menu");
+              items.Add().Text("Convert").Url("#divConvert");
+              items.Add().Text("Files").Url("#divFiles"); ;
+              items.Add().Text("Mappings").Url("#divMappings"); ;
+          }
+          )
+          .Deferred()
+)
 
-<div class="k-block k-info-colored">Please upload INPUT EXAMPLE 1.pdf and click 'Download Excel' button.</div>
-<hr />
-
-<form method="post" action='@Url.Action("Submit")'>
-    <div class="demo-section k-content">
-        @(Html.Kendo().Upload()
+<br />
+<div id="divConvert" class="k-block">
+    <div class="k-header k-success-colored">1. Please upload a pdf file and click 'Download Excel' button.</div>
+    <div class="k-block k-info-colored">
+        <form method="post" action='@Url.Action("Submit")'>
+            <div class="demo-section k-content">
+                @(Html.Kendo().Upload()
             .Name("files")
             .HtmlAttributes(new { accept = "*.pdf" })
             .Multiple(false)
@@ -42,23 +55,25 @@
             .Validation(v => v.AllowedExtensions("pdf"))
             .Events(e => e.Error("onError"))
             .Deferred()
-        )
-        <hr />
-        <a asp-controller="Upload" class="k-button"
-           asp-action="Excel">Download Excel</a>
-
-     
+                )
+                <hr />
+                <a asp-controller="Upload" class="k-button"
+                   asp-action="Excel">Download Excel</a>
+            </div>
+        </form>
     </div>
-</form>
-<hr />
+</div>
+<br />
 @*@(Html.Kendo().Button().Name("btnShowDebugInfo").Content("Show Info").Events(e => e.Click("btnShowDebugInfoClick"))
-    .Deferred()
-    )
-<div id="divDebugInfo" style="display:none">
-   
-</div>*@
+        .Deferred()
+        )
+    <div id="divDebugInfo" style="display:none">
 
-@(Html.Kendo().Grid<AzureCloudFileViewModel>()
+    </div>*@
+<div id="divFiles" class="k-block">
+    <div class="k-header k-success-colored">2. Download or delete already uploaded files.</div>
+
+    @(Html.Kendo().Grid<AzureCloudFileViewModel>()
             .Name("gridFs")
             .Columns(columns =>
             {
@@ -67,12 +82,21 @@
                 columns.Bound(c => c.Extension).Width(20);
                 columns.Bound(c => c.Length).Width(30);
                 columns.Command(command => command.Destroy()).Width(50).Title("Delete");
-                columns.Template("<a href='/Grid/Download/?safeUri=#:SafeUri#'>Download</a>").Width(100).Title("Download");
+                columns.Template("<a href='/Grid/Download/?safeUri=#:SafeUri#' class='k-button'>Download</a>").Width(100).Title("Download");
             })
             .Groupable()
             .Sortable()
             .Filterable()
             .Resizable(r => r.Columns(true))
+            .Excel(excel => excel
+        .FileName("Files.xlsx")
+        .Filterable(true)
+        .ProxyURL(Url.Action("Export", "Grid"))
+    )
+    .Pdf(p =>
+          {
+          p.ProxyURL(Url.Action("Export", "Grid"));
+         })
             .ToolBar(t =>
             {
                 t.Excel();
@@ -92,25 +116,36 @@
                 })
             )
             .Deferred()
-)
-<hr />
-@(Html.Kendo().Grid<FinancialRow>()
-            .Name("gridBs")
-            .Columns(columns =>
-            {
-                columns.Bound(c => c.Number).Width(50);
-                columns.Bound(c => c.Name).Width(100);
-                columns.Bound(c => c.GoesToRowNumber).Width(50);
-                columns.Bound(c => c.GoesToRowTitle).Width(100);
-                columns.Bound(c => c.CurrentYear).Width(50);
-            })
-            .Groupable()
-            .Sortable()
-            .Filterable()
+    )
+</div>
+<br />
+<div id="divMappings" class="k-block">
+    <div class="k-header k-success-colored">3. Mappings.</div>
+    @(Html.Kendo().Grid<FinancialRow>()
+                    .Name("gridBs")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.Number).Width(50);
+                        columns.Bound(c => c.Name).Width(100);
+                        columns.Bound(c => c.GoesToRowNumber).Width(50);
+                        columns.Bound(c => c.GoesToRowTitle).Width(100);
+                        columns.Bound(c => c.CurrentYear).Width(50);
+                    })
+                    .Groupable()
+                    .Sortable()
+                    .Filterable()
+                                   .Excel(excel => excel
+                                   .FileName("Files.xlsx")
+                                   .Filterable(true)
+                                   .ProxyURL(Url.Action("Export", "Grid")))
+                                   .Pdf(p =>
+                                   {
+                                       p.ProxyURL(Url.Action("Export", "Grid"));
+                                   })
             .ToolBar(t =>
             {
                 t.Excel();
-                t.Pdf();                
+                t.Pdf();
             })
             .Pageable(s => s.Refresh(true))
             .DataSource(dataSource => dataSource
@@ -120,4 +155,5 @@
                 .ServerOperation(false)
             )
             .Deferred()
-)
+    )
+</div>
