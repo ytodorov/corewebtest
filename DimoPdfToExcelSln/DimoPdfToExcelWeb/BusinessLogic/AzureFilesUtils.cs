@@ -98,10 +98,24 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             var boolResult = cloudFileShare.DeleteIfExistsAsync().Result;
         }
 
+        public static void DeleteFileByUri(Uri uri)
+        {
+            StorageCredentials sc = new StorageCredentials("yordansto" + "rageaccount",
+               "WHN5k4wFTmFmiuzFaWkB4N646yYE9PjrOpiyx7j5iWe3XC" + "GVgi/5ja8jT9LGiIXsvaLB9DYDpUenu7/NQJVZWA==");
+            CloudFile cf = new CloudFile(uri, sc);
+            var boolResult = cf.DeleteIfExistsAsync().Result;
+        }
+
         public static List<CloudFile> ListAllFiles()
         {
             var dirs = new List<CloudFileDirectory>();
+
+            
+
             CloudFileDirectory inputDirectory = GetCloudDirectoryShare();
+
+            
+
             dirs.Add(inputDirectory);
             CloudFileDirectory outputDirectory = GetCloudDirectoryShare(false);
             dirs.Add(outputDirectory);
@@ -111,7 +125,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 FileContinuationToken fct = new FileContinuationToken();
 
                 FileResultSegment fileResultSegment = cloudFileDirectory.ListFilesAndDirectoriesSegmentedAsync(fct).Result;
-
+                
                 List<IListFileItem> list = fileResultSegment.Results.ToList();
            
                 foreach (var l in list)

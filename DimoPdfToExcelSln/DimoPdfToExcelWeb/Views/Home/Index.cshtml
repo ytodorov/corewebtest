@@ -22,6 +22,7 @@
             });
     }
 
+
 </script>
 
 <div class="k-block k-info-colored">Please upload INPUT EXAMPLE 1.pdf and click 'Download Excel' button.</div>
@@ -32,16 +33,14 @@
         @(Html.Kendo().Upload()
             .Name("files")
             .HtmlAttributes(new { accept = "*.pdf" })
+            .Multiple(false)
+            .ShowFileList(true)
             .Async(a => a
                 .Save("ChunkSave", "Upload")
                 .Remove("Remove", "Upload")
-
-            //.ChunkSize(2000)
             )
             .Validation(v => v.AllowedExtensions("pdf"))
             .Events(e => e.Error("onError"))
-            //.Directory(true)
-            //.DirectoryDrop(true)
             .Deferred()
         )
         <hr />
@@ -67,6 +66,7 @@
                 columns.Bound(c => c.FileName).Width(100);
                 columns.Bound(c => c.Extension).Width(50);
                 columns.Bound(c => c.Length).Width(100);
+                columns.Command(command => command.Destroy()).Width(150);
             })
             .Groupable()
             .Sortable()
@@ -79,10 +79,15 @@
             .Pageable(s => s.Refresh(true))
 
             .DataSource(dataSource => dataSource
-                .Ajax()                
+                .Ajax()
                 .Read(read => read.Action("AzureFiles_Read", "Grid"))
+                .Destroy(destroy => destroy.Action("AzureFiles_Destroy", "Grid"))
                 .PageSize(2000)
                 .ServerOperation(false)
+                .Model(model =>
+                {
+                    model.Id(f => f.Uri);
+                })
             )
             .Deferred()
 )

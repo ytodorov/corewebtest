@@ -37,16 +37,27 @@ namespace DimoPdfToExcelWeb.Controllers
             foreach (var file in files)
             {
                 AzureCloudFileViewModel model = new AzureCloudFileViewModel();
+                model.Uri = file.Uri;
                 model.FileName = file.Name;
                 model.DirectoryName = file.Parent.Name;
                 model.Extension = Path.GetExtension(file.Name);
                 model.Length = file.Properties.Length;
                 resultList.Add(model);
+
             }
 
             var result = Json(resultList.ToDataSourceResult(request));
             return result;
         }
+
+
+        public ActionResult AzureFiles_Destroy([DataSourceRequest] DataSourceRequest request,
+           AzureCloudFileViewModel azureCloudFileViewModel)
+        {
+            AzureFilesUtils.DeleteFileByUri(azureCloudFileViewModel.Uri);
+            return Json(new[] { azureCloudFileViewModel }.ToDataSourceResult(request, ModelState));
+        }
+
 
     }
 }
