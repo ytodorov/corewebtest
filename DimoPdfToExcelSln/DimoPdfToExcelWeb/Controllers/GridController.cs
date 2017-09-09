@@ -9,6 +9,8 @@ using Kendo.Mvc.UI;
 using DimoPdfToExcelWeb.BusinessLogic;
 using Kendo.Mvc.Extensions;
 using System.IO;
+using DimoPdfToExcelWeb.Extensions;
+using Microsoft.AspNetCore.Http;
 
 namespace DimoPdfToExcelWeb.Controllers
 {
@@ -43,8 +45,10 @@ namespace DimoPdfToExcelWeb.Controllers
                 model.Extension = Path.GetExtension(file.Name);
                 model.Length = file.Properties.Length;
                 resultList.Add(model);
-
+                var test = model.SafeUri;
             }
+
+
 
             var result = Json(resultList.ToDataSourceResult(request));
             return result;
@@ -56,6 +60,15 @@ namespace DimoPdfToExcelWeb.Controllers
         {
             AzureFilesUtils.DeleteFileByUri(azureCloudFileViewModel.Uri);
             return Json(new[] { azureCloudFileViewModel }.ToDataSourceResult(request, ModelState));
+        }
+
+        public ActionResult Download(string safeUri)
+        {
+            var realUri = safeUri.DecodeBase64Safe();
+            Uri uri = new Uri(realUri);
+            var res = AzureFilesUtils.DownloadFile(uri);
+
+            return File(res.Content, res.ContentType, res.Name);
         }
 
 

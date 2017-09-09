@@ -1,4 +1,5 @@
-﻿using Microsoft.WindowsAzure.Storage;
+﻿using DimoPdfToExcelWeb.Models;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.File;
 using System;
@@ -22,18 +23,6 @@ namespace DimoPdfToExcelWeb.BusinessLogic
         {
             return base.GetHashCode();
         }
-
-        //[EditorBrowsable(EditorBrowsableState.Never)]
-        //public static override bool Equals(object obj)
-        //{
-        //    throw new Exception("Assertion does not implement Equals, use Ensure or Require");
-        //}
-
-        //[EditorBrowsable(EditorBrowsableState.Never)]
-        //public static new bool ReferenceEquals(object objA, object objB)
-        //{
-        //    throw new Exception("Assertion does not implement ReferenceEquals, use Ensure or Require");
-        //}
 
         public static CloudFileDirectory GetCloudDirectoryShare(bool inputFilesShare = true)
         {
@@ -106,16 +95,39 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             var boolResult = cf.DeleteIfExistsAsync().Result;
         }
 
+        public static AzureFileDownloadViewModel DownloadFile(Uri uri)
+        {
+            StorageCredentials sc = new StorageCredentials("yordansto" + "rageaccount",
+              "WHN5k4wFTmFmiuzFaWkB4N646yYE9PjrOpiyx7j5iWe3XC" + "GVgi/5ja8jT9LGiIXsvaLB9DYDpUenu7/NQJVZWA==");
+            CloudFile cf = new CloudFile(uri, sc);
+            cf.FetchAttributesAsync().Wait();
+
+            AzureFileDownloadViewModel vm = new AzureFileDownloadViewModel();
+
+            long fileByteLength = cf.Properties.Length;
+            vm.Name = cf.Name;
+            vm.Content = new byte[fileByteLength];
+            var boolResult = cf.DownloadToByteArrayAsync(vm.Content, 0).Result;
+
+            if (cf.Name.ToUpperInvariant().EndsWith("pdf".ToUpperInvariant()))
+            {
+                vm.ContentType = "application/pdf";
+                vm.Extension = ".pdf";
+            }
+            else if (cf.Name.ToUpperInvariant().EndsWith("xlsm".ToUpperInvariant()))
+            {
+                vm.ContentType = "application/vnd.ms-excel.sheet.macroEnabled.12";
+                vm.Extension = "xlsm";
+            }
+
+            return vm;
+                
+        }
+
         public static List<CloudFile> ListAllFiles()
         {
             var dirs = new List<CloudFileDirectory>();
-
-            
-
             CloudFileDirectory inputDirectory = GetCloudDirectoryShare();
-
-            
-
             dirs.Add(inputDirectory);
             CloudFileDirectory outputDirectory = GetCloudDirectoryShare(false);
             dirs.Add(outputDirectory);

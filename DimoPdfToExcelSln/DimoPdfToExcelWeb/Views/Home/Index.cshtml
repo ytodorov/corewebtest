@@ -62,15 +62,17 @@
             .Name("gridFs")
             .Columns(columns =>
             {
-                columns.Bound(c => c.DirectoryName).Width(50);
-                columns.Bound(c => c.FileName).Width(100);
-                columns.Bound(c => c.Extension).Width(50);
-                columns.Bound(c => c.Length).Width(100);
-                columns.Command(command => command.Destroy()).Width(150);
+                columns.Bound(c => c.DirectoryName).Width(50).Title("Company");
+                columns.Bound(c => c.FileName).Width(100).Title("File");
+                columns.Bound(c => c.Extension).Width(20);
+                columns.Bound(c => c.Length).Width(30);
+                columns.Command(command => command.Destroy()).Width(50).Title("Delete");
+                columns.Template("<a href='/Grid/Download/?safeUri=#:SafeUri#'>Download</a>").Width(100).Title("Download");
             })
             .Groupable()
             .Sortable()
             .Filterable()
+            .Resizable(r => r.Columns(true))
             .ToolBar(t =>
             {
                 t.Excel();
@@ -111,10 +113,8 @@
                 t.Pdf();                
             })
             .Pageable(s => s.Refresh(true))
-
             .DataSource(dataSource => dataSource
                 .Ajax()
-
                 .Read(read => read.Action("BsRows_Read", "Grid"))
                 .PageSize(2000)
                 .ServerOperation(false)
