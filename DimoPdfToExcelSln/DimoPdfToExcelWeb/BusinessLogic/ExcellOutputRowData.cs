@@ -13,5 +13,11 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
         public int PreviousYear { get; set; }
 
+        public override string ToString()
+        {
+            var result = $"{RowNumber} {CurrentYear} {PreviousYear}";
+            return result;
+        }
+
     }
 }

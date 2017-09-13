@@ -127,9 +127,10 @@
                     {
                         columns.Bound(c => c.Number).Width(50);
                         columns.Bound(c => c.Name).Width(100);
-                        columns.Bound(c => c.GoesToRowNumber).Width(50);
-                        columns.Bound(c => c.GoesToRowTitle).Width(100);
-                        columns.Bound(c => c.CurrentYear).Width(50);
+                        columns.Bound(c => c.GoesToRowNumberString).Width(50).Title("Goes To");
+                        columns.Bound(c => c.GoesToRowTitle).Width(100).Title("Goes To Title");
+                        columns.Bound(c => c.Sign).Width(50);
+                        //columns.Bound(c => c.CurrentYear).Width(50);
                     })
                     .Groupable()
                     .Sortable()

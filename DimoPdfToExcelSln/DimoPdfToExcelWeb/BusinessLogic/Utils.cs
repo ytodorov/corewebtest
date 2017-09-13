@@ -43,16 +43,25 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                                     var inputValue = currentSheet.Cells[i, 1].Value.ToString().Substring(0, 3);
                                     var hungName = currentSheet.Cells[i, 1].Value.ToString().Substring(5);
                                     var goesTo = currentSheet.Cells[i, 2].Value.ToString();
-                                    var goesToRowNumberString = currentSheet.Cells[i, 3]?.Value?.ToString();
+                                    var goesToRowNumberString = currentSheet.Cells[i, 3]?.Value?.ToString()?.Trim()?.Replace(" ", string.Empty);
                                     var sign = currentSheet.Cells[i, 4]?.Value?.ToString();
                                     FinancialRow fr = new FinancialRow();
                                     fr.Number = inputValue;
                                     fr.Name = hungName;
                                     fr.GoesToRowTitle = goesTo;
-                                    if (int.TryParse(goesToRowNumberString, out int goesToRowNumberInt))
+
+                                    string[] rowNumbers = goesToRowNumberString.Split(',');
+                                    List<int> rowNumbersList = new List<int>();
+
+                                    foreach (var rowNum in rowNumbers)
                                     {
-                                        fr.GoesToRowNumber = goesToRowNumberInt;
+                                        if (int.TryParse(rowNum, out int goesToRowNumberInt))
+                                        {
+                                            fr.GoesToRowNumber.Add(goesToRowNumberInt);
+                                        }
                                     }
+
+                                  
                                     if (!string.IsNullOrEmpty(sign) && sign.Trim().Equals("-", StringComparison.InvariantCultureIgnoreCase))
                                     {
                                         fr.Sign = "-";
@@ -122,14 +131,16 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                                     {
                                         fr.Sign = "-";
                                     }
-                                    //fr.GoesToRowTitle = goesTo;
-                                    if (int.TryParse(goesToRowNumberString, out int goesToRowNumberInt))
+
+                                    string[] rowNumbers = goesToRowNumberString.Split(',');
+                                    List<int> rowNumbersList = new List<int>();
+
+                                    foreach (var rowNum in rowNumbers)
                                     {
-                                        fr.GoesToRowNumber = goesToRowNumberInt;
-                                    }
-                                    else
-                                    {
-                                        continue;
+                                        if (int.TryParse(rowNum, out int goesToRowNumberInt))
+                                        {
+                                            fr.GoesToRowNumber.Add(goesToRowNumberInt);
+                                        }
                                     }
 
                                     if (page == 1)
@@ -190,13 +201,16 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                                     fr.Number = number;
                                     fr.Name = name;
                                     //fr.GoesToRowTitle = goesTo;
-                                    if (int.TryParse(goesToRowNumberString, out int goesToRowNumberInt))
+
+                                    string[] rowNumbers = goesToRowNumberString.Split(',');
+                                    List<int> rowNumbersList = new List<int>();
+
+                                    foreach (var rowNum in rowNumbers)
                                     {
-                                        fr.GoesToRowNumber = goesToRowNumberInt;
-                                    }
-                                    else
-                                    {
-                                        continue;
+                                        if (int.TryParse(rowNum, out int goesToRowNumberInt))
+                                        {
+                                            fr.GoesToRowNumber.Add(goesToRowNumberInt);
+                                        }
                                     }
 
                                     if (page == 1)
@@ -231,89 +245,105 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             result.BsValues = new List<ExcellOutputRowData>();
             result.PlValues = new List<ExcellOutputRowData>();
 
-            var bsGroup = bsRows.GroupBy(h => h.GoesToRowNumber);
+            //var bsGroup = bsRows.GroupBy(h => h.GoesToRowNumber);
 
-            foreach (var group in bsGroup)
+            for (int rowNumber = 0; rowNumber < 110; rowNumber++)
             {
-
-                //var sumCurrentYear = (int)group.Sum(g => g.CurrentYear);
-                int sumCurrentYear = 0;
-                foreach (var item in group)
+                var bsGroup = bsRows.Where(b => b.GoesToRowNumber.Contains(rowNumber)).ToList();
+                if (bsGroup.Count == 0)
                 {
-                    if (item.Sign.Equals("-", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        sumCurrentYear -= (int)item.CurrentYear;
-                    }
-                    else
-                    {
-                        sumCurrentYear += (int)item.CurrentYear;
-                    }
+                    continue;
                 }
-                //var sumPreviousYear = (int)group.Sum(g => g.PreviousYear);
-                int sumPreviousYear = 0;
-                foreach (var item in group)
+
+                //foreach (var group in bsGroup)
                 {
-                    if (item.Sign.Equals("-", StringComparison.InvariantCultureIgnoreCase))
+
+                    //var sumCurrentYear = (int)group.Sum(g => g.CurrentYear);
+                    int sumCurrentYear = 0;
+                    foreach (var item in bsGroup)
                     {
-                        sumPreviousYear -= (int)item.PreviousYear;
+                        if (item.Sign.Equals("-", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            sumCurrentYear -= (int)item.CurrentYear;
+                        }
+                        else
+                        {
+                            sumCurrentYear += (int)item.CurrentYear;
+                        }
                     }
-                    else
+                    //var sumPreviousYear = (int)group.Sum(g => g.PreviousYear);
+                    int sumPreviousYear = 0;
+                    foreach (var item in bsGroup)
                     {
-                        sumPreviousYear += (int)item.PreviousYear;
+                        if (item.Sign.Equals("-", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            sumPreviousYear -= (int)item.PreviousYear;
+                        }
+                        else
+                        {
+                            sumPreviousYear += (int)item.PreviousYear;
+                        }
                     }
+                    ExcellOutputRowData excellOutputRowData = new ExcellOutputRowData()
+                    {
+                        RowNumber = rowNumber,//group.Key,
+                        CurrentYear = sumCurrentYear,
+                        PreviousYear = sumPreviousYear
+                    };
+
+                    result.BsValues.Add(excellOutputRowData);
+
+                    //var sumPreviousYear = (int)group.Sum(g => g.PreviousYear);
+                    //result.BsValues.Add(group.Key, sumCurrentYear);
                 }
-                ExcellOutputRowData excellOutputRowData = new ExcellOutputRowData()
-                {
-                    RowNumber = group.Key,
-                    CurrentYear = sumCurrentYear,
-                    PreviousYear = sumPreviousYear
-                };
-
-                result.BsValues.Add(excellOutputRowData);
-
-                //var sumPreviousYear = (int)group.Sum(g => g.PreviousYear);
-                //result.BsValues.Add(group.Key, sumCurrentYear);
             }
 
-            var plGroup = plRows.GroupBy(h => h.GoesToRowNumber);
-
-            foreach (var group in plGroup)
+            //var plGroup = plRows.GroupBy(h => h.GoesToRowNumber);
+            for (int rowNumber = 0; rowNumber < 110; rowNumber++)
             {
-                //var sumCurrentYear = (int)group.Sum(g => g.CurrentYear);
-                //var sumPreviousYear = (int)group.Sum(g => g.PreviousYear);
-                //var sumCurrentYear = (int)group.Sum(g => g.CurrentYear);
-                int sumCurrentYear = 0;
-                foreach (var item in group)
+                var plGroup = plRows.Where(b => b.GoesToRowNumber.Contains(rowNumber)).ToList();
+                if (plGroup.Count == 0)
                 {
-                    if (item.Sign.Equals("-", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        sumCurrentYear -= (int)item.CurrentYear;
-                    }
-                    else
-                    {
-                        sumCurrentYear += (int)item.CurrentYear;
-                    }
+                    continue;
                 }
-                //var sumPreviousYear = (int)group.Sum(g => g.PreviousYear);
-                int sumPreviousYear = 0;
-                foreach (var item in group)
+                //foreach (var group in plGroup)
                 {
-                    if (item.Sign.Equals("-", StringComparison.InvariantCultureIgnoreCase))
+                    //var sumCurrentYear = (int)group.Sum(g => g.CurrentYear);
+                    //var sumPreviousYear = (int)group.Sum(g => g.PreviousYear);
+                    //var sumCurrentYear = (int)group.Sum(g => g.CurrentYear);
+                    int sumCurrentYear = 0;
+                    foreach (var item in plGroup)
                     {
-                        sumPreviousYear -= (int)item.PreviousYear;
+                        if (item.Sign.Equals("-", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            sumCurrentYear -= (int)item.CurrentYear;
+                        }
+                        else
+                        {
+                            sumCurrentYear += (int)item.CurrentYear;
+                        }
                     }
-                    else
+                    //var sumPreviousYear = (int)group.Sum(g => g.PreviousYear);
+                    int sumPreviousYear = 0;
+                    foreach (var item in plGroup)
                     {
-                        sumPreviousYear += (int)item.PreviousYear;
+                        if (item.Sign.Equals("-", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            sumPreviousYear -= (int)item.PreviousYear;
+                        }
+                        else
+                        {
+                            sumPreviousYear += (int)item.PreviousYear;
+                        }
                     }
+                    ExcellOutputRowData excellOutputRowData = new ExcellOutputRowData()
+                    {
+                        RowNumber = rowNumber,//group.Key,
+                        CurrentYear = sumCurrentYear,
+                        PreviousYear = sumPreviousYear
+                    };
+                    result.PlValues.Add(excellOutputRowData);
                 }
-                ExcellOutputRowData excellOutputRowData = new ExcellOutputRowData()
-                {
-                    RowNumber = group.Key,
-                    CurrentYear = sumCurrentYear,
-                    PreviousYear = sumPreviousYear
-                };
-                result.PlValues.Add(excellOutputRowData);
             }
             return result;
         }
@@ -758,7 +788,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 {
                     foreach (var item in parsedPdfResult.DictWithValuesBS)
                     {
-                        if (bsRow.Number.Equals(item.Number, StringComparison.InvariantCultureIgnoreCase))
+                        if (bsRow.Number?.Equals(item.Number, StringComparison.InvariantCultureIgnoreCase) == true)
                         {
                             bsRow.CurrentYear = item.CurrentYear;
                             bsRow.PreviousYear = item.PreviousYear;
@@ -770,7 +800,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 {
                     foreach (var item in parsedPdfResult.DictWithValuesPL)
                     {
-                        if (plRow.Number.Equals(item.Number, StringComparison.InvariantCultureIgnoreCase))
+                        if (plRow.Number?.Equals(item.Number, StringComparison.InvariantCultureIgnoreCase) == true)
                         {
                             plRow.CurrentYear = item.CurrentYear;
                             plRow.PreviousYear = item.PreviousYear;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DimoPdfToExcelWeb.BusinessLogic
@@ -16,7 +17,26 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
         public string GoesToRowTitle { get; set; }
 
-        public int GoesToRowNumber { get; set; }
+        public List<int> GoesToRowNumber { get; set; } = new List<int>();
+
+        public string GoesToRowNumberString
+        {
+            get
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (var item in GoesToRowNumber)
+                {
+                    sb.Append($"{item} ");
+                }
+                return sb.ToString();
+            }
+            set
+            {
+
+            }
+        }
+        
+
 
         public string Sign { get; set; } = "+";
 
@@ -32,7 +52,12 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
         public override string ToString()
         {
-            string result = $"{Type} {Number} {Name} --goes to row:{GoesToRowNumber} prev:{PreviousYear} curr:{CurrentYear}";
+            StringBuilder sb = new StringBuilder();
+            foreach (var item in GoesToRowNumber)
+            {
+                sb.Append($"{item} ");
+            }
+            string result = $"{Type} {Number} {Name} --goes to row:{sb.ToString()} prev:{PreviousYear} curr:{CurrentYear}";
             return result;
         }
     }

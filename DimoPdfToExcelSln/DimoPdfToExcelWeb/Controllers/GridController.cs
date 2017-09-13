@@ -18,8 +18,16 @@ namespace DimoPdfToExcelWeb.Controllers
     {
         public ActionResult BsRows_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var bsRows = Mappings.HungarianBsRows;
-            var result = Json(bsRows.ToDataSourceResult(request));
+            var allRows = new List<FinancialRow>();
+            allRows.AddRange(Mappings.HungarianBsRows);
+            allRows.AddRange(Mappings.HungarianPlRows);
+            allRows.AddRange(Mappings.SerbianBsRows);
+            allRows.AddRange(Mappings.SerbianPlRows);
+            //allRows.AddRange(Mappings.CroatiaBsRows);
+            //allRows.AddRange(Mappings.CroatiaPlRows);
+
+            //var bsRows = Mappings.HungarianBsRows;
+            var result = Json(allRows.ToDataSourceResult(request));
             return result;
         }
 
