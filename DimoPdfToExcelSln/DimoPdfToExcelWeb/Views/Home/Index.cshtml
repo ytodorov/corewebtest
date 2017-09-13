@@ -4,11 +4,10 @@
 
 <script type="text/javascript">
     function onError(e) {
-        // An array with information about the uploaded files
         var files = e.files;
 
         if (e.operation == "upload") {
-            alert("Failed to upload " + files.length + " files");
+            kendo.alert("Failed to upload " + files.length + " files");
         }
     }
 
@@ -20,6 +19,19 @@
                     .show()
                     .html(text);
             });
+    }
+
+    function DownloadExcelClick(e) {
+        debugger;
+        var upload = $("#files").data("kendoUpload"),
+            files = upload.getFiles();
+
+        if (files.length == 0)
+        {
+            e.preventDefault();
+            kendo.alert("You should upload a file first!");
+
+        }
     }
 
 
@@ -37,6 +49,9 @@
           .Deferred()
 )
 
+<div class="text-center">
+    <img src="~/images/logo2R.png" alt="ALD Automotive" />
+</div>
 <br />
 <div id="divConvert" class="k-block">
     <div class="k-header k-success-colored">1. Please upload a pdf file and click 'Download Excel' button.</div>
@@ -57,7 +72,7 @@
             .Deferred()
                 )
                 <hr />
-                <a asp-controller="Upload" class="k-button"
+                <a asp-controller="Upload" class="k-button" onclick="DownloadExcelClick(event)"
                    asp-action="Excel">Download Excel</a>
             </div>
         </form>
