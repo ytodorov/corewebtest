@@ -18,6 +18,8 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
         public int GoesToRowNumber { get; set; }
 
+        public string Sign { get; set; } = "+";
+
         public double PreviousYear { get; set; }
 
         public double CurrentYear { get; set; }
