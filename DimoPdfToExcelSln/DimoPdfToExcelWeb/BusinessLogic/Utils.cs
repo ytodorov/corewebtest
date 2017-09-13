@@ -143,6 +143,11 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                                         }
                                     }
 
+                                    if (fr.GoesToRowNumber.Count == 0)
+                                    {
+                                        continue;
+                                    }
+
                                     if (page == 1)
                                     {
                                         fr.Type = "BS";
