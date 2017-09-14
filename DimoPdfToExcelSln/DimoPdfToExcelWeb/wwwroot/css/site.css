@@ -3,6 +3,11 @@
     padding-bottom: 20px;
 }*/
 
+body
+{
+    background-image: url("../images/backgroundImages/subtle_white_mini_waves.png");
+}
+
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */
 .body-content {
