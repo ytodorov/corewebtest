@@ -48,8 +48,14 @@ namespace DimoPdfToExcelWeb.Controllers
             {
                 AzureCloudFileViewModel model = new AzureCloudFileViewModel();
                 model.Uri = file.Uri;
-                model.FileName = file.Name;
-                model.DirectoryName = file.Parent.Name;
+
+                
+                int index = file.Name.IndexOf("_");
+                string fileName = file.Name.Substring(index + 1);
+
+
+                model.FileName = fileName;
+                model.DirectoryName = file.Name.Split("_").FirstOrDefault();
                 model.Extension = Path.GetExtension(file.Name);
                 model.Length = file.Properties.Length;
                 resultList.Add(model);

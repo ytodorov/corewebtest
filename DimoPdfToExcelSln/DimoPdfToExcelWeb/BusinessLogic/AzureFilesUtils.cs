@@ -1,6 +1,7 @@
 ﻿using DimoPdfToExcelWeb.Models;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.File;
 using System;
 using System.Collections.Generic;
@@ -24,40 +25,57 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             return base.GetHashCode();
         }
 
-        public static CloudFileDirectory GetCloudDirectoryShare(bool inputFilesShare = true)
+        private static StorageCredentials GetStorageCredentials()
         {
-            StorageCredentials sc = new StorageCredentials("yordansto" + "rageaccount",
-               "WHN5k4wFTmFmiuzFaWkB4N646yYE9PjrOpiyx7j5iWe3XC" + "GVgi/5ja8jT9LGiIXsvaLB9DYDpUenu7/NQJVZWA==");
+            StorageCredentials sc = new StorageCredentials("al" + "dautomotive",
+               "qJmaOC9XhO126Dr4X0kWybU/3lTFBFHXoK9Tte+Ogxy1tuCCMrIDzzNZy7I8XMxsrswTgOlhOp1XiVRq8W" + "Smdw==");
+            return sc;
+        }
+
+        public static CloudBlobContainer GetCloudDirectoryShare(bool inputFilesShare = true)
+        {
+            StorageCredentials sc = GetStorageCredentials();
             CloudStorageAccount cloudStorageAccount = new CloudStorageAccount(sc, true);
 
+            CloudBlobClient blobClient = cloudStorageAccount.CreateCloudBlobClient();
+
             // Create a CloudFileClient object for credentialed access to Azure File storage.
-            CloudFileClient fileClient = cloudStorageAccount.CreateCloudFileClient();
-            
+            //CloudFileClient fileClient = cloudStorageAccount.CreateCloudFileClient();
+
             // Get a reference to the file share we created previously.
-            CloudFileShare share = fileClient.GetShareReference("dimo");
-            var boolResult = share.CreateIfNotExistsAsync().Result;
-            CloudFileDirectory rootDir = share.GetRootDirectoryReference();
-            CloudFileDirectory resultDir = null;
+            CloudBlobContainer container = null;
             if (inputFilesShare)
             {
-                resultDir = rootDir.GetDirectoryReference("DimoInputPdfFiles");
+                container = blobClient.GetContainerReference("input");
             }
             else
             {
-                resultDir = rootDir.GetDirectoryReference("DimoOutputExcelFiles");
+                container = blobClient.GetContainerReference("output");
             }
-            boolResult = resultDir.CreateIfNotExistsAsync().Result;
-            return resultDir;
+            var boolResult = container.CreateIfNotExistsAsync().Result;
+            return container;
+            //var boolResult = share.CreateIfNotExistsAsync().Result;
+            //CloudFileDirectory rootDir = share.GetRootDirectoryReference();
+            //CloudFileDirectory resultDir = null;
+            //if (inputFilesShare)
+            //{
+            //    resultDir = rootDir.GetDirectoryReference("DimoInputPdfFiles");
+            //}
+            //else
+            //{
+            //    resultDir = rootDir.GetDirectoryReference("DimoOutputExcelFiles");
+            //}
+            //boolResult = resultDir.CreateIfNotExistsAsync().Result;
+            //return resultDir;
         }
 
         public static void UploadFile(string directoryName, string fileNameWithExtension, Stream stream)
         {
-            CloudFileDirectory cloudFileDirectory = GetCloudDirectoryShare();
+            CloudBlobContainer container = GetCloudDirectoryShare();
 
-            CloudFile cloudFileShare = cloudFileDirectory.GetFileReference(fileNameWithExtension);
-            var boolResult = cloudFileShare.DeleteIfExistsAsync().Result;
-            cloudFileShare.UploadFromStreamAsync(stream).Wait();
-            
+            CloudBlockBlob blob = container.GetBlockBlobReference(fileNameWithExtension);
+            var boolResult = blob.DeleteIfExistsAsync().Result;
+            blob.UploadFromStreamAsync(stream).Wait();
         }
 
         public static void UploadFile(string directoryName, string fileNameWithExtension, string path)
@@ -70,36 +88,31 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 fileNameWithExtension = fileNameWithExtension.Replace(invalidChar.ToString(), string.Empty);
             }
 
-            CloudFileDirectory rootFileDirectory = GetCloudDirectoryShare();
-
-            CloudFileDirectory companyCloudDirectory = rootFileDirectory.GetDirectoryReference(directoryName);
-            var boolResult = companyCloudDirectory.CreateIfNotExistsAsync().Result;
-            CloudFile cloudFileShare = companyCloudDirectory.GetFileReference(fileNameWithExtension);
-            boolResult = cloudFileShare.DeleteIfExistsAsync().Result;
-            cloudFileShare.UploadFromFileAsync(path).Wait();
+            CloudBlobContainer container = GetCloudDirectoryShare();
+            CloudBlockBlob blob = container.GetBlockBlobReference($"{directoryName}_{fileNameWithExtension}");
+            var boolResult = blob.DeleteIfExistsAsync().Result;
+            blob.UploadFromFileAsync(path).Wait();
         }
 
         public static void DeleteFile(string directoryName, string fileNameWithExtension, string path)
         {
-            CloudFileDirectory rootFileDirectory = GetCloudDirectoryShare();
-            CloudFileDirectory companyCloudDirectory = rootFileDirectory.GetDirectoryReference(directoryName);
-            CloudFile cloudFileShare = companyCloudDirectory.GetFileReference(fileNameWithExtension);
-            var boolResult = cloudFileShare.DeleteIfExistsAsync().Result;
+            CloudBlobContainer container = GetCloudDirectoryShare();
+            CloudBlockBlob blob = container.GetBlockBlobReference($"{directoryName}_{fileNameWithExtension}");
+            var boolResult = blob.DeleteIfExistsAsync().Result;
         }
 
         public static void DeleteFileByUri(Uri uri)
         {
-            StorageCredentials sc = new StorageCredentials("yordansto" + "rageaccount",
-               "WHN5k4wFTmFmiuzFaWkB4N646yYE9PjrOpiyx7j5iWe3XC" + "GVgi/5ja8jT9LGiIXsvaLB9DYDpUenu7/NQJVZWA==");
-            CloudFile cf = new CloudFile(uri, sc);
+            StorageCredentials sc = GetStorageCredentials();
+            CloudBlockBlob cf = new CloudBlockBlob(uri, sc);
             var boolResult = cf.DeleteIfExistsAsync().Result;
         }
 
         public static AzureFileDownloadViewModel DownloadFile(Uri uri)
         {
-            StorageCredentials sc = new StorageCredentials("yordansto" + "rageaccount",
-              "WHN5k4wFTmFmiuzFaWkB4N646yYE9PjrOpiyx7j5iWe3XC" + "GVgi/5ja8jT9LGiIXsvaLB9DYDpUenu7/NQJVZWA==");
-            CloudFile cf = new CloudFile(uri, sc);
+            StorageCredentials sc = GetStorageCredentials();
+            CloudBlockBlob cf = new CloudBlockBlob(uri, sc);
+            
             cf.FetchAttributesAsync().Wait();
 
             AzureFileDownloadViewModel vm = new AzureFileDownloadViewModel();
@@ -124,54 +137,21 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 
         }
 
-        public static List<CloudFile> ListAllFiles()
+        public static List<CloudBlockBlob> ListAllFiles()
         {
             var dirs = new List<CloudFileDirectory>();
-            CloudFileDirectory inputDirectory = GetCloudDirectoryShare();
-            dirs.Add(inputDirectory);
-            CloudFileDirectory outputDirectory = GetCloudDirectoryShare(false);
-            dirs.Add(outputDirectory);
-            List<CloudFile> cloudFileList = new List<CloudFile>();
-            foreach (CloudFileDirectory cloudFileDirectory in dirs)
-            {
-                FileContinuationToken fct = new FileContinuationToken();
+            CloudBlobContainer inputContainer = GetCloudDirectoryShare();
+            var inputBlobs = inputContainer.ListBlobsSegmentedAsync(null).Result.Results;
+            CloudBlobContainer outputContainer = GetCloudDirectoryShare();
+            var outputBlobs = outputContainer.ListBlobsSegmentedAsync(null).Result.Results;
 
-                FileResultSegment fileResultSegment = cloudFileDirectory.ListFilesAndDirectoriesSegmentedAsync(fct).Result;
-                
-                List<IListFileItem> list = fileResultSegment.Results.ToList();
-           
-                foreach (var l in list)
-                {
-                    CloudFile cf = l as CloudFile;
-                    if (cf != null)
-                    {
-                        cloudFileList.Add(cf);
-                    }
-                    else
-                    {
-                        CloudFileDirectory cfd = l as CloudFileDirectory;
-                        if (cfd != null)
-                        {
-                            var subFiles = cfd.ListFilesAndDirectoriesSegmentedAsync(fct).Result.Results.ToList();
-                            foreach (var sunItem in subFiles)
-                            {
-                                var dummy = sunItem as CloudFile;
-                                if (dummy != null)
-                                {
-                                    cloudFileList.Add(dummy);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            List<CloudBlockBlob> allBlobs = new List<CloudBlockBlob>();
+            allBlobs.AddRange(inputBlobs.Select(s => s as CloudBlockBlob));
+            allBlobs.AddRange(outputBlobs.Select(s => s as CloudBlockBlob));
 
-           
-            return cloudFileList;
+            allBlobs = allBlobs.Where(a => a != null).ToList();
+
+            return allBlobs;
         }
-
-
-
-
     }
 }
