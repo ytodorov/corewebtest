@@ -89,6 +89,10 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             }
 
             CloudBlobContainer container = GetCloudDirectoryShare();
+            if (fileNameWithExtension.ToUpperInvariant().EndsWith(".xlsm".ToUpperInvariant()))
+            {
+                container = GetCloudDirectoryShare(false);
+            }
             CloudBlockBlob blob = container.GetBlockBlobReference($"{directoryName}_{fileNameWithExtension}");
             var boolResult = blob.DeleteIfExistsAsync().Result;
             blob.UploadFromFileAsync(path).Wait();
@@ -142,7 +146,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             var dirs = new List<CloudFileDirectory>();
             CloudBlobContainer inputContainer = GetCloudDirectoryShare();
             var inputBlobs = inputContainer.ListBlobsSegmentedAsync(null).Result.Results;
-            CloudBlobContainer outputContainer = GetCloudDirectoryShare();
+            CloudBlobContainer outputContainer = GetCloudDirectoryShare(false);
             var outputBlobs = outputContainer.ListBlobsSegmentedAsync(null).Result.Results;
 
             List<CloudBlockBlob> allBlobs = new List<CloudBlockBlob>();
