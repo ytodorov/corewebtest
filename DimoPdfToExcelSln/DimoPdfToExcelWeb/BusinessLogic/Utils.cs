@@ -1154,6 +1154,30 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             return parsedPdfRow;
         }
 
+        public static bool IsFinalExcelFileValid(string path)
+        {
+            FileInfo fi = new FileInfo(path);
+            using (ExcelPackage package = new ExcelPackage(fi))
+            {
+                var bsWorkSheet = package.Workbook.Worksheets[1];
 
+                bsWorkSheet.Cells["D92"].Calculate();
+                var bsCheckCellValueCurrentYear = bsWorkSheet.Cells["D92"]?.Value?.ToString();
+                bsWorkSheet.Cells["G92"].Calculate();
+                var bsCheckCellValuePreviousYear = bsWorkSheet.Cells["G92"]?.Value?.ToString();
+
+
+
+                if (bsCheckCellValueCurrentYear?.Equals("0", StringComparison.CurrentCultureIgnoreCase) != true)
+                {
+                    return false;
+                }
+                if (bsCheckCellValuePreviousYear?.Equals("0", StringComparison.CurrentCultureIgnoreCase) != true)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }

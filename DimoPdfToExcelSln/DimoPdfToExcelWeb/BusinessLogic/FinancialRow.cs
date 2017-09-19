@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DimoPdfToExcelWeb.Extensions;
 
 namespace DimoPdfToExcelWeb.BusinessLogic
 {
@@ -14,6 +15,18 @@ namespace DimoPdfToExcelWeb.BusinessLogic
         public string Number { get; set; }
 
         public string Name { get; set; }
+
+        public string NameOnlyUpperCaseLetters
+        {
+            get
+            {
+                string result = Name?.ExtractTextOnlyFromString();
+                return result;
+            }
+            set
+            {
+            }
+        }
 
         public string GoesToRowTitle { get; set; }
 
@@ -35,7 +48,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
             }
         }
-        
+
 
 
         public string Sign { get; set; } = "+";

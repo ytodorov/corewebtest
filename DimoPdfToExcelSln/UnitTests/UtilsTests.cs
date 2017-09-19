@@ -16,8 +16,14 @@ namespace UnitTests
         {
             foreach (var path in HungarianFileNames)
             {
-                var result = Utils.ParseHungarianPdf(path);
-                var outputPath = Utils.GetExcelOutputFilePath(WwwRootFolder, path);
+                if (path.Contains("3"))
+                {
+                    var result = Utils.ParseHungarianPdf(path);
+                    var outputPath = Utils.GetExcelOutputFilePath(WwwRootFolder, path);
+                    var isValid = Utils.IsFinalExcelFileValid(outputPath);
+                    Assert.True(isValid);
+                }
+                
             }
         }
 
@@ -28,6 +34,8 @@ namespace UnitTests
             {
                 var result = Utils.ParseSerbianPdf(path);
                 var outputPath = Utils.GetExcelOutputFilePath(WwwRootFolder, path);
+                var isValid = Utils.IsFinalExcelFileValid(outputPath);
+                Assert.True(isValid);
             }
         }
 
