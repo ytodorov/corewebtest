@@ -42,8 +42,8 @@
           {
               items.Add().Text("Home").Url("#Menu");
               items.Add().Text("Convert").Url("#divConvert");
-              items.Add().Text("Files").Url("#divFiles"); ;
-              items.Add().Text("Mappings").Url("#divMappings"); ;
+              //items.Add().Text("Files").Url("#divFiles"); ;
+              //items.Add().Text("Mappings").Url("#divMappings");
           }
           )
           .Deferred()
@@ -59,17 +59,17 @@
         <form method="post" action='@Url.Action("Submit")'>
             <div class="demo-section k-content">
                 @(Html.Kendo().Upload()
-            .Name("files")
-            .HtmlAttributes(new { accept = "*.pdf" })
-            .Multiple(false)
-            .ShowFileList(true)
-            .Async(a => a
-                .Save("ChunkSave", "Upload")
-                .Remove("Remove", "Upload")
-            )
-            .Validation(v => v.AllowedExtensions("pdf"))
-            .Events(e => e.Error("onError"))
-            .Deferred()
+.Name("files")
+.HtmlAttributes(new { accept = "*.pdf" })
+.Multiple(false)
+.ShowFileList(true)
+.Async(a => a
+    .Save("ChunkSave", "Upload")
+    .Remove("Remove", "Upload")
+)
+.Validation(v => v.AllowedExtensions("pdf"))
+.Events(e => e.Error("onError"))
+.Deferred()
                 )
                 <hr />
                 <a asp-controller="Upload" class="k-button" onclick="DownloadExcelClick(event)"
@@ -85,7 +85,8 @@
     <div id="divDebugInfo" style="display:none">
 
     </div>*@
-<div id="divFiles" class="k-block">
+
+<div id="divFiles" class="k-block" style="display:none">
     <div class="k-header k-success-colored">2. Download or delete already uploaded files.</div>
 
     @(Html.Kendo().Grid<AzureCloudFileViewModel>()
@@ -129,12 +130,13 @@
                 {
                     model.Id(f => f.Uri);
                 })
-            )
+            )            
             .Deferred()
     )
+    
 </div>
 <br />
-<div id="divMappings" class="k-block">
+<div id="divMappings" class="k-block" style="display:none">
     <div class="k-header k-success-colored">3. Mappings.</div>
     @(Html.Kendo().Grid<FinancialRow>()
                     .Name("gridBs")

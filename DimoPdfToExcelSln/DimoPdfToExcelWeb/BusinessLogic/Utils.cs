@@ -1204,11 +1204,11 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                     {
                         // current year
                         
-                            if (Math.Abs(fr.FragmentCorners[1].X - currentYearXCoordinate) < 20)
+                            if (Math.Abs(fr.FragmentCorners[1].X - currentYearXCoordinate) < 50)
                             {
                                 currentYear = fr?.Text;
                             }
-                            else if (Math.Abs(fr.FragmentCorners[1].X - previousYearXCoordinate) < 20)
+                            else if (Math.Abs(fr.FragmentCorners[1].X - previousYearXCoordinate) < 50)
                             {
                                 previousYear = fr?.Text;
                             }
