@@ -515,7 +515,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                         allRows.AddRange(parsedPdfResult.PlRows);
                         foreach (var entry in allRows)
                         {
-                            if (text.Contains("Jegyzett tőke"))
+                            if (text.Contains("Rendkívüli eredmény"))
                             {
 
                             }
@@ -523,7 +523,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                             var entryToCheck = entry.Name;
                             if (entryToCheck.Contains("."))
                             {
-                                entryToCheck = entryToCheck.Substring(entry.Name.IndexOf("."));
+                                entryToCheck = entryToCheck.Substring(entry.Name.LastIndexOf("."));
                             }
 
                             entryToCheck = entryToCheck.ExtractTextOnlyFromString2().ToUpperInvariant();
