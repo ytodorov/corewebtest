@@ -16,6 +16,12 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
         public string Name { get; set; }
 
+        public bool IsSum { get; set; }
+
+        public string AlphaParent { get; set; }
+
+        public string RomanParent { get; set; }
+
         public string GoesToRowTitle { get; set; }
 
         public List<int> GoesToRowNumber { get; set; } = new List<int>();
@@ -58,7 +64,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             {
                 sb.Append($"{item} ");
             }
-            string result = $"{Type} {Number} {Name} --goes to row:{sb.ToString()} prev:{PreviousYear} curr:{CurrentYear}";
+            string result = $"{Type} {Name} AlphaParent: {AlphaParent} RomanParent: {RomanParent} goes to row:{sb.ToString()} prev:{PreviousYear} curr:{CurrentYear}";
             return result;
         }
     }

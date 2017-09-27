@@ -35,7 +35,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                         for (int i = 1; i <= 113; i++)
                         {
                             // Проверка за бял цвят
-                            if (string.IsNullOrEmpty(currentSheet.Cells[i, 1].Style.Fill.BackgroundColor.Rgb))
+                            //if (string.IsNullOrEmpty(currentSheet.Cells[i, 1].Style.Fill.BackgroundColor.Rgb))
                             {
                                 // Проверка за невалиден ред
                                 if (!string.IsNullOrWhiteSpace(currentSheet.Cells[i, 1].Value?.ToString()) &&
@@ -43,13 +43,23 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                                 {
                                     var inputValue = currentSheet.Cells[i, 1].Value.ToString().Substring(0, 3);
                                     var hungName = currentSheet.Cells[i, 1].Value.ToString().Substring(5);
-                                    var goesTo = currentSheet.Cells[i, 2].Value.ToString();
+                                    var goesTo = currentSheet.Cells[i, 2].Value?.ToString();
                                     var goesToRowNumberString = currentSheet.Cells[i, 3]?.Value?.ToString()?.Trim()?.Replace(" ", string.Empty);
                                     var sign = currentSheet.Cells[i, 4]?.Value?.ToString();
+
+                                    var alphaParent = currentSheet.Cells[i, 5]?.Value?.ToString()?.Trim();
+                                    var romanParent = currentSheet.Cells[i, 6]?.Value?.ToString()?.Trim();
+
                                     FinancialRow fr = new FinancialRow();
-                                    fr.Number = inputValue;
+                                    if (!string.IsNullOrEmpty(currentSheet.Cells[i, 1].Style.Fill.BackgroundColor.Rgb))
+                                    {
+                                        fr.IsSum = true;
+                                    }
+                                        fr.Number = inputValue;
                                     fr.Name = hungName;
                                     fr.GoesToRowTitle = goesTo;
+                                    fr.AlphaParent = alphaParent;
+                                    fr.RomanParent = romanParent;
 
                                     string[] rowNumbers = goesToRowNumberString.Split(',');
                                     List<int> rowNumbersList = new List<int>();
@@ -513,12 +523,27 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                         List<FinancialRow> allRows = new List<FinancialRow>();
                         allRows.AddRange(parsedPdfResult.BsRows);
                         allRows.AddRange(parsedPdfResult.PlRows);
+                        //allRows = allRows.Where(a => !a.IsSum).ToList();
+
+                        //// Проверка дали започва с римста буква реда
+                        //if (i > 2 && (Constants.RomanLetters.Contains(tfc[i - 2].Text?.Trim()?.Replace(".", string.Empty)) ||
+                        //    Constants.AlphabetLetters.Contains(tfc[i - 2].Text?.Trim()?.Replace(".", string.Empty))))
+                        //{
+                        //    // да
+                        //    continue;
+                        //}
+
                         foreach (var entry in allRows)
                         {
-                            if (text.Contains("Rendkívüli eredmény"))
+
+
+                            if (text.Contains("Rendkívüli ráfordítások"))
                             {
 
                             }
+
+                          
+
                             var textOnlyUpperCase = text.ExtractTextOnlyFromString2().ToUpperInvariant();
                             var entryToCheck = entry.Name;
                             if (entryToCheck.Contains("."))
@@ -556,7 +581,55 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 }
 
                 var textFromPdf = sb.ToString();
-                              
+
+                parsedPdfResult.BsRows = parsedPdfResult.BsRows.Where(r => r.CurrentYear != 0 || r.PreviousYear != 0).ToList();
+
+                List<FinancialRow> itemsToRemove = new List<FinancialRow>();
+
+               
+                for (int i = 0; i < parsedPdfResult.BsRows.Count; i++)
+                {
+                    var current = parsedPdfResult.BsRows[i];
+                    FinancialRow next = null;
+                    if (i < parsedPdfResult.BsRows.Count - 1)
+                    {
+                        next = parsedPdfResult.BsRows[i + 1];
+                    }
+                    int indexOfDot = current.Name.IndexOf(".");
+                    if (indexOfDot != -1)
+                    {
+                        var romanNumber = current.Name.Substring(0, indexOfDot).Trim();
+                        var romanName = current.Name.Substring(indexOfDot + 1).Trim();
+                        if (Constants.RomanLetters.Contains(romanNumber))
+                        {
+                            if (next?.RomanParent?.ToUpperInvariant()?.Contains(romanName?.ToUpperInvariant()) == true)
+                            {
+                                itemsToRemove.Add(current);
+                                continue;
+                            }
+                        }
+
+                        var alphaLetter = current.Name.Substring(0, indexOfDot).Trim();
+                        var alphaName = current.Name.Substring(indexOfDot + 1).Trim();
+                        if (Constants.AlphabetLetters.Contains(romanNumber))
+                        {
+                            if (next?.AlphaParent?.ToUpperInvariant()?.Contains(alphaName?.ToUpperInvariant()) == true)
+                            {
+                                itemsToRemove.Add(current);
+                                continue;
+                            }
+                        }
+                    }
+                }
+
+                foreach (var item in itemsToRemove)
+                {
+                    parsedPdfResult.BsRows.Remove(item);
+                }
+
+
+
+
 
                 return parsedPdfResult;
             }
