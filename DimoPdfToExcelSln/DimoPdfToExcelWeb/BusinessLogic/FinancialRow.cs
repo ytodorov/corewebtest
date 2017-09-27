@@ -16,18 +16,6 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
         public string Name { get; set; }
 
-        public string NameOnlyUpperCaseLetters
-        {
-            get
-            {
-                string result = Name?.ExtractTextOnlyFromString();
-                return result;
-            }
-            set
-            {
-            }
-        }
-
         public string GoesToRowTitle { get; set; }
 
         public List<int> GoesToRowNumber { get; set; } = new List<int>();

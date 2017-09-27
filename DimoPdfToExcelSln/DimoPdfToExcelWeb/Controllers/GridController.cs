@@ -20,9 +20,9 @@ namespace DimoPdfToExcelWeb.Controllers
         {
             var allRows = new List<FinancialRow>();
             allRows.AddRange(Mappings.HungarianBsRows);
-            allRows.AddRange(Mappings.HungarianPlRows);
-            allRows.AddRange(Mappings.SerbianBsRows);
-            allRows.AddRange(Mappings.SerbianPlRows);
+            //allRows.AddRange(Mappings.HungarianPlRows);
+            //allRows.AddRange(Mappings.SerbianBsRows);
+            //allRows.AddRange(Mappings.SerbianPlRows);
             //allRows.AddRange(Mappings.CroatiaBsRows);
             //allRows.AddRange(Mappings.CroatiaPlRows);
 

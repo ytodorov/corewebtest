@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Xfinium.Pdf;
 using Xfinium.Pdf.Content;
 using Xfinium.Pdf.Graphics;
+using DimoPdfToExcelWeb.Extensions;
 
 namespace DimoPdfToExcelWeb.BusinessLogic
 {
@@ -451,6 +452,9 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                 List<string> allStringFragments = new List<string>();
 
+                double currentYearX = 0;
+                double previousYearX = 0;
+
                 foreach (var page in document.Pages)
                 {
                     PdfContentExtractor ce = new PdfContentExtractor(page);
@@ -459,7 +463,24 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                     for (int i = 0; i < tfc.Count; i++)
                     {
                         allStringFragments.Add(tfc[i].Text);
+
+                        if (tfc[i].Text?.ToUpperInvariant().StartsWith("Előző üzleti év".ToUpperInvariant()) == true)
+                        {
+                            if (tfc[i].Brush.Color.ToRgbColor().B == 125)
+                            {
+                                previousYearX = tfc[i].FragmentCorners[1].X;
+                            }
+                        }
+                        if (tfc[i].Text?.ToUpperInvariant().StartsWith("Tárgyévi adatok".ToUpperInvariant()) == true)
+                        {
+                            if (tfc[i].Brush.Color.ToRgbColor().B == 125)
+                            {
+                                currentYearX = tfc[i].FragmentCorners[1].X;
+                            }
+                        }
                     }
+
+                    
                 }
 
                 List<string> allStringFragmentsToCount = new List<string>();
@@ -474,59 +495,57 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                     for (int i = 0; i < tfc.Count; i++)
                     {
-
                         var text = tfc[i].Text;
+                                             
 
-                        if (text == "006.")
+                        if (string.IsNullOrWhiteSpace(text))
+                        {
+                            continue;
+                        }
+
+                        if (text.Contains("Követelések") && text.Contains("szolgáltatásból"))
                         {
 
-                        }
+                        }                                  
 
                         sb.AppendLine(text);
-
-                        foreach (var entry in parsedPdfResult.PlRows)
+                        
+                        List<FinancialRow> allRows = new List<FinancialRow>();
+                        allRows.AddRange(parsedPdfResult.BsRows);
+                        allRows.AddRange(parsedPdfResult.PlRows);
+                        foreach (var entry in allRows)
                         {
-                            if (text.Equals(entry.Number + "."))
+                            if (text.Contains("Jegyzett tőke"))
                             {
-                                if (allStringFragmentsToCount.Contains(text))
-                                {
-                                    var keyBS = entry.Number;
 
-                                    var intToAdd = GetCorrectValueFromHungarianPdfRow(i, tfc, entry.Number);
-
-                                    entry.CurrentYear = intToAdd.CurrentYear;
-
-                                    if (!parsedPdfResult.DictWithValuesPL.Any(k => k.Number == keyBS))
-                                    {
-                                        ParsedPdfRow parsedPdfRow = new ParsedPdfRow();
-                                        parsedPdfRow.Number = keyBS;
-                                        parsedPdfRow.CurrentYear = intToAdd.CurrentYear;
-                                        parsedPdfRow.PreviousYear = intToAdd.PreviousYear;
-                                        parsedPdfResult.DictWithValuesPL.Add(parsedPdfRow);
-                                    }
-                                }
                             }
-                        }
-
-
-                        foreach (var entry in parsedPdfResult.BsRows)
-                        {
-                            if (text.Equals(entry.Number + "."))
+                            var textOnlyUpperCase = text.ExtractTextOnlyFromString2().ToUpperInvariant();
+                            var entryToCheck = entry.Name;
+                            if (entryToCheck.Contains("."))
                             {
-                                var keyBS = entry.Number;
+                                entryToCheck = entryToCheck.Substring(entry.Name.IndexOf("."));
+                            }
 
-                                var intToAdd = GetCorrectValueFromHungarianPdfRow(i, tfc, entry.Number);
+                            entryToCheck = entryToCheck.ExtractTextOnlyFromString2().ToUpperInvariant();
+                            if (!string.IsNullOrWhiteSpace(textOnlyUpperCase) &&
+                                !string.IsNullOrWhiteSpace(entryToCheck) &&
+                                entryToCheck.StartsWith(textOnlyUpperCase) &&                                
+                                textOnlyUpperCase.Length == entryToCheck.Length ||
 
+                                (
+                                !string.IsNullOrWhiteSpace(textOnlyUpperCase) &&
+                                !string.IsNullOrWhiteSpace(entryToCheck) &&
+                                entryToCheck.StartsWith(textOnlyUpperCase) &&
+                                (textOnlyUpperCase != entryToCheck) && textOnlyUpperCase.Length > 30) // Важно Bevetelek
+                                )
+                            {
+                                 
+                                var keyBS = entry.Name;
+
+                                var intToAdd = GetCorrectValueFromHungarianPdfRow(i, tfc, currentYearX, previousYearX);
+                                
                                 entry.CurrentYear = intToAdd.CurrentYear;
-
-                                if (!parsedPdfResult.DictWithValuesBS.Any(k => k.Number == keyBS))
-                                {
-                                    ParsedPdfRow parsedPdfRow = new ParsedPdfRow();
-                                    parsedPdfRow.Number = keyBS;
-                                    parsedPdfRow.CurrentYear = intToAdd.CurrentYear;
-                                    parsedPdfRow.PreviousYear = intToAdd.PreviousYear;
-                                    parsedPdfResult.DictWithValuesBS.Add(parsedPdfRow);
-                                }
+                                entry.PreviousYear = intToAdd.PreviousYear;                                
                             }
                         }
 
@@ -537,31 +556,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 }
 
                 var textFromPdf = sb.ToString();
-
-                // Това трябва да го има
-                foreach (var bsRow in parsedPdfResult.BsRows)
-                {
-                    foreach (var item in parsedPdfResult.DictWithValuesBS)
-                    {
-                        if (bsRow.Number.Equals(item.Number, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            bsRow.CurrentYear = item.CurrentYear;
-                            bsRow.PreviousYear = item.PreviousYear;
-                        }
-                    }
-                }
-
-                foreach (var plRow in parsedPdfResult.PlRows)
-                {
-                    foreach (var item in parsedPdfResult.DictWithValuesPL)
-                    {
-                        if (plRow.Number.Equals(item.Number, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            plRow.CurrentYear = item.CurrentYear;
-                            plRow.PreviousYear = item.PreviousYear;
-                        }
-                    }
-                }
+                              
 
                 return parsedPdfResult;
             }
@@ -1099,59 +1094,65 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
         }
 
-        private static ParsedPdfRow GetCorrectValueFromHungarianPdfRow(int numberInCollection, PdfTextFragmentCollection tfc, string currentNumberString)
+        private static ParsedPdfRow GetCorrectValueFromHungarianPdfRow(int numberInCollection,
+            PdfTextFragmentCollection tfc, double currentYearXCoordinate, double previousYearXCoordinate)
         {
-            ParsedPdfRow parsedPdfRow = new ParsedPdfRow();
-            parsedPdfRow.Number = currentNumberString;
-            // Проверяваме следващите 10 записа за втория целочислен запис
+            string currentYear = string.Empty;
+            string previousYear = string.Empty;
 
-            string nextNumberString = "";
-            if (int.TryParse(currentNumberString, out int currentNumberInt))
+            PdfTextFragment rowNumberFr = tfc[numberInCollection];
+
+            PdfTextFragment first = null;
+            if (numberInCollection + 1 < tfc.Count)
             {
-                nextNumberString = (currentNumberInt + 1).ToString("D3");
+                first = tfc[numberInCollection + 1];
             }
-            else
+            PdfTextFragment second = null;
+            if (numberInCollection + 2 < tfc.Count)
             {
-
+                second = tfc[numberInCollection + 2];
+            }
+            PdfTextFragment third = null;
+            if (numberInCollection + 3 < tfc.Count)
+            {
+                third = tfc[numberInCollection + 3];
             }
 
-
-            int successfulParsedNumbers = 0;
-            for (int i = 1; i < 10; i++)
-            {
-                if (numberInCollection + i < tfc.Count)
+            List<PdfTextFragment> fragments = new List<PdfTextFragment>()
                 {
-                    var currentFragment = tfc[numberInCollection + i];
+                    first,second,third
+                };
 
-                    var text = currentFragment.Text?.Replace(" ", "");
-
-                    if (int.TryParse(text, out int dummy))
+            foreach (var fr in fragments)
+            {
+                if (fr != null)
+                {
+                    if (Math.Abs(fr.FragmentCorners[1].Y - rowNumberFr.FragmentCorners[1].Y) < 10) // Проверка дали са на същия ред
                     {
-                        successfulParsedNumbers++;
-                        if (successfulParsedNumbers == 1)
-                        {
-                            parsedPdfRow.PreviousYear = dummy;
-                        }
-                    }
-                    if (successfulParsedNumbers == 2)
-                    {
-                        parsedPdfRow.CurrentYear = dummy;
-                        //return dummy;
-                        break;
-                    }
-                    if (!string.IsNullOrEmpty(nextNumberString))
-                    {
-                        if (text.ToUpperInvariant().Trim().Equals((nextNumberString + ".").ToUpperInvariant().Trim(),
-                            StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            //return 0;
-                            break;
-                        }
+                        // current year
+                        
+                            if (Math.Abs(fr.FragmentCorners[1].X - currentYearXCoordinate) < 20)
+                            {
+                                currentYear = fr?.Text;
+                            }
+                            else if (Math.Abs(fr.FragmentCorners[1].X - previousYearXCoordinate) < 20)
+                            {
+                                previousYear = fr?.Text;
+                            }
+                      
                     }
                 }
-            }
+            }                  
+           
 
-            return parsedPdfRow;
+
+            int.TryParse(currentYear.Replace(" ", string.Empty), out int currentYearInt);
+            int.TryParse(previousYear.Replace(" ", string.Empty), out int previousYearInt);
+
+            var result = new ParsedPdfRow();
+            result.CurrentYear = currentYearInt;
+            result.PreviousYear = previousYearInt;
+            return result;
         }
 
         public static bool IsFinalExcelFileValid(string path)

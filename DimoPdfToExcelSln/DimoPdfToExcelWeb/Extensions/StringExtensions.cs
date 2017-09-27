@@ -9,7 +9,32 @@ namespace DimoPdfToExcelWeb.Extensions
 {
     public static class StringExtensions
     {
-        public static string ExtractTextOnlyFromString(this string input)
+
+        public static bool AreLettersTheSame(this string input, string tocheck)
+        {
+            StringBuilder onlyLetters = new StringBuilder();
+            foreach (var c in input)
+            {
+                if (char.IsLetter(c))
+                {
+                    onlyLetters.Append(c.ToString().ToUpperInvariant());                       
+                }
+            }
+            StringBuilder onlyLetters2 = new StringBuilder();
+            foreach (var c in tocheck)
+            {
+                if (char.IsLetter(c))
+                {
+                    onlyLetters2.Append(c.ToString().ToUpperInvariant());
+                }
+            }
+            var r1 = onlyLetters.ToString();
+            var r2 = onlyLetters2.ToString();
+            bool result = r1 == r2;
+            return result;
+        }
+            
+        public static string ExtractTextOnlyFromString2(this string input)
         {
             if (string.IsNullOrEmpty(input))
             {
@@ -37,7 +62,7 @@ namespace DimoPdfToExcelWeb.Extensions
             {
                 input = input.Replace(s, "");
             }
-            result = input;
+            result = input.ToString();
             return result;
         }
 

@@ -12,13 +12,15 @@ namespace DimoPdfToExcelWeb.BusinessLogic
         /// </summary>
         public string Number { get; set; }
 
+        public string Name { get; set; }
+
         public int PreviousYear { get; set; }
 
         public int CurrentYear { get; set; }
 
         public override string ToString()
         {
-            string result = $"{Number} {PreviousYear} {CurrentYear}";
+            string result = $"{Number} {Name} {PreviousYear} {CurrentYear}";
             return result;
         }
     }
