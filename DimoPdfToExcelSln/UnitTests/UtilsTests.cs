@@ -16,7 +16,7 @@ namespace UnitTests
         {
             foreach (var path in HungarianFileNames)
             {
-                if (!path.Contains("4"))
+                //if (!path.Contains("4"))
                 {
                     var result = Utils.ParseHungarianPdf(path);
                     var outputPath = Utils.GetExcelOutputFilePath(WwwRootFolder, path);

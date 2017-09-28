@@ -16,91 +16,99 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 {
     public class Utils
     {
+        //private static Object thisLock = new Object();
         public static void PopulateHungarianMappingDictionaries(string dirWithFiles)
         {
-
-            string dirPath = Path.Combine(dirWithFiles, "Files", "HungarianDistributionKeys.xlsx");
-            FileInfo fileDistributionInfo = new FileInfo(dirPath);
-
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-
-            if (fileDistributionInfo.Exists)
+            //lock (thisLock)
             {
-                using (ExcelPackage package = new ExcelPackage(fileDistributionInfo))
+                string dirPath = Path.Combine(dirWithFiles, "Files", "HungarianDistributionKeys.xlsx");
+                FileInfo fileDistributionInfo = new FileInfo(dirPath);
+
+                Dictionary<string, string> dict = new Dictionary<string, string>();
+
+                if (fileDistributionInfo.Exists)
                 {
-                    for (int page = 1; page <= 2; page++)
+                    using (ExcelPackage package = new ExcelPackage(fileDistributionInfo))
                     {
-                        ExcelWorksheet currentSheet = package.Workbook.Worksheets[page];
-
-                        for (int i = 1; i <= 113; i++)
+                        for (int page = 1; page <= 2; page++)
                         {
-                            // Проверка за бял цвят
-                            //if (string.IsNullOrEmpty(currentSheet.Cells[i, 1].Style.Fill.BackgroundColor.Rgb))
+                            ExcelWorksheet currentSheet = package.Workbook.Worksheets[page];
+
+                            for (int i = 2; i <= 113; i++)
                             {
-                                // Проверка за невалиден ред
-                                if (!string.IsNullOrWhiteSpace(currentSheet.Cells[i, 1].Value?.ToString()) &&
-                                    !string.IsNullOrWhiteSpace(currentSheet.Cells[i, 3].Value?.ToString()))
+                                // Проверка за бял цвят
+                                //if (string.IsNullOrEmpty(currentSheet.Cells[i, 1].Style.Fill.BackgroundColor.Rgb))
                                 {
-                                    var inputValue = currentSheet.Cells[i, 1].Value.ToString().Substring(0, 3);
-                                    var hungName = currentSheet.Cells[i, 1].Value.ToString().Substring(5);
-                                    var goesTo = currentSheet.Cells[i, 2].Value?.ToString();
-                                    var goesToRowNumberString = currentSheet.Cells[i, 3]?.Value?.ToString()?.Trim()?.Replace(" ", string.Empty);
-                                    var sign = currentSheet.Cells[i, 4]?.Value?.ToString();
-
-                                    var alphaParent = currentSheet.Cells[i, 5]?.Value?.ToString()?.Trim();
-                                    var romanParent = currentSheet.Cells[i, 6]?.Value?.ToString()?.Trim();
-
-                                    FinancialRow fr = new FinancialRow();
-                                    if (!string.IsNullOrEmpty(currentSheet.Cells[i, 1].Style.Fill.BackgroundColor.Rgb))
+                                    // Проверка за невалиден ред
+                                    if (!string.IsNullOrWhiteSpace(currentSheet.Cells[i, 1].Value?.ToString()) &&
+                                        !string.IsNullOrWhiteSpace(currentSheet.Cells[i, 3].Value?.ToString()))
                                     {
-                                        fr.IsSum = true;
-                                    }
-                                        fr.Number = inputValue;
-                                    fr.Name = hungName;
-                                    fr.GoesToRowTitle = goesTo;
-                                    fr.AlphaParent = alphaParent;
-                                    fr.RomanParent = romanParent;
+                                        var inputValue = currentSheet.Cells[i, 1].Value.ToString().Substring(0, 3);
+                                        var hungName = currentSheet.Cells[i, 1].Value.ToString().Substring(5);
+                                        var goesTo = currentSheet.Cells[i, 2].Value?.ToString();
+                                        var goesToRowNumberString = currentSheet.Cells[i, 3]?.Value?.ToString()?.Trim()?.Replace(" ", string.Empty);
+                                        var sign = currentSheet.Cells[i, 4]?.Value?.ToString();
 
-                                    string[] rowNumbers = goesToRowNumberString.Split(',');
-                                    List<int> rowNumbersList = new List<int>();
+                                        var alphaParent = currentSheet.Cells[i, 5]?.Value?.ToString()?.Trim();
+                                        var romanParent = currentSheet.Cells[i, 6]?.Value?.ToString()?.Trim();
 
-                                    foreach (var rowNum in rowNumbers)
-                                    {
-                                        if (int.TryParse(rowNum, out int goesToRowNumberInt))
+                                        FinancialRow fr = new FinancialRow();
+                                        if (!string.IsNullOrEmpty(currentSheet.Cells[i, 1].Style.Fill.BackgroundColor.Rgb))
                                         {
-                                            fr.GoesToRowNumber.Add(goesToRowNumberInt);
+                                            fr.IsSum = true;
                                         }
-                                    }
+                                        fr.Number = inputValue;
+                                        fr.Name = hungName;
+                                        fr.GoesToRowTitle = goesTo;
+                                        fr.AlphaParent = alphaParent;
+                                        fr.RomanParent = romanParent;
 
-                                  
-                                    if (!string.IsNullOrEmpty(sign) && sign.Trim().Equals("-", StringComparison.InvariantCultureIgnoreCase))
-                                    {
-                                        fr.Sign = "-";
-                                    }
+                                        string[] rowNumbers = goesToRowNumberString.Split(',');
+                                        List<int> rowNumbersList = new List<int>();
 
-                                    if (page == 1)
-                                    {
-                                        fr.Type = "BS";
-                                        Mappings.HungarianBsRows.Add(fr);
-                                    }
-                                    else if (page == 2)
-                                    {
-                                        fr.Type = "PL";
-                                        Mappings.HungarianPlRows.Add(fr);
+                                        foreach (var rowNum in rowNumbers)
+                                        {
+                                            if (int.TryParse(rowNum, out int goesToRowNumberInt))
+                                            {
+                                                fr.GoesToRowNumber.Add(goesToRowNumberInt);
+                                            }
+                                        }
+
+
+                                        if (!string.IsNullOrEmpty(sign) && sign.Trim().Equals("-", StringComparison.InvariantCultureIgnoreCase))
+                                        {
+                                            fr.Sign = "-";
+                                        }
+
+                                        if (page == 1)
+                                        {
+                                            fr.Type = "BS";
+                                            if (!Mappings.HungarianBsRows.Any(f => f.Name == fr.Name))
+                                            {
+                                                Mappings.HungarianBsRows.Add(fr);
+                                            }
+                                        }
+                                        else if (page == 2)
+                                        {
+                                            fr.Type = "PL";
+                                            if (!Mappings.HungarianPlRows.Any(f => f.Name == fr.Name))
+                                            {
+                                                Mappings.HungarianPlRows.Add(fr);
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
+
+
+
                     }
-
-
-
                 }
+
+                var bsRows = Mappings.HungarianBsRows;
+                var plRows = Mappings.HungarianPlRows;
             }
-
-            var bsRows = Mappings.HungarianBsRows;
-            var plRows = Mappings.HungarianPlRows;
-
         }
 
         public static void PopulateSerbianMappingDictionaries(string dirWithFiles)
@@ -584,7 +592,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                 parsedPdfResult.BsRows = parsedPdfResult.BsRows.Where(r => r.CurrentYear != 0 || r.PreviousYear != 0).ToList();
 
-                List<FinancialRow> itemsToRemove = new List<FinancialRow>();
+                List<FinancialRow> itemsToRemoveBS = new List<FinancialRow>();
 
                
                 for (int i = 0; i < parsedPdfResult.BsRows.Count; i++)
@@ -604,29 +612,72 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                         {
                             if (next?.RomanParent?.ToUpperInvariant()?.Contains(romanName?.ToUpperInvariant()) == true)
                             {
-                                itemsToRemove.Add(current);
+                                itemsToRemoveBS.Add(current);
                                 continue;
                             }
                         }
 
                         var alphaLetter = current.Name.Substring(0, indexOfDot).Trim();
                         var alphaName = current.Name.Substring(indexOfDot + 1).Trim();
-                        if (Constants.AlphabetLetters.Contains(romanNumber))
+                        if (Constants.AlphabetLetters.Contains(alphaLetter))
                         {
                             if (next?.AlphaParent?.ToUpperInvariant()?.Contains(alphaName?.ToUpperInvariant()) == true)
                             {
-                                itemsToRemove.Add(current);
+                                itemsToRemoveBS.Add(current);
                                 continue;
                             }
                         }
                     }
                 }
-
-                foreach (var item in itemsToRemove)
+                
+                foreach (var item in itemsToRemoveBS)
                 {
                     parsedPdfResult.BsRows.Remove(item);
                 }
 
+                parsedPdfResult.PlRows = parsedPdfResult.PlRows.Where(r => r.CurrentYear != 0 || r.PreviousYear != 0).ToList();
+                List<FinancialRow> itemsToRemovePL = new List<FinancialRow>();
+
+                for (int i = 0; i < parsedPdfResult.PlRows.Count; i++)
+                {
+                    if (i > 0)
+                    {
+                        var current = parsedPdfResult.PlRows[i];
+                        var previous = parsedPdfResult.PlRows[i - 1];
+
+
+                        int indexOfDot = current.Name.IndexOf(".");
+                        if (indexOfDot != -1)
+                        {
+                            var romanNumber = current.Name.Substring(0, indexOfDot).Trim();
+                            var romanName = current.Name.Substring(indexOfDot + 1).Trim();
+                            if (Constants.RomanLetters.Contains(romanNumber))
+                            {
+                                if (previous?.RomanParent?.ToUpperInvariant()?.Contains(romanName?.ToUpperInvariant()) == true)
+                                {
+                                    itemsToRemovePL.Add(current);
+                                    continue;
+                                }
+                            }
+
+                            var alphaLetter = current.Name.Substring(0, indexOfDot).Trim();
+                            var alphaName = current.Name.Substring(indexOfDot + 1).Trim();
+                            if (Constants.AlphabetLetters.Contains(alphaLetter))
+                            {
+                                if (previous?.AlphaParent?.ToUpperInvariant()?.Contains(alphaName?.ToUpperInvariant()) == true)
+                                {
+                                    itemsToRemovePL.Add(current);
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                foreach (var item in itemsToRemovePL)
+                {
+                    parsedPdfResult.PlRows.Remove(item);
+                }
 
 
 
