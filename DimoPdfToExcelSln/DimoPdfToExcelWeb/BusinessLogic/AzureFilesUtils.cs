@@ -78,7 +78,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             blob.UploadFromStreamAsync(stream).Wait();
         }
 
-        public static void UploadFile(string directoryName, string fileNameWithExtension, string path)
+        public static string UploadFile(string directoryName, string fileNameWithExtension, string path)
         {
             var invalidChars = Path.GetInvalidFileNameChars();
 
@@ -96,6 +96,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             CloudBlockBlob blob = container.GetBlockBlobReference($"{directoryName}_{fileNameWithExtension}");
             var boolResult = blob.DeleteIfExistsAsync().Result;
             blob.UploadFromFileAsync(path).Wait();
+            return blob.Uri.ToString();
         }
 
         public static void DeleteFile(string directoryName, string fileNameWithExtension, string path)

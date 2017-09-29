@@ -34,6 +34,17 @@
         }
     }
 
+    function uploadComplete(e) {
+        debugger;
+        // The Upload is now idle
+        $.ajax({
+            url: "upload/getLastPdfUrl", success: function (url) {
+                debugger;
+                $("#iframePdf").attr("src", "https://docs.google.com/gview?url=" + url + "&embedded=true");
+            }
+        });
+    }
+
 
 </script>
 @(Html.Kendo().Menu()
@@ -63,6 +74,7 @@
 .HtmlAttributes(new { accept = "*.pdf" })
 .Multiple(false)
 .ShowFileList(true)
+.Events(e => e.Complete("uploadComplete"))
 .Async(a => a
     .Save("ChunkSave", "Upload")
     .Remove("Remove", "Upload")
@@ -72,13 +84,16 @@
 .Deferred()
                 )
                 <hr />
-                <a asp-controller="Upload" class="k-button" onclick="DownloadExcelClick(event)"
+                <a asp-controller="Upload" class="k-button" onclick="DownloadExcelClick(event)" on
                    asp-action="Excel">Download Excel</a>
             </div>
         </form>
     </div>
 </div>
 <br />
+
+<iframe id="iframePdf" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
+@*return Redirect("https://docs.google.com/gview?url=" + fullUrl + "&embedded=true");*@
 @*@(Html.Kendo().Button().Name("btnShowDebugInfo").Content("Show Info").Events(e => e.Click("btnShowDebugInfoClick"))
         .Deferred()
         )

@@ -30,6 +30,16 @@ namespace DimoPdfToExcelWeb
             services.AddMvc()
                    .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver()); ;
 
+            // Adds a default in-memory implementation of IDistributedCache.
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                // Set a short timeout for easy testing.
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.Cookie.HttpOnly = true;
+            });
+
             services.Configure<GzipCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Optimal);
             services.AddResponseCompression(options =>
             {
@@ -66,7 +76,7 @@ namespace DimoPdfToExcelWeb
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
+            app.UseSession();
             //app.UseStaticFiles();
             //https://andrewlock.net/adding-cache-control-headers-to-static-files-in-asp-net-core/
             app.UseStaticFiles(new StaticFileOptions

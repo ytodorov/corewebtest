@@ -93,7 +93,14 @@ namespace DimoPdfToExcelWeb.Controllers
 
             return Json(fileBlob);
         }
-               
+
+        public ActionResult GetLastPdfUrl()
+        {
+            var url = HttpContext.Session.GetString("url");
+            return Json(url);
+        }
+
+
         public ActionResult Save(IEnumerable<IFormFile> files)
         {
             try
@@ -125,7 +132,8 @@ namespace DimoPdfToExcelWeb.Controllers
                         CompanyPdfMetaData cpmd = Utils.GetCompanyPdfMetaData(physicalPath);
                         string fileNameInAzure = $"From {cpmd.StartPeriodOfReport.Day}_{cpmd.StartPeriodOfReport.Month}_{cpmd.StartPeriodOfReport.Year} to {cpmd.EndPeriodOfReport.Day}_{cpmd.EndPeriodOfReport.Month}_{cpmd.EndPeriodOfReport.Year}{extension}";
 
-                        AzureFilesUtils.UploadFile(cpmd.CompanyName, fileNameInAzure, physicalPath);
+                        var url = AzureFilesUtils.UploadFile(cpmd.CompanyName, fileNameInAzure, physicalPath);
+                        HttpContext.Session.SetString("url", url);
 
                     }
                 }
@@ -177,8 +185,9 @@ namespace DimoPdfToExcelWeb.Controllers
 
             CompanyPdfMetaData cpmd = Utils.GetCompanyPdfMetaData(lastPhysicalPath);
             string fileNameInAzure = $"From {cpmd.StartPeriodOfReport.Day}_{cpmd.StartPeriodOfReport.Month}_{cpmd.StartPeriodOfReport.Year} to {cpmd.EndPeriodOfReport.Day}_{cpmd.EndPeriodOfReport.Month}_{cpmd.EndPeriodOfReport.Year}.xlsm";
-            AzureFilesUtils.UploadFile(cpmd.CompanyName, fileNameInAzure, outputExcelFilePath);
-
+            string url = 
+                AzureFilesUtils.UploadFile(cpmd.CompanyName, fileNameInAzure, outputExcelFilePath);
+            HttpContext.Session.SetString("excelUrl", url);
             //var result = PhysicalFile(outputExcelFilePath, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             //	application/vnd.ms-excel.sheet.macroEnabled.12
             var result = PhysicalFile(outputExcelFilePath, "application/vnd.ms-excel.sheet.macroEnabled.12");
