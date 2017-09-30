@@ -22,7 +22,6 @@
     }
 
     function DownloadExcelClick(e) {
-        debugger;
         var upload = $("#files").data("kendoUpload"),
             files = upload.getFiles();
 
@@ -34,13 +33,12 @@
 
             $.ajax({
                 url: "upload/excel", success: function (url) {
-                    debugger;
                     $("#iframeExcel").attr("src", "https://docs.google.com/gview?url=" + url + "&embedded=true");
 
-                    $("#divResult").html("<a id='aDownloadExcel' href='" + url + "' class='k-button'>Download Excel</a>");
+                    $("#divResult").html("<a id='aDownloadExcel' href='" + url + "'>Download Excel</a>");
                     $("#aGenerateExcel").hide();
                     $("#aDownloadExcel").show();
-                    var popupNotification = $("#popupNotification").data("kendoNotification");         
+                    var popupNotification = $("#popupNotification").data("kendoNotification");
                     popupNotification.show("Your file is ready! Click download to save it!", "info");
                 }
             });
@@ -54,11 +52,9 @@
 
 
     function uploadComplete(e) {
-        debugger;
         // The Upload is now idle
         $.ajax({
             url: "upload/getLastPdfUrl", success: function (url) {
-                debugger;
                 $("#iframePdf").attr("src", "https://docs.google.com/gview?url=" + url + "&embedded=true");
                 $("#iframeExcel").attr("src", "");
                 $("#aGenerateExcel").show();
@@ -71,18 +67,18 @@
 
 
 </script>
-@(Html.Kendo().Menu()
-          .Name("Menu")
-          .Items(items =>
-          {
-              items.Add().Text("Home").Url("#Menu");
-              items.Add().Text("Convert").Url("#divConvert");
-              //items.Add().Text("Files").Url("#divFiles"); ;
-              //items.Add().Text("Mappings").Url("#divMappings");
-          }
-          )
-          .Deferred()
-)
+@*@(Html.Kendo().Menu()
+              .Name("Menu")
+              .Items(items =>
+              {
+                  items.Add().Text("Home").Url("#Menu");
+                  items.Add().Text("Convert").Url("#divConvert");
+                  //items.Add().Text("Files").Url("#divFiles"); ;
+                  //items.Add().Text("Mappings").Url("#divMappings");
+              }
+              )
+              .Deferred()
+    )*@
 
 <div class="text-center">
     <img src="~/images/logo2R.png" alt="ALD Automotive" />
@@ -90,12 +86,12 @@
 <br />
 <div id="divConvert" class="k-block">
     <div class="k-header k-success-colored">1. Please upload a pdf file and click 'Download Excel' button.</div>
-    <div class="k-block k-info-colored">
-        <form method="post" action='@Url.Action("Submit")'>
-            <div class="demo-section k-content">
-                @(Html.Kendo().Upload()
+
+    <form method="post" action='@Url.Action("Submit")'>
+        <div class="demo-section k-content">
+            @(Html.Kendo().Upload()
 .Name("files")
-.HtmlAttributes(new { accept = "*.pdf" })
+.HtmlAttributes(new { accept = "*.pdf", style = "width:300px" })
 .Multiple(false)
 .ShowFileList(true)
 .Events(e => e.Complete("uploadComplete"))
@@ -106,14 +102,15 @@
 .Validation(v => v.AllowedExtensions("pdf"))
 .Events(e => e.Error("onError"))
 .Deferred()
-                )
-                <hr />
-                <a id="aGenerateExcel" class="k-button" onclick="DownloadExcelClick(event)">Generate Excel</a>
+            )
+            <hr />
+            <a id="aGenerateExcel" class="k-button" onclick="DownloadExcelClick(event)">Generate Excel</a>
 
-                <div id="divResult"></div>
-            </div>
-        </form>
-    </div>
+            <div id="divResult"></div>
+            <br />
+        </div>
+    </form>
+
 </div>
 <br />
 
