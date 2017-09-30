@@ -33,13 +33,20 @@
         else {
 
             $.ajax({
-                url: "upload/getLastExcelUrl", success: function (url) {
+                url: "upload/excel", success: function (url) {
                     debugger;
                     $("#iframeExcel").attr("src", "https://docs.google.com/gview?url=" + url + "&embedded=true");
+
+                    $("#divResult").html("<a id='aDownloadExcel' href='" + url + "' class='k-button'>Download Excel</a>");
+                    $("#aGenerateExcel").hide();
+                    $("#aDownloadExcel").show();
+                    var popupNotification = $("#popupNotification").data("kendoNotification");         
+                    popupNotification.show("Your file is ready! Click download to save it!", "info");
                 }
             });
 
         }
+        e.preventDefault();
     }
     $(document).ajaxComplete(function (event, request, settings) {
         $("#msg").append("<li>Request Complete.</li>");
@@ -54,6 +61,8 @@
                 debugger;
                 $("#iframePdf").attr("src", "https://docs.google.com/gview?url=" + url + "&embedded=true");
                 $("#iframeExcel").attr("src", "");
+                $("#aGenerateExcel").show();
+                $("#aDownloadExcel").hide();
             }
         });
     }
@@ -99,8 +108,9 @@
 .Deferred()
                 )
                 <hr />
-                <a asp-controller="Upload" class="k-button" onclick="DownloadExcelClick(event)" on
-                   asp-action="Excel">Download Excel</a>
+                <a id="aGenerateExcel" class="k-button" onclick="DownloadExcelClick(event)">Generate Excel</a>
+
+                <div id="divResult"></div>
             </div>
         </form>
     </div>
@@ -209,3 +219,6 @@
             .Deferred()
     )
 </div>
+@(Html.Kendo().Notification()
+    .Name("popupNotification").Deferred()
+)

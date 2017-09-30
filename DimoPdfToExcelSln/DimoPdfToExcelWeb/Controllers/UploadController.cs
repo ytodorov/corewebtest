@@ -15,6 +15,7 @@ using OfficeOpenXml;
 using DimoPdfToExcelWeb.BusinessLogic;
 using System.Globalization;
 using System.Threading;
+using DimoPdfToExcelWeb.Extensions;
 
 namespace DimoPdfToExcelWeb.Controllers
 {
@@ -48,7 +49,34 @@ namespace DimoPdfToExcelWeb.Controllers
             //Response.AppendHeader("Content-Disposition", cd.ToString());
             //return File(System.IO.File.ReadAllBytes(lastPhysicalPath), "application/pdf");
 
-            return Export();
+            string sWebRootFolder = HostingEnvironment.WebRootPath;
+
+            // Decide country File type
+
+            string outputExcelFilePath = Utils.GetExcelOutputFilePath(sWebRootFolder, lastPhysicalPath);
+
+            var test = HttpContext.Session.GetInt32("one");
+            HttpContext.Session.SetInt32("one", 1);
+            test = HttpContext.Session.GetInt32("one");
+
+
+            CompanyPdfMetaData cpmd = Utils.GetCompanyPdfMetaData(lastPhysicalPath);
+            string fileNameInAzure = $"From {cpmd.StartPeriodOfReport.Day}_{cpmd.StartPeriodOfReport.Month}_{cpmd.StartPeriodOfReport.Year} to {cpmd.EndPeriodOfReport.Day}_{cpmd.EndPeriodOfReport.Month}_{cpmd.EndPeriodOfReport.Year}.xlsm";
+            string url =
+                AzureFilesUtils.UploadFile(cpmd.CompanyName, fileNameInAzure, outputExcelFilePath);
+            HttpContext.Session.SetString("excelUrl", url);
+            //var result = PhysicalFile(outputExcelFilePath, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            //	application/vnd.ms-excel.sheet.macroEnabled.12
+            var result = PhysicalFile(outputExcelFilePath, "application/vnd.ms-excel.sheet.macroEnabled.12");
+            Response.Headers["Content-Disposition"] = new ContentDispositionHeaderValue("attachment")
+            {
+                FileName = Path.GetFileName(outputExcelFilePath)
+            }.ToString();
+
+            var result2 = url.ToString();//.EncodeBase64Safe();
+            return Json(result2);
+
+            //return result;
 
             // тест за сваляне
         }
@@ -191,29 +219,7 @@ namespace DimoPdfToExcelWeb.Controllers
             return Content("");
         }
 
-        public IActionResult Export()
-        {
-            string sWebRootFolder = HostingEnvironment.WebRootPath;
-
-            // Decide country File type
-
-            string outputExcelFilePath = Utils.GetExcelOutputFilePath(sWebRootFolder, lastPhysicalPath);
-
-            CompanyPdfMetaData cpmd = Utils.GetCompanyPdfMetaData(lastPhysicalPath);
-            string fileNameInAzure = $"From {cpmd.StartPeriodOfReport.Day}_{cpmd.StartPeriodOfReport.Month}_{cpmd.StartPeriodOfReport.Year} to {cpmd.EndPeriodOfReport.Day}_{cpmd.EndPeriodOfReport.Month}_{cpmd.EndPeriodOfReport.Year}.xlsm";
-            string url = 
-                AzureFilesUtils.UploadFile(cpmd.CompanyName, fileNameInAzure, outputExcelFilePath);
-            HttpContext.Session.SetString("excelUrl", url);
-            //var result = PhysicalFile(outputExcelFilePath, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            //	application/vnd.ms-excel.sheet.macroEnabled.12
-            var result = PhysicalFile(outputExcelFilePath, "application/vnd.ms-excel.sheet.macroEnabled.12");
-            Response.Headers["Content-Disposition"] = new ContentDispositionHeaderValue("attachment")
-            {
-                FileName = Path.GetFileName(outputExcelFilePath)
-            }.ToString();
-
-            return result;
-        }
+        
 
     }
 }
