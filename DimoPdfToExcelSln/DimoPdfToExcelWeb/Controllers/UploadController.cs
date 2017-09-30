@@ -14,6 +14,7 @@ using Xfinium.Pdf.Content;
 using OfficeOpenXml;
 using DimoPdfToExcelWeb.BusinessLogic;
 using System.Globalization;
+using System.Threading;
 
 namespace DimoPdfToExcelWeb.Controllers
 {
@@ -98,6 +99,21 @@ namespace DimoPdfToExcelWeb.Controllers
         {
             var url = HttpContext.Session.GetString("url");
             return Json(url);
+        }
+
+        public ActionResult GetLastExcelUrl()
+        {
+            Thread.Sleep(5000);
+            var url = HttpContext.Session.GetString("excelUrl");
+            if (!string.IsNullOrEmpty(url))
+            {
+                return Json(url);
+            }
+            else
+            {
+                return Json(string.Empty);
+            }
+            
         }
 
 

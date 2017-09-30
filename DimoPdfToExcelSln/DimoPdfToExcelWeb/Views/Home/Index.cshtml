@@ -26,13 +26,25 @@
         var upload = $("#files").data("kendoUpload"),
             files = upload.getFiles();
 
-        if (files.length == 0)
-        {
+        if (files.length == 0) {
             e.preventDefault();
             kendo.alert("You should upload a file first!");
+        }
+        else {
+
+            $.ajax({
+                url: "upload/getLastExcelUrl", success: function (url) {
+                    debugger;
+                    $("#iframeExcel").attr("src", "https://docs.google.com/gview?url=" + url + "&embedded=true");
+                }
+            });
 
         }
     }
+    $(document).ajaxComplete(function (event, request, settings) {
+        $("#msg").append("<li>Request Complete.</li>");
+    });
+
 
     function uploadComplete(e) {
         debugger;
@@ -41,9 +53,12 @@
             url: "upload/getLastPdfUrl", success: function (url) {
                 debugger;
                 $("#iframePdf").attr("src", "https://docs.google.com/gview?url=" + url + "&embedded=true");
+                $("#iframeExcel").attr("src", "");
             }
         });
     }
+
+
 
 
 </script>
@@ -92,14 +107,18 @@
 </div>
 <br />
 
-<iframe id="iframePdf" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
+<div id="divPreviewPdf" class="k-block">
+    <div class="k-header k-success-colored">2. Preview uploaded pdf.</div>
+    <iframe id="iframePdf" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
+</div>
+<br />
+<div id="divPreviewExcel" class="k-block">
+    <div class="k-header k-success-colored">3. Preview generated excel.</div>
+    <iframe id="iframeExcel" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
+</div>
+<br />
 @*return Redirect("https://docs.google.com/gview?url=" + fullUrl + "&embedded=true");*@
-@*@(Html.Kendo().Button().Name("btnShowDebugInfo").Content("Show Info").Events(e => e.Click("btnShowDebugInfoClick"))
-        .Deferred()
-        )
-    <div id="divDebugInfo" style="display:none">
 
-    </div>*@
 
 <div id="divFiles" class="k-block" style="display:none">
     <div class="k-header k-success-colored">2. Download or delete already uploaded files.</div>
@@ -125,9 +144,9 @@
         .ProxyURL(Url.Action("Export", "Grid"))
     )
     .Pdf(p =>
-          {
-          p.ProxyURL(Url.Action("Export", "Grid"));
-         })
+    {
+        p.ProxyURL(Url.Action("Export", "Grid"));
+    })
             .ToolBar(t =>
             {
                 t.Excel();
@@ -145,10 +164,10 @@
                 {
                     model.Id(f => f.Uri);
                 })
-            )            
+            )
             .Deferred()
     )
-    
+
 </div>
 <br />
 <div id="divMappings" class="k-block" style="display:none">
