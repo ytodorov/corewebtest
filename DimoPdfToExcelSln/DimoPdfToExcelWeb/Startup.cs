@@ -12,6 +12,11 @@ using System.IO;
 using OfficeOpenXml;
 using DimoPdfToExcelWeb.BusinessLogic;
 using Newtonsoft.Json.Serialization;
+using DimoPdfToExcelWeb.Models;
+using Microsoft.AspNetCore.Identity;
+using DimoPdfToExcelWeb.Data;
+using Microsoft.EntityFrameworkCore;
+using DimoPdfToExcelWeb.Services;
 
 namespace DimoPdfToExcelWeb
 {
@@ -27,6 +32,22 @@ namespace DimoPdfToExcelWeb
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ApplicationDbContext>(options =>
+               options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
+            // Add application services.
+            services.AddTransient<IEmailSender, EmailSender>();
+
+            services.AddAuthentication().AddGoogle(googleOptions =>
+            {
+                googleOptions.ClientId = "327729092284-8umlocf6nrn9nn7viu8fm9b8dlmiu3jf.apps.googleusercontent.com";
+                googleOptions.ClientSecret = "k7fbt8DFAgLKIRDZ7yei4yhx";
+            });
+
             services.AddMvc()
                    .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver()); ;
 
@@ -93,12 +114,16 @@ namespace DimoPdfToExcelWeb
                 }
             });
 
+            app.UseAuthentication();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+      
 
             // Configure Kendo UI
             app.UseKendo(env);
