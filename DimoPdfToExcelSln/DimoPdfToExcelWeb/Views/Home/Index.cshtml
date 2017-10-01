@@ -1,221 +1,77 @@
-﻿@{
-    ViewData["Title"] = "Pdf to Excel";
-}
+﻿<section id="features">
+    <div class="container">
 
-<script type="text/javascript">
-    function onError(e) {
-        var files = e.files;
+        <header class="text-center margin-bottom-60">
+            <h2>Pdf to Excel</h2>
+            <p class="lead font-lato">Convert financial pdf files to excel in seconds.</p>
+            
+            <hr>
+        </header>
 
-        if (e.operation == "upload") {
-            kendo.alert("Failed to upload " + files.length + " files");
-        }
-    }
-
-    function btnShowDebugInfoClick(e) {
-
-        var jqxhr = $.ajax("/Home/DebugInfo")
-            .done(function (text) {
-                $("#divDebugInfo")
-                    .show()
-                    .html(text);
-            });
-    }
-
-    function DownloadExcelClick(e) {
-        var upload = $("#files").data("kendoUpload"),
-            files = upload.getFiles();
-
-        if (files.length == 0) {
-            e.preventDefault();
-            kendo.alert("You should upload a file first!");
-        }
-        else {
-
-            $.ajax({
-                url: "upload/excel", success: function (url) {
-                    $("#iframeExcel").attr("src", "https://docs.google.com/gview?url=" + url + "&embedded=true");
-
-                    $("#divResult").html("<a id='aDownloadExcel' href='" + url + "'>Download Excel</a>");
-                    $("#aGenerateExcel").hide();
-                    $("#aDownloadExcel").show();
-                    var popupNotification = $("#popupNotification").data("kendoNotification");
-                    popupNotification.show("Your file is ready! Click download to save it!", "info");
-                }
-            });
-
-        }
-        e.preventDefault();
-    }
-    $(document).ajaxComplete(function (event, request, settings) {
-        $("#msg").append("<li>Request Complete.</li>");
-    });
-
-
-    function uploadComplete(e) {
-        // The Upload is now idle
-        $.ajax({
-            url: "upload/getLastPdfUrl", success: function (url) {
-                $("#iframePdf").attr("src", "https://docs.google.com/gview?url=" + url + "&embedded=true");
-                $("#iframeExcel").attr("src", "");
-                $("#aGenerateExcel").show();
-                $("#aDownloadExcel").hide();
-            }
-        });
-    }
-
-
-
-
-</script>
-@*@(Html.Kendo().Menu()
-              .Name("Menu")
-              .Items(items =>
-              {
-                  items.Add().Text("Home").Url("#Menu");
-                  items.Add().Text("Convert").Url("#divConvert");
-                  //items.Add().Text("Files").Url("#divFiles"); ;
-                  //items.Add().Text("Mappings").Url("#divMappings");
-              }
-              )
-              .Deferred()
-    )*@
-
-<div class="text-center">
-    <img src="~/images/logo2R.png" alt="ALD Automotive" />
-</div>
-<br />
-<div id="divConvert" class="k-block">
-    <div class="k-header k-success-colored">1. Please upload a pdf file and click 'Download Excel' button.</div>
-
-    <form method="post" action='@Url.Action("Submit")'>
-        <div class="demo-section k-content">
-            @(Html.Kendo().Upload()
-.Name("files")
-.HtmlAttributes(new { accept = "*.pdf", style = "width:300px" })
-.Multiple(false)
-.ShowFileList(true)
-.Events(e => e.Complete("uploadComplete"))
-.Async(a => a
-    .Save("ChunkSave", "Upload")
-    .Remove("Remove", "Upload")
-)
-.Validation(v => v.AllowedExtensions("pdf"))
-.Events(e => e.Error("onError"))
-.Deferred()
-            )
-            <hr />
-            <a id="aGenerateExcel" class="k-button" onclick="DownloadExcelClick(event)">Generate Excel</a>
-
-            <div id="divResult"></div>
-            <br />
+        <!-- FEATURED BOXES 3 -->
+        <div class="row">
+            <div class="col-md-3 col-xs-6">
+                <div class="text-center">
+                    <i class="ico-light ico-lg ico-rounded ico-hover et-circle-compass"></i>
+                    <h4>Pixel Perfect</h4>
+                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+                <div class="text-center">
+                    <i class="ico-light ico-lg ico-rounded ico-hover et-piechart"></i>
+                    <h4>Graphs</h4>
+                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+                <div class="text-center">
+                    <i class="ico-light ico-lg ico-rounded ico-hover et-strategy"></i>
+                    <h4>Startegy</h4>
+                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+                <div class="text-center">
+                    <i class="ico-light ico-lg ico-rounded ico-hover et-streetsign"></i>
+                    <h4>SEO Optimized</h4>
+                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus. </p>
+                </div>
+            </div>
         </div>
-    </form>
+        <!-- /FEATURED BOXES 3 -->
+        <!-- FEATURED BOXES 3 -->
+        <div class="row">
+            <div class="col-md-3 col-xs-6">
+                <div class="text-center">
+                    <i class="ico-light ico-lg ico-rounded ico-hover et-trophy"></i>
+                    <h4>Winners</h4>
+                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+                <div class="text-center">
+                    <i class="ico-light ico-lg ico-rounded ico-hover et-gears"></i>
+                    <h4>Responsive</h4>
+                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+                <div class="text-center">
+                    <i class="ico-light ico-lg ico-rounded ico-hover et-tools"></i>
+                    <h4>Costomizable</h4>
+                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+                <div class="text-center">
+                    <i class="ico-light ico-lg ico-rounded ico-hover et-layers"></i>
+                    <h4>Easy to Modify</h4>
+                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus. </p>
+                </div>
+            </div>
+        </div>
+        <!-- /FEATURED BOXES 3 -->
 
-</div>
-<br />
-
-<div id="divPreviewPdf" class="k-block">
-    <div class="k-header k-success-colored">2. Preview uploaded pdf.</div>
-    <iframe id="iframePdf" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
-</div>
-<br />
-<div id="divPreviewExcel" class="k-block">
-    <div class="k-header k-success-colored">3. Preview generated excel.</div>
-    <iframe id="iframeExcel" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
-</div>
-<br />
-@*return Redirect("https://docs.google.com/gview?url=" + fullUrl + "&embedded=true");*@
-
-
-<div id="divFiles" class="k-block" style="display:none">
-    <div class="k-header k-success-colored">2. Download or delete already uploaded files.</div>
-
-    @(Html.Kendo().Grid<AzureCloudFileViewModel>()
-            .Name("gridFs")
-            .Columns(columns =>
-            {
-                columns.Bound(c => c.DirectoryName).Width(50).Title("Company");
-                columns.Bound(c => c.FileName).Width(100).Title("File");
-                columns.Bound(c => c.Extension).Width(20);
-                columns.Bound(c => c.Length).Width(30);
-                columns.Command(command => command.Destroy()).Width(50).Title("Delete");
-                columns.Template("<a href='/Grid/Download/?safeUri=#:SafeUri#' class='k-button'>Download</a>").Width(100).Title("Download");
-            })
-            .Groupable()
-            .Sortable()
-            .Filterable()
-            .Resizable(r => r.Columns(true))
-            .Excel(excel => excel
-        .FileName("Files.xlsx")
-        .Filterable(true)
-        .ProxyURL(Url.Action("Export", "Grid"))
-    )
-    .Pdf(p =>
-    {
-        p.ProxyURL(Url.Action("Export", "Grid"));
-    })
-            .ToolBar(t =>
-            {
-                t.Excel();
-                t.Pdf();
-            })
-            .Pageable(s => s.Refresh(true))
-
-            .DataSource(dataSource => dataSource
-                .Ajax()
-                .Read(read => read.Action("AzureFiles_Read", "Grid"))
-                .Destroy(destroy => destroy.Action("AzureFiles_Destroy", "Grid"))
-                .PageSize(2000)
-                .ServerOperation(false)
-                .Model(model =>
-                {
-                    model.Id(f => f.Uri);
-                })
-            )
-            .Deferred()
-    )
-
-</div>
-<br />
-<div id="divMappings" class="k-block" style="display:none">
-    <div class="k-header k-success-colored">3. Mappings.</div>
-    @(Html.Kendo().Grid<FinancialRow>()
-                    .Name("gridBs")
-                    .Columns(columns =>
-                    {
-                        columns.Bound(c => c.Number).Width(50);
-                        columns.Bound(c => c.Name).Width(100);
-                        columns.Bound(c => c.GoesToRowNumberString).Width(50).Title("Goes To");
-                        columns.Bound(c => c.GoesToRowTitle).Width(100).Title("Goes To Title");
-                        columns.Bound(c => c.Sign).Width(50);
-                        //columns.Bound(c => c.CurrentYear).Width(50);
-                    })
-                    .Groupable()
-                    .Sortable()
-                    .Filterable()
-                                   .Excel(excel => excel
-                                   .FileName("Files.xlsx")
-                                   .Filterable(true)
-                                   .ProxyURL(Url.Action("Export", "Grid")))
-                                   .Pdf(p =>
-                                   {
-                                       p.ProxyURL(Url.Action("Export", "Grid"));
-                                   })
-            .ToolBar(t =>
-            {
-                t.Excel();
-                t.Pdf();
-            })
-            .Pageable(s => s.Refresh(true))
-            .DataSource(dataSource => dataSource
-                .Ajax()
-                .Read(read => read.Action("BsRows_Read", "Grid"))
-                .PageSize(2000)
-                .ServerOperation(false)
-            )
-            .Deferred()
-    )
-</div>
-@(Html.Kendo().Notification()
-    .Name("popupNotification").Deferred()
-)
+    </div>
+</section>

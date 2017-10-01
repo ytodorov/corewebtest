@@ -10,13 +10,8 @@ using DimoPdfToExcelWeb.BusinessLogic;
 
 namespace DimoPdfToExcelWeb.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
-
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
