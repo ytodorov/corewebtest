@@ -275,6 +275,21 @@ namespace DimoPdfToExcelWeb.Controllers
             {
                 return RedirectToAction(nameof(Login));
             }
+            var yordan = info.Principal.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress", StringComparison.InvariantCultureIgnoreCase));
+            var emailAddress = yordan?.Value;
+
+            List<string> allowedEmailAddresses = new List<string>()
+            {
+                "ytodorov@ytodorov.com",
+                "statkov.dimo@gmail.com"
+            };
+
+            if (!allowedEmailAddresses.Any(a => a.Equals(emailAddress, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                ErrorMessage = $"The email {emailAddress} is not allowed to access this part of the site. Please contact the administrator of the site!";
+                return RedirectToAction(nameof(Login));
+            }
+
 
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
