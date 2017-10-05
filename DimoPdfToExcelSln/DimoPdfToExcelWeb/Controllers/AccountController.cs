@@ -281,7 +281,8 @@ namespace DimoPdfToExcelWeb.Controllers
             List<string> allowedEmailAddresses = new List<string>()
             {
                 "ytodorov@ytodorov.com",
-                "statkov.dimo@gmail.com"
+                "statkov.dimo@gmail.com",
+                "statkovdimo@gmail.com"
             };
 
             if (!allowedEmailAddresses.Any(a => a.Equals(emailAddress, StringComparison.InvariantCultureIgnoreCase)))
