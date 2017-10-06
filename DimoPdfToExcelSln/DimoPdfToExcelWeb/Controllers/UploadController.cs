@@ -28,7 +28,8 @@ namespace DimoPdfToExcelWeb.Controllers
             HostingEnvironment = hostingEnvironment;
         }
 
-        public static string lastPhysicalPath = string.Empty;
+        private static string lastPhysicalPathInput = string.Empty;
+        public static string lastPhysicalPathOutput = string.Empty;
 
         public IActionResult Excel()
         {
@@ -53,14 +54,14 @@ namespace DimoPdfToExcelWeb.Controllers
 
             // Decide country File type
 
-            string outputExcelFilePath = Utils.GetExcelOutputFilePath(sWebRootFolder, lastPhysicalPath);
+            string outputExcelFilePath = Utils.GetExcelOutputFilePath(sWebRootFolder, lastPhysicalPathInput, lastPhysicalPathOutput);
 
             var test = HttpContext.Session.GetInt32("one");
             HttpContext.Session.SetInt32("one", 1);
             test = HttpContext.Session.GetInt32("one");
 
 
-            CompanyPdfMetaData cpmd = Utils.GetCompanyPdfMetaData(lastPhysicalPath);
+            CompanyPdfMetaData cpmd = Utils.GetCompanyPdfMetaData(lastPhysicalPathInput);
             string fileNameInAzure = $"From {cpmd.StartPeriodOfReport.Day}_{cpmd.StartPeriodOfReport.Month}_{cpmd.StartPeriodOfReport.Year} to {cpmd.EndPeriodOfReport.Day}_{cpmd.EndPeriodOfReport.Month}_{cpmd.EndPeriodOfReport.Year}.xlsm";
             string url =
                 AzureFilesUtils.UploadFile(cpmd.CompanyName, fileNameInAzure, outputExcelFilePath);
@@ -83,44 +84,14 @@ namespace DimoPdfToExcelWeb.Controllers
 
         public ActionResult ChunkSave(IEnumerable<IFormFile> files, string metaData)
         {
-            string dirPath = Path.Combine(HostingEnvironment.WebRootPath, "App_Data");
-            if (!Directory.Exists(dirPath))
-            {
-                Directory.CreateDirectory(dirPath);
-            }
-                
+            var result = Save(files);
+            return result;
+        }
 
-            if (metaData == null)
-            {
-                return Save(files);
-            }
-
-            MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(metaData));
-
-            JsonSerializer serializer = new JsonSerializer();
-            ChunkMetaData chunkData;
-            using (StreamReader streamReader = new StreamReader(ms))
-            {
-                chunkData = (ChunkMetaData)serializer.Deserialize(streamReader, typeof(ChunkMetaData));
-            }
-
-            string path = String.Empty;
-            // The Name of the Upload component is "files"
-            if (files != null)
-            {
-                foreach (var file in files)
-                {
-                    path = Path.Combine(HostingEnvironment.WebRootPath, "App_Data", chunkData.FileName);
-
-                    //AppendToFile(path, file);
-                }
-            }
-
-            FileResultData fileBlob = new FileResultData();
-            fileBlob.uploaded = chunkData.TotalChunks - 1 <= chunkData.ChunkIndex;
-            fileBlob.fileUid = chunkData.UploadUid;
-
-            return Json(fileBlob);
+        public ActionResult ChunkSaveOutput(IEnumerable<IFormFile> filesOutput, string metaData)
+        {
+            var result = Save(filesOutput, false);
+            return result;
         }
 
         public ActionResult GetLastPdfUrl()
@@ -145,7 +116,7 @@ namespace DimoPdfToExcelWeb.Controllers
         }
 
 
-        public ActionResult Save(IEnumerable<IFormFile> files)
+        public ActionResult Save(IEnumerable<IFormFile> files, bool isInput = true)
         {
             try
             {
@@ -170,7 +141,15 @@ namespace DimoPdfToExcelWeb.Controllers
                         using (var fileStream = new FileStream(physicalPath, FileMode.Create))
                         {
                             file.CopyTo(fileStream);
-                            lastPhysicalPath = physicalPath;
+                            if (isInput)
+                            {
+                                lastPhysicalPathInput = physicalPath;
+                            }
+                            else
+                            {
+                                lastPhysicalPathOutput = physicalPath;
+                                return Content("");
+                            }
                         }
 
                         CompanyPdfMetaData cpmd = Utils.GetCompanyPdfMetaData(physicalPath);

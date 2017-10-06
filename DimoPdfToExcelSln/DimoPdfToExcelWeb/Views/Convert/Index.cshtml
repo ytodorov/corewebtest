@@ -2,9 +2,9 @@
     ViewData["Title"] = "Pdf to Excel";
 }
 @Html.Partial("_CssPartial")
-@section Scripts{ 
+@section Scripts{
 
-@Html.Partial("_JsPartial")
+    @Html.Partial("_JsPartial")
 }
 <script type="text/javascript">
     function onError(e) {
@@ -84,14 +84,20 @@
     )*@
 
 <br />
-<div id="divConvert" class="k-block">
-    <div class="k-header k-success-colored">1. Please upload a pdf file and click 'Generate Excel' button.</div>
+@*<div id="divConvert" class="k-block">
 
-    <form method="post" action='@Url.Action("Submit")'>
-        <div class="demo-section k-content">
-            @(Html.Kendo().Upload()
+    <div class="k-header k-success-colored">1. Please upload a pdf file and click 'Generate Excel' button.</div>*@
+<div class="row">
+    <div class="col-md-6">
+       
+        <div class="alert alert-bordered">
+            <!-- BORDERED -->
+            <p><i class="ico-transparent ico-bordered et-upload"></i>Select a PDF file to upload.</p>
+        </div>
+
+
+                @(Html.Kendo().Upload()
 .Name("files")
-.HtmlAttributes(new { accept = "*.pdf", style = "width:300px" })
 .Multiple(false)
 .ShowFileList(true)
 .Events(e => e.Complete("uploadComplete"))
@@ -102,26 +108,59 @@
 .Validation(v => v.AllowedExtensions("pdf"))
 .Events(e => e.Error("onError"))
 .Deferred()
-            )
-            <hr />
-            <a id="aGenerateExcel" class="k-button" onclick="DownloadExcelClick(event)">Generate Excel</a>
-
-            <div id="divResult"></div>
-            <br />
+                )
+   
+    </div>
+    <div class="col-md-6">
+        <div class="alert alert-bordered">
+            <!-- BORDERED -->
+            <p><i class="ico-transparent ico-bordered et-upload"></i>Optionally select XLSM file to render data.</p>
         </div>
-    </form>
-
+        @(Html.Kendo().Upload()
+.Name("filesOutput")
+.Multiple(false)
+.ShowFileList(true)
+.Async(a => a
+    .Save("ChunkSaveOutput", "Upload")
+    .Remove("Remove", "Upload")
+)
+.Validation(v => v.AllowedExtensions("xlsm"))
+.Events(e => e.Error("onError"))
+.Deferred()
+        )
+    </div>
 </div>
+<hr />
+<a id="aGenerateExcel" class="k-button center" style="float:none" onclick="DownloadExcelClick(event)">Generate Excel</a>
+
+<div id="divResult"></div>
+<br />
+@*</div>*@
+
+
 <br />
 
-<div id="divPreviewPdf" class="k-block">
+@*<div id="divPreviewPdf" class="k-block">
     <div class="k-header k-success-colored">2. Preview uploaded pdf.</div>
     <iframe id="iframePdf" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
+</div>*@
+
+<div class="alert alert-bordered">
+    <!-- BORDERED -->
+    <p><i class="ico-transparent ico-bordered et-refresh"></i>Preview uploaded pdf.</p>
+    <iframe id="iframePdf" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
 </div>
+
 <br />
-<div id="divPreviewExcel" class="k-block">
+@*<div id="divPreviewExcel" class="k-block">
     <div class="k-header k-success-colored">3. Preview generated excel.</div>
     <iframe id="iframeExcel" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
+</div>*@
+
+<div class="alert alert-bordered">
+    <!-- BORDERED -->
+    <p><i class="ico-transparent ico-bordered et-recycle"></i> Preview generated excel</p>
+    <iframe id="iframePdf" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
 </div>
 <br />
 
@@ -129,88 +168,88 @@
     <div class="k-header k-success-colored">2. Download or delete already uploaded files.</div>
 
     @*@(Html.Kendo().Grid<AzureCloudFileViewModel>()
-            .Name("gridFs")
-            .Columns(columns =>
-            {
-                columns.Bound(c => c.DirectoryName).Width(50).Title("Company");
-                columns.Bound(c => c.FileName).Width(100).Title("File");
-                columns.Bound(c => c.Extension).Width(20);
-                columns.Bound(c => c.Length).Width(30);
-                columns.Command(command => command.Destroy()).Width(50).Title("Delete");
-                columns.Template("<a href='/Grid/Download/?safeUri=#:SafeUri#' class='k-button'>Download</a>").Width(100).Title("Download");
-            })
-            .Groupable()
-            .Sortable()
-            .Filterable()
-            .Resizable(r => r.Columns(true))
-            .Excel(excel => excel
-        .FileName("Files.xlsx")
-        .Filterable(true)
-        .ProxyURL(Url.Action("Export", "Grid"))
-    )
-    .Pdf(p =>
-    {
-        p.ProxyURL(Url.Action("Export", "Grid"));
-    })
-            .ToolBar(t =>
-            {
-                t.Excel();
-                t.Pdf();
-            })
-            .Pageable(s => s.Refresh(true))
-
-            .DataSource(dataSource => dataSource
-                .Ajax()
-                .Read(read => read.Action("AzureFiles_Read", "Grid"))
-                .Destroy(destroy => destroy.Action("AzureFiles_Destroy", "Grid"))
-                .PageSize(2000)
-                .ServerOperation(false)
-                .Model(model =>
+                .Name("gridFs")
+                .Columns(columns =>
                 {
-                    model.Id(f => f.Uri);
+                    columns.Bound(c => c.DirectoryName).Width(50).Title("Company");
+                    columns.Bound(c => c.FileName).Width(100).Title("File");
+                    columns.Bound(c => c.Extension).Width(20);
+                    columns.Bound(c => c.Length).Width(30);
+                    columns.Command(command => command.Destroy()).Width(50).Title("Delete");
+                    columns.Template("<a href='/Grid/Download/?safeUri=#:SafeUri#' class='k-button'>Download</a>").Width(100).Title("Download");
                 })
-            )
-    )*@
+                .Groupable()
+                .Sortable()
+                .Filterable()
+                .Resizable(r => r.Columns(true))
+                .Excel(excel => excel
+            .FileName("Files.xlsx")
+            .Filterable(true)
+            .ProxyURL(Url.Action("Export", "Grid"))
+        )
+        .Pdf(p =>
+        {
+            p.ProxyURL(Url.Action("Export", "Grid"));
+        })
+                .ToolBar(t =>
+                {
+                    t.Excel();
+                    t.Pdf();
+                })
+                .Pageable(s => s.Refresh(true))
+
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Read(read => read.Action("AzureFiles_Read", "Grid"))
+                    .Destroy(destroy => destroy.Action("AzureFiles_Destroy", "Grid"))
+                    .PageSize(2000)
+                    .ServerOperation(false)
+                    .Model(model =>
+                    {
+                        model.Id(f => f.Uri);
+                    })
+                )
+        )*@
 
 </div>
 <br />
 <div id="divMappings" class="k-block" style="display:none">
     <div class="k-header k-success-colored">3. Mappings.</div>
     @*@(Html.Kendo().Grid<FinancialRow>()
-                    .Name("gridBs")
-                    .Columns(columns =>
-                    {
-                        columns.Bound(c => c.Number).Width(50);
-                        columns.Bound(c => c.Name).Width(100);
-                        columns.Bound(c => c.GoesToRowNumberString).Width(50).Title("Goes To");
-                        columns.Bound(c => c.GoesToRowTitle).Width(100).Title("Goes To Title");
-                        columns.Bound(c => c.Sign).Width(50);
-                        //columns.Bound(c => c.CurrentYear).Width(50);
-                    })
-                    .Groupable()
-                    .Sortable()
-                    .Filterable()
-                                   .Excel(excel => excel
-                                   .FileName("Files.xlsx")
-                                   .Filterable(true)
-                                   .ProxyURL(Url.Action("Export", "Grid")))
-                                   .Pdf(p =>
-                                   {
-                                       p.ProxyURL(Url.Action("Export", "Grid"));
-                                   })
-            .ToolBar(t =>
-            {
-                t.Excel();
-                t.Pdf();
-            })
-            .Pageable(s => s.Refresh(true))
-            .DataSource(dataSource => dataSource
-                .Ajax()
-                .Read(read => read.Action("BsRows_Read", "Grid"))
-                .PageSize(2000)
-                .ServerOperation(false)
-            )
-    )*@
+                        .Name("gridBs")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.Number).Width(50);
+                            columns.Bound(c => c.Name).Width(100);
+                            columns.Bound(c => c.GoesToRowNumberString).Width(50).Title("Goes To");
+                            columns.Bound(c => c.GoesToRowTitle).Width(100).Title("Goes To Title");
+                            columns.Bound(c => c.Sign).Width(50);
+                            //columns.Bound(c => c.CurrentYear).Width(50);
+                        })
+                        .Groupable()
+                        .Sortable()
+                        .Filterable()
+                                       .Excel(excel => excel
+                                       .FileName("Files.xlsx")
+                                       .Filterable(true)
+                                       .ProxyURL(Url.Action("Export", "Grid")))
+                                       .Pdf(p =>
+                                       {
+                                           p.ProxyURL(Url.Action("Export", "Grid"));
+                                       })
+                .ToolBar(t =>
+                {
+                    t.Excel();
+                    t.Pdf();
+                })
+                .Pageable(s => s.Refresh(true))
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Read(read => read.Action("BsRows_Read", "Grid"))
+                    .PageSize(2000)
+                    .ServerOperation(false)
+                )
+        )*@
 </div>
 @(Html.Kendo().Notification()
     .Name("popupNotification")

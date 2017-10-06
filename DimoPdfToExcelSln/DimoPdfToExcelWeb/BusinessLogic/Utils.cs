@@ -372,14 +372,23 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             return result;
         }
 
-        public static string GetExcelOutputFilePath(string rootFolder, string pdfFilePath)
+        public static string GetExcelOutputFilePath(string rootFolder, string pdfFilePath, string xlsmFilePath = null)
         {
             CountryFileTypes countryFileType = Utils.GetCountryFileTypesFromPdfFile(pdfFilePath);
-            FileInfo fileEmptyOutput = new FileInfo(Path.Combine(rootFolder, "Files", "OUTPUT.xlsm"));
-            if (!fileEmptyOutput.Exists)
-            {
-                throw new ApplicationException("Няма го файла OUTPUT.xlsm в папка Files");
+            FileInfo fileEmptyOutput = null;
+            if (string.IsNullOrEmpty(xlsmFilePath))
+            {               
+                fileEmptyOutput = new FileInfo(Path.Combine(rootFolder, "Files", "OUTPUT.xlsm"));
+                if (!fileEmptyOutput.Exists)
+                {
+                    throw new ApplicationException("Няма го файла OUTPUT.xlsm в папка Files");
+                }
             }
+            else
+            {
+                fileEmptyOutput = new FileInfo(xlsmFilePath);
+            }
+           
 
             CompanyPdfMetaData companyPdfMetaData = GetCompanyPdfMetaData(pdfFilePath);
 
