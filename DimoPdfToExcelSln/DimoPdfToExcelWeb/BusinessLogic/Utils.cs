@@ -852,7 +852,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                         }
 
                         sb.AppendLine(text);
-                        if (firstPageText.ToUpperInvariant().Contains("БИЛАНС УСПЕХА".ToUpperInvariant())) // Profit and loss
+                        //if (firstPageText.ToUpperInvariant().Contains("БИЛАНС УСПЕХА".ToUpperInvariant())) // Profit and loss
                         {
                             foreach (var entry in parsedPdfResult.PlRows)
                             {
@@ -876,7 +876,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                             }
                         }
 
-                        if (firstPageText.ToUpperInvariant().Contains("БИЛАНС СТАЊА".ToUpperInvariant())) // BalanceSheet
+                        //if (firstPageText.ToUpperInvariant().Contains("БИЛАНС СТАЊА".ToUpperInvariant())) // BalanceSheet
                         {
                             foreach (var entry in parsedPdfResult.BsRows)
                             {
