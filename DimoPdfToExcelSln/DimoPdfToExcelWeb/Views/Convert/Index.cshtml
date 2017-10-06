@@ -37,7 +37,7 @@
 
             $.ajax({
                 url: "upload/excel", success: function (url) {
-                    $("#iframeExcel").attr("src", "https://docs.google.com/gview?url=" + url + "&embedded=true");
+                    $("#iframeExcel").attr("src", "https://docs.google.com/gview?url=" + url + "&embedded=true").height(400);
 
                     $("#divResult").html("<a id='aDownloadExcel' href='" + url + "'>Download Excel</a>");
                     $("#aGenerateExcel").hide();
@@ -59,7 +59,7 @@
         // The Upload is now idle
         $.ajax({
             url: "upload/getLastPdfUrl", success: function (url) {
-                $("#iframePdf").attr("src", "https://docs.google.com/gview?url=" + url + "&embedded=true");
+                $("#iframePdf").attr("src", "https://docs.google.com/gview?url=" + url + "&embedded=true").height(400);
                 $("#iframeExcel").attr("src", "");
                 $("#aGenerateExcel").show();
                 $("#aDownloadExcel").hide();
@@ -148,7 +148,7 @@
 <div class="alert alert-bordered">
     <!-- BORDERED -->
     <p><i class="ico-transparent ico-bordered et-refresh"></i>Preview uploaded pdf.</p>
-    <iframe id="iframePdf" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
+    <iframe id="iframePdf" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:20px;width:100%">Browser not compatible.</iframe>
 </div>
 
 <br />
@@ -160,7 +160,7 @@
 <div class="alert alert-bordered">
     <!-- BORDERED -->
     <p><i class="ico-transparent ico-bordered et-recycle"></i> Preview generated excel</p>
-    <iframe id="iframePdf" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
+    <iframe id="iframeExcel" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:20px;width:100%">Browser not compatible.</iframe>
 </div>
 <br />
 
