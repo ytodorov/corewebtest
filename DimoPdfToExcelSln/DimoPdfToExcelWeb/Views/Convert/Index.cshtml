@@ -1,7 +1,11 @@
 ﻿@{
     ViewData["Title"] = "Pdf to Excel";
 }
+@Html.Partial("_CssPartial")
+@section Scripts{ 
 
+@Html.Partial("_JsPartial")
+}
 <script type="text/javascript">
     function onError(e) {
         var files = e.files;
@@ -77,7 +81,6 @@
                   //items.Add().Text("Mappings").Url("#divMappings");
               }
               )
-              .Deferred()
     )*@
 
 <br />
@@ -121,13 +124,11 @@
     <iframe id="iframeExcel" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
 </div>
 <br />
-@*return Redirect("https://docs.google.com/gview?url=" + fullUrl + "&embedded=true");*@
-
 
 <div id="divFiles" class="k-block" style="display:none">
     <div class="k-header k-success-colored">2. Download or delete already uploaded files.</div>
 
-    @(Html.Kendo().Grid<AzureCloudFileViewModel>()
+    @*@(Html.Kendo().Grid<AzureCloudFileViewModel>()
             .Name("gridFs")
             .Columns(columns =>
             {
@@ -169,14 +170,13 @@
                     model.Id(f => f.Uri);
                 })
             )
-            .Deferred()
-    )
+    )*@
 
 </div>
 <br />
 <div id="divMappings" class="k-block" style="display:none">
     <div class="k-header k-success-colored">3. Mappings.</div>
-    @(Html.Kendo().Grid<FinancialRow>()
+    @*@(Html.Kendo().Grid<FinancialRow>()
                     .Name("gridBs")
                     .Columns(columns =>
                     {
@@ -210,9 +210,9 @@
                 .PageSize(2000)
                 .ServerOperation(false)
             )
-            .Deferred()
-    )
+    )*@
 </div>
 @(Html.Kendo().Notification()
-    .Name("popupNotification").Deferred()
+    .Name("popupNotification")
+    .Deferred()
 )

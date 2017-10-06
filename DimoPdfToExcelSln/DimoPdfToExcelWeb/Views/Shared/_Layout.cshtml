@@ -38,9 +38,9 @@
         <link href="~/assets/css/color_scheme/green.css" rel="stylesheet" type="text/css" id="color_scheme" />
         
 
-        <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.3.913/styles/kendo.common-fiori.min.css" />
+        @*<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.3.913/styles/kendo.common-fiori.min.css" />
         <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.3.913/styles/kendo.fiori.min.css" />
-        <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.3.913/styles/kendo.fiori.mobile.min.css" />
+        <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.3.913/styles/kendo.fiori.mobile.min.css" />*@
         @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />*@
         <link href="~/lib/PACE/themes/green/pace-theme-minimal.css" rel="stylesheet" />
         <link rel="stylesheet" href="~/css/site.css" />
@@ -429,13 +429,12 @@
     <script type="text/javascript" src="~/assets/js/scripts.js"></script>
 
     <environment include="Development">
-        <script src="~/lib/PACE/pace.js"></script>
-        @*<script src="~/lib/jquery/dist/jquery.js"></script>*@
+        @*<script src="~/lib/PACE/pace.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/js/jszip.min.js"></script>
         <script src="~/js/kendo.all.min.js"></script>
         <script src="~/js/kendo.aspnetmvc.min.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>*@
 
 
     </environment>
@@ -451,7 +450,7 @@
 
 
     @RenderSection("Scripts", required: false)
-
+    
     @Html.Kendo().DeferredScripts()
 </body>
 
