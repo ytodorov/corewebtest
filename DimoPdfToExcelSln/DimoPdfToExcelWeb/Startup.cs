@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Identity;
 using DimoPdfToExcelWeb.Data;
 using Microsoft.EntityFrameworkCore;
 using DimoPdfToExcelWeb.Services;
+using WebMarkupMin.AspNetCore2;
 
 namespace DimoPdfToExcelWeb
 {
@@ -60,6 +61,21 @@ namespace DimoPdfToExcelWeb
                 options.IdleTimeout = TimeSpan.FromSeconds(10);
                 options.Cookie.HttpOnly = true;
             });
+
+            services.AddWebMarkupMin(
+        options =>
+        {
+            options.AllowMinificationInDevelopmentEnvironment = true;
+            options.AllowCompressionInDevelopmentEnvironment = true;
+        })
+        .AddHtmlMinification(
+            options =>
+            {
+                options.MinificationSettings.RemoveRedundantAttributes = true;
+                options.MinificationSettings.RemoveHttpProtocolFromAttributes = true;
+                options.MinificationSettings.RemoveHttpsProtocolFromAttributes = true;
+            })
+        .AddHttpCompression();
 
             services.Configure<GzipCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Optimal);
             services.AddResponseCompression(options =>
@@ -116,6 +132,8 @@ namespace DimoPdfToExcelWeb
 
             app.UseAuthentication();
 
+            app.UseWebMarkupMin();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -123,7 +141,7 @@ namespace DimoPdfToExcelWeb
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-      
+
 
             // Configure Kendo UI
             app.UseKendo(env);

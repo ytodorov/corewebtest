@@ -89,14 +89,12 @@
     <div class="k-header k-success-colored">1. Please upload a pdf file and click 'Generate Excel' button.</div>*@
 <div class="row">
     <div class="col-md-6">
-       
+        <br />
         <div class="alert alert-bordered">
             <!-- BORDERED -->
             <p><i class="ico-transparent ico-bordered et-upload"></i>Select a PDF file to upload.</p>
         </div>
-
-
-                @(Html.Kendo().Upload()
+        @(Html.Kendo().Upload()
 .Name("files")
 .Multiple(false)
 .ShowFileList(true)
@@ -108,10 +106,11 @@
 .Validation(v => v.AllowedExtensions("pdf"))
 .Events(e => e.Error("onError"))
 .Deferred()
-                )
-   
+        )
+
     </div>
     <div class="col-md-6">
+        <br />
         <div class="alert alert-bordered">
             <!-- BORDERED -->
             <p><i class="ico-transparent ico-bordered et-upload"></i>Optionally select XLSM file to render data.</p>
@@ -141,9 +140,9 @@
 <br />
 
 @*<div id="divPreviewPdf" class="k-block">
-    <div class="k-header k-success-colored">2. Preview uploaded pdf.</div>
-    <iframe id="iframePdf" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
-</div>*@
+        <div class="k-header k-success-colored">2. Preview uploaded pdf.</div>
+        <iframe id="iframePdf" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
+    </div>*@
 
 <div class="alert alert-bordered">
     <!-- BORDERED -->
@@ -153,9 +152,9 @@
 
 <br />
 @*<div id="divPreviewExcel" class="k-block">
-    <div class="k-header k-success-colored">3. Preview generated excel.</div>
-    <iframe id="iframeExcel" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
-</div>*@
+        <div class="k-header k-success-colored">3. Preview generated excel.</div>
+        <iframe id="iframeExcel" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
+    </div>*@
 
 <div class="alert alert-bordered">
     <!-- BORDERED -->
