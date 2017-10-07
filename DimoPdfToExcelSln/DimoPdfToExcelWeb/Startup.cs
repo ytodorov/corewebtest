@@ -18,6 +18,8 @@ using DimoPdfToExcelWeb.Data;
 using Microsoft.EntityFrameworkCore;
 using DimoPdfToExcelWeb.Services;
 using WebMarkupMin.AspNetCore2;
+using WebMarkupMin.MsAjax;
+using WebMarkupMin.Yui;
 
 namespace DimoPdfToExcelWeb
 {
@@ -67,6 +69,8 @@ namespace DimoPdfToExcelWeb
         {
             options.AllowMinificationInDevelopmentEnvironment = true;
             options.AllowCompressionInDevelopmentEnvironment = true;
+
+            
         })
         .AddHtmlMinification(
             options =>
@@ -74,6 +78,9 @@ namespace DimoPdfToExcelWeb
                 options.MinificationSettings.RemoveRedundantAttributes = true;
                 options.MinificationSettings.RemoveHttpProtocolFromAttributes = true;
                 options.MinificationSettings.RemoveHttpsProtocolFromAttributes = true;
+
+                options.CssMinifierFactory = new MsAjaxCssMinifierFactory();
+                options.JsMinifierFactory = new MsAjaxJsMinifierFactory();
             })
         .AddHttpCompression();
 

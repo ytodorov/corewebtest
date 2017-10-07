@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AjaxMin" Version="5.14.5506.26202" />
     <PackageReference Include="EPPlus.Core" Version="1.5.2" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="2.0.0" />
@@ -14,6 +15,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
     <PackageReference Include="Telerik.UI.for.AspNet.Core" Version="2017.3.913" />
     <PackageReference Include="WebMarkupMin.AspNetCore2" Version="2.4.2" />
+    <PackageReference Include="WebMarkupMin.MsAjax" Version="2.4.0" />
+    <PackageReference Include="WebMarkupMin.Yui" Version="2.4.0" />
     <PackageReference Include="WindowsAzure.Storage" Version="8.5.0" />
     <PackageReference Include="Xfinium.Pdf.NetCore" Version="6.9.0" />
   </ItemGroup>
