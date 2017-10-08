@@ -39,7 +39,7 @@
                 url: "upload/excel", success: function (url) {
                     $("#iframeExcel").attr("src", "https://docs.google.com/gview?url=" + url + "&embedded=true").height(400);
 
-                    $("#divResult").html("<a id='aDownloadExcel' href='" + url + "'>Download Excel</a>");
+                    $("#divResult").html("<a id='aDownloadExcel' class='k-button k-primary bounceIn animated' href='" + url + "'>Download Excel</a>");
                     $("#aGenerateExcel").hide();
                     $("#aDownloadExcel").show();
                     var popupNotification = $("#popupNotification").data("kendoNotification");
@@ -130,9 +130,15 @@
     </div>
 </div>
 <hr />
-<a id="aGenerateExcel" class="k-button center" style="float:none" onclick="DownloadExcelClick(event)">Generate Excel</a>
+<div >
+    <div class="row">
+        <div class="col-md-12 col-md-offset-5">
+            <a id="aGenerateExcel" class="k-button center" style="float:none" onclick="DownloadExcelClick(event)">Generate Excel</a>
 
-<div id="divResult"></div>
+            <div id="divResult"></div>
+        </div>
+    </div>
+</div>
 <br />
 @*</div>*@
 
