@@ -26,7 +26,7 @@
     }
 
     function DownloadExcelClick(e) {
-        var upload = $("#files").data("kendoUpload"),
+        var upload = $("#singleFile").data("kendoUpload"),
             files = upload.getFiles();
 
         if (files.length == 0) {
@@ -71,33 +71,21 @@
 
 
 </script>
-@*@(Html.Kendo().Menu()
-              .Name("Menu")
-              .Items(items =>
-              {
-                  items.Add().Text("Home").Url("#Menu");
-                  items.Add().Text("Convert").Url("#divConvert");
-                  //items.Add().Text("Files").Url("#divFiles"); ;
-                  //items.Add().Text("Mappings").Url("#divMappings");
-              }
-              )
-    )*@
-
 <br />
-@*<div id="divConvert" class="k-block">
-
-    <div class="k-header k-success-colored">1. Please upload a pdf file and click 'Generate Excel' button.</div>*@
 <div class="row">
     <div class="col-md-6">
         <br />
-        <div class="alert alert-bordered">
-            <!-- BORDERED -->
-            <p><i class="ico-transparent ico-bordered et-upload"></i>Select a PDF file to upload.</p>
-        </div>
-        @(Html.Kendo().Upload()
-.Name("files")
+        <div id="divSingleFile">
+            <div class="alert alert-bordered">
+                <!-- BORDERED -->
+                <p><i class="ico-transparent ico-bordered et-upload"></i>Drop a PDF file here or click 'Select files...'</p>
+            </div>
+
+            @(Html.Kendo().Upload()
+.Name("singleFile")
 .Multiple(false)
 .ShowFileList(true)
+.DropZone("#divSingleFile")
 .Events(e => e.Complete("uploadComplete"))
 .Async(a => a
     .Save("ChunkSave", "Upload")
@@ -106,18 +94,32 @@
 .Validation(v => v.AllowedExtensions("pdf"))
 .Events(e => e.Error("onError"))
 .Deferred()
+            )
+        </div>
+        <br />
+        @*@(Html.Kendo().Upload()
+        .Name("directoryFiles")
+        .Async(a => a
+            .Save("ChunkSave", "Upload")
+            .Remove("Remove", "Upload")
         )
+        .Directory(true)
+        .DirectoryDrop(true)
+        .Validation(v => v.AllowedExtensions("pdf"))
+        .Deferred()
+        )*@
 
     </div>
     <div class="col-md-6">
         <br />
-        <div class="alert alert-bordered">
-            <!-- BORDERED -->
-            <p><i class="ico-transparent ico-bordered et-upload"></i>Optionally select XLSM file to render data.</p>
-        </div>
-        @(Html.Kendo().Upload()
+        <div id="divSingleFileOutput">
+            <div class="alert alert-bordered">
+                <p><i class="ico-transparent ico-bordered et-upload"></i>Optionally drop a XLSM file to render data or click 'Select files...'.</p>
+            </div>
+            @(Html.Kendo().Upload()
 .Name("filesOutput")
 .Multiple(false)
+.DropZone("#divSingleFileOutput")
 .ShowFileList(true)
 .Async(a => a
     .Save("ChunkSaveOutput", "Upload")
@@ -126,8 +128,10 @@
 .Validation(v => v.AllowedExtensions("xlsm"))
 .Events(e => e.Error("onError"))
 .Deferred()
-        )
-    </div>
+            )
+            </div>
+        </div>
+        
 </div>
 <hr />
 <div >
@@ -140,30 +144,17 @@
     </div>
 </div>
 <br />
-@*</div>*@
+
 
 
 <br />
 
-@*<div id="divPreviewPdf" class="k-block">
-        <div class="k-header k-success-colored">2. Preview uploaded pdf.</div>
-        <iframe id="iframePdf" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
-    </div>*@
-
 <div class="alert alert-bordered">
-    <!-- BORDERED -->
     <p><i class="ico-transparent ico-bordered et-refresh"></i>Preview uploaded pdf.</p>
     <iframe id="iframePdf" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:20px;width:100%">Browser not compatible.</iframe>
 </div>
-
 <br />
-@*<div id="divPreviewExcel" class="k-block">
-        <div class="k-header k-success-colored">3. Preview generated excel.</div>
-        <iframe id="iframeExcel" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:400px;width:100%">Browser not compatible.</iframe>
-    </div>*@
-
-<div class="alert alert-bordered">
-    <!-- BORDERED -->
+<div class="alert alert-bordered">   
     <p><i class="ico-transparent ico-bordered et-recycle"></i> Preview generated excel</p>
     <iframe id="iframeExcel" src="" seamless='seamless' frameBorder="0" style="overflow:hidden;height:20px;width:100%">Browser not compatible.</iframe>
 </div>
@@ -171,7 +162,6 @@
 
 <div id="divFiles" class="k-block" style="display:none">
     <div class="k-header k-success-colored">2. Download or delete already uploaded files.</div>
-
     @*@(Html.Kendo().Grid<AzureCloudFileViewModel>()
                 .Name("gridFs")
                 .Columns(columns =>

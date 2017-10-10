@@ -39,10 +39,6 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
             CloudBlobClient blobClient = cloudStorageAccount.CreateCloudBlobClient();
 
-            // Create a CloudFileClient object for credentialed access to Azure File storage.
-            //CloudFileClient fileClient = cloudStorageAccount.CreateCloudFileClient();
-
-            // Get a reference to the file share we created previously.
             CloudBlobContainer container = null;
             if (inputFilesShare)
             {
@@ -54,19 +50,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             }
             var boolResult = container.CreateIfNotExistsAsync().Result;
             return container;
-            //var boolResult = share.CreateIfNotExistsAsync().Result;
-            //CloudFileDirectory rootDir = share.GetRootDirectoryReference();
-            //CloudFileDirectory resultDir = null;
-            //if (inputFilesShare)
-            //{
-            //    resultDir = rootDir.GetDirectoryReference("DimoInputPdfFiles");
-            //}
-            //else
-            //{
-            //    resultDir = rootDir.GetDirectoryReference("DimoOutputExcelFiles");
-            //}
-            //boolResult = resultDir.CreateIfNotExistsAsync().Result;
-            //return resultDir;
+           
         }
 
         public static void UploadFile(string directoryName, string fileNameWithExtension, Stream stream)

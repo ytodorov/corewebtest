@@ -28,9 +28,6 @@ namespace DimoPdfToExcelWeb.Controllers
             HostingEnvironment = hostingEnvironment;
         }
 
-        private static string lastPhysicalPathInput = string.Empty;
-        public static string lastPhysicalPathOutput = string.Empty;
-
         public IActionResult Excel()
         {
 
@@ -53,6 +50,8 @@ namespace DimoPdfToExcelWeb.Controllers
             string sWebRootFolder = HostingEnvironment.WebRootPath;
 
             // Decide country File type
+            string lastPhysicalPathInput = ControllerContext.HttpContext.Session.GetString("lastPhysicalPathInput");
+            string lastPhysicalPathOutput = ControllerContext.HttpContext.Session.GetString("lastPhysicalPathOutput");
 
             string outputExcelFilePath = Utils.GetExcelOutputFilePath(sWebRootFolder, lastPhysicalPathInput, lastPhysicalPathOutput);
 
@@ -82,10 +81,57 @@ namespace DimoPdfToExcelWeb.Controllers
             // тест за сваляне
         }
 
-        public ActionResult ChunkSave(IEnumerable<IFormFile> files, string metaData)
+        public ActionResult ChunkSave(List<IFormFile> singleFile, List<IFormFile> directoryFiles, string metaData)
         {
-            var result = Save(files);
-            return result;
+            try
+            {
+                if (singleFile?.Count > 0)
+                {
+                    return Save(singleFile);
+                }
+                else
+                {
+                    return Save(directoryFiles);
+                }
+            }
+            catch (Exception)
+            {
+                return Content("Error occured!");
+            }
+
+
+            //if (metaData == null)
+            //{
+            //    // Ъплоудваме 1 файл.
+            //    return Save(files2);
+            //}
+            //// Ъплоудваме много файлове
+            //MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(metaData));
+
+            //JsonSerializer serializer = new JsonSerializer();
+            //ChunkMetaData chunkData;
+            //using (StreamReader streamReader = new StreamReader(ms))
+            //{
+            //    chunkData = (ChunkMetaData)serializer.Deserialize(streamReader, typeof(ChunkMetaData));
+            //}
+
+            //string path = String.Empty;
+            //// The Name of the Upload component is "files"
+            //if (files2 != null)
+            //{
+            //    foreach (var file in files2)
+            //    {
+            //        path = Path.Combine(HostingEnvironment.WebRootPath, "App_Data", chunkData.FileName);
+
+            //        //AppendToFile(path, file);
+            //    }
+            //}
+
+            //FileResult fileBlob = new FileResult();
+            //fileBlob.uploaded = chunkData.TotalChunks - 1 <= chunkData.ChunkIndex;
+            //fileBlob.fileUid = chunkData.UploadUid;
+
+            //return Json(fileBlob);
         }
 
         public ActionResult ChunkSaveOutput(IEnumerable<IFormFile> filesOutput, string metaData)
@@ -143,11 +189,13 @@ namespace DimoPdfToExcelWeb.Controllers
                             file.CopyTo(fileStream);
                             if (isInput)
                             {
-                                lastPhysicalPathInput = physicalPath;
+                                ControllerContext.HttpContext.Session.SetString("lastPhysicalPathInput", physicalPath);
+                                //lastPhysicalPathInput = physicalPath;
                             }
                             else
                             {
-                                lastPhysicalPathOutput = physicalPath;
+                                ControllerContext.HttpContext.Session.SetString("lastPhysicalPathOutput", physicalPath);
+                                //lastPhysicalPathOutput = physicalPath;
                                 return Content("");
                             }
                         }
@@ -200,5 +248,11 @@ namespace DimoPdfToExcelWeb.Controllers
 
         
 
+    }
+
+    public class FileResult
+    {
+        public bool uploaded { get; set; }
+        public string fileUid { get; set; }
     }
 }
