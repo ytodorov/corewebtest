@@ -437,20 +437,26 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                 foreach (var finRow in excelInputData.BsValues)
                 {
-                    string cellNameCurrentYear = $"D{finRow.RowNumber}";
-                    string cellNamePrevoiusYear = $"G{finRow.RowNumber}";
-                    cellsBS[cellNameCurrentYear].Value = finRow.CurrentYear;
-                    cellsBS[cellNamePrevoiusYear].Value = finRow.PreviousYear;
+                    if (finRow.RowNumber > 0)
+                    {
+                        string cellNameCurrentYear = $"D{finRow.RowNumber}";
+                        string cellNamePrevoiusYear = $"G{finRow.RowNumber}";
+                        cellsBS[cellNameCurrentYear].Value = finRow.CurrentYear;
+                        cellsBS[cellNamePrevoiusYear].Value = finRow.PreviousYear;
+                    }
                 }
 
                 ExcelRange cellsPl = package.Workbook.Worksheets[2].Cells;
 
                 foreach (var finRow in excelInputData.PlValues)
                 {
-                    string cellNameCurrentYear = $"D{finRow.RowNumber}";
-                    string cellNamePrevoiusYear = $"G{finRow.RowNumber}";
-                    cellsPl[cellNameCurrentYear].Value = finRow.CurrentYear;
-                    cellsPl[cellNamePrevoiusYear].Value = finRow.PreviousYear;
+                    if (finRow.RowNumber > 0)
+                    {
+                        string cellNameCurrentYear = $"D{finRow.RowNumber}";
+                        string cellNamePrevoiusYear = $"G{finRow.RowNumber}";
+                        cellsPl[cellNameCurrentYear].Value = finRow.CurrentYear;
+                        cellsPl[cellNamePrevoiusYear].Value = finRow.PreviousYear;
+                    }
                 }
 
                 ExcelRange cellsPL = package.Workbook.Worksheets[2].Cells;
@@ -515,6 +521,10 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 var bsRows = parsedPdfResult.BsRows;
                 var plRows = parsedPdfResult.PlRows;
 
+                List<FinancialRow> allRows = new List<FinancialRow>();
+                allRows.AddRange(parsedPdfResult.BsRows);
+                allRows.AddRange(parsedPdfResult.PlRows);
+
                 foreach (var page in document.Pages)
                 {
                     PdfContentExtractor ce = new PdfContentExtractor(page);
@@ -523,7 +533,78 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                     for (int i = 0; i < tfc.Count; i++)
                     {
                         var text = tfc[i].Text;
-                                             
+
+                        string fullRowText = text;
+
+                        if (text.Contains("Befektetett pénzügyi eszközökből"))
+                        {
+
+                        }
+
+                        if (text?.ExtractTextOnlyFromString2()?.Length > 3 && allRows.Any(r => r.Name.ExtractTextOnlyFromString2().Contains(text.ExtractTextOnlyFromString2())))
+                        {
+                            int counter = 0;
+                            string rowName = string.Empty;
+                            // Проверка за уникалност
+                            bool foundInList = false;
+                            foreach (var row in allRows)
+                            {
+                           
+
+
+                                var entryToCheck = row.Name;
+                                if (entryToCheck.Contains("."))
+                                {
+                                    entryToCheck = entryToCheck.Substring(row.Name.LastIndexOf("."));
+                                }
+                                if (entryToCheck.ExtractTextOnlyFromString2().StartsWith(text.ExtractTextOnlyFromString2()))
+                                {
+                                    counter++;
+                                    rowName = entryToCheck;
+                                }
+                            }
+                            if (counter == 1)
+                            {
+                                fullRowText = rowName;
+                                foundInList = true;
+                            }
+
+                            // Тук сме само ако text е нещо което ни интересува
+                            //if (fullRowText == text)
+                            if (!foundInList)
+                            {
+                                //if (text.Contains("Befektetett pénzügyi eszközökből"))
+                                {
+                                    var currentX = tfc[i].FragmentCorners[0].X;
+
+                                    for (int curr = 1; curr < 5; curr++)
+                                    {
+                                        if (i + curr < tfc.Count)
+                                        {
+                                            var next = tfc[i + curr];
+
+                                            if (Math.Abs(next.FragmentCorners[0].X - currentX) < 20)
+                                            {
+                                                if (!string.IsNullOrWhiteSpace(next.Text.ExtractTextOnlyFromString2()))
+                                                {
+                                                    fullRowText += next.Text;
+
+                                                    // TO DO Тук може да отива и на следващата страница ПРОБЛЕМ Hungarian1
+                                                }
+                                            }
+                                            else
+                                            {
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            continue;
+                        }
 
                         if (string.IsNullOrWhiteSpace(text))
                         {
@@ -537,49 +618,21 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                         sb.AppendLine(text);
                         
-                        List<FinancialRow> allRows = new List<FinancialRow>();
-                        allRows.AddRange(parsedPdfResult.BsRows);
-                        allRows.AddRange(parsedPdfResult.PlRows);
-                        //allRows = allRows.Where(a => !a.IsSum).ToList();
-
-                        //// Проверка дали започва с римста буква реда
-                        //if (i > 2 && (Constants.RomanLetters.Contains(tfc[i - 2].Text?.Trim()?.Replace(".", string.Empty)) ||
-                        //    Constants.AlphabetLetters.Contains(tfc[i - 2].Text?.Trim()?.Replace(".", string.Empty))))
-                        //{
-                        //    // да
-                        //    continue;
-                        //}
-
+                        
+                  
                         foreach (var entry in allRows)
                         {
-
-
-                            if (text.Contains("Rendkívüli ráfordítások"))
-                            {
-
-                            }
-
-                          
-
-                            var textOnlyUpperCase = text.ExtractTextOnlyFromString2().ToUpperInvariant();
                             var entryToCheck = entry.Name;
                             if (entryToCheck.Contains("."))
                             {
                                 entryToCheck = entryToCheck.Substring(entry.Name.LastIndexOf("."));
                             }
 
-                            entryToCheck = entryToCheck.ExtractTextOnlyFromString2().ToUpperInvariant();
-                            if (!string.IsNullOrWhiteSpace(textOnlyUpperCase) &&
-                                !string.IsNullOrWhiteSpace(entryToCheck) &&
-                                entryToCheck.StartsWith(textOnlyUpperCase) &&                                
-                                textOnlyUpperCase.Length == entryToCheck.Length ||
+                           // Не трябва да се използва СтартсВитх              
+                            if (entryToCheck.ExtractTextOnlyFromString2().Equals(fullRowText.ExtractTextOnlyFromString2(),
+                                StringComparison.InvariantCultureIgnoreCase))
 
-                                (
-                                !string.IsNullOrWhiteSpace(textOnlyUpperCase) &&
-                                !string.IsNullOrWhiteSpace(entryToCheck) &&
-                                entryToCheck.StartsWith(textOnlyUpperCase) &&
-                                (textOnlyUpperCase != entryToCheck) && textOnlyUpperCase.Length > 30) // Важно Bevetelek
-                                )
+
                             {
                                  
                                 var keyBS = entry.Name;
@@ -600,6 +653,9 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 var textFromPdf = sb.ToString();
 
                 parsedPdfResult.BsRows = parsedPdfResult.BsRows.Where(r => r.CurrentYear != 0 || r.PreviousYear != 0).ToList();
+
+                parsedPdfResult.AllBsRows.AddRange(parsedPdfResult.BsRows);
+                parsedPdfResult.AllPlRows.AddRange(parsedPdfResult.PlRows);
 
                 List<FinancialRow> itemsToRemoveBS = new List<FinancialRow>();
 
@@ -641,7 +697,8 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 
                 foreach (var item in itemsToRemoveBS)
                 {
-                    parsedPdfResult.BsRows.Remove(item);
+                    var realItem = parsedPdfResult.BsRows.FirstOrDefault(f => f.Name == item.Name);
+                    parsedPdfResult.BsRows.Remove(realItem);
                 }
 
                 parsedPdfResult.PlRows = parsedPdfResult.PlRows.Where(r => r.CurrentYear != 0 || r.PreviousYear != 0).ToList();
@@ -685,9 +742,21 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                 foreach (var item in itemsToRemovePL)
                 {
-                    parsedPdfResult.PlRows.Remove(item);
+                    var realItem = parsedPdfResult.PlRows.FirstOrDefault(f => f.Name == item.Name);
+                    parsedPdfResult.PlRows.Remove(realItem);
+                    //parsedPdfResult.PlRows.Remove(item);
                 }
 
+                StringBuilder sbBalance = new StringBuilder();
+                foreach (var item in parsedPdfResult.BsRows)
+                {
+                    sbBalance.AppendLine($"{item.Name} {item.CurrentYear} {item.PreviousYear}");
+                }
+                foreach (var item in parsedPdfResult.PlRows)
+                {
+                    sbBalance.AppendLine($"{item.Name} {item.CurrentYear} {item.PreviousYear}");
+                }
+                var test = sbBalance.ToString();
 
 
 
@@ -1251,9 +1320,29 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 third = tfc[numberInCollection + 3];
             }
 
+            PdfTextFragment fourth = null;
+            if (numberInCollection + 4 < tfc.Count)
+            {
+                fourth = tfc[numberInCollection + 4];
+            }
+
+            PdfTextFragment fifth = null;
+            if (numberInCollection + 5 < tfc.Count)
+            {
+                fifth = tfc[numberInCollection + 5];
+            }
+
+            PdfTextFragment sixth = null;
+            if (numberInCollection + 6 < tfc.Count)
+            {
+                sixth = tfc[numberInCollection + 6];
+            }
+
+
+
             List<PdfTextFragment> fragments = new List<PdfTextFragment>()
                 {
-                    first,second,third
+                    first,second,third,fourth,fifth,sixth
                 };
 
             foreach (var fr in fragments)
@@ -1288,7 +1377,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
             return result;
         }
 
-        public static bool IsFinalExcelFileValid(string path)
+        public static bool IsFinalExcelFileValid(string path, ParsedPdfResult parsedPdfResult = null)
         {
             FileInfo fi = new FileInfo(path);
             using (ExcelPackage package = new ExcelPackage(fi))
@@ -1300,6 +1389,14 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 bsWorkSheet.Cells["G92"].Calculate();
                 var bsCheckCellValuePreviousYear = bsWorkSheet.Cells["G92"]?.Value?.ToString();
 
+                var plWorkSheet = package.Workbook.Worksheets[2];
+                plWorkSheet.Cells["D102"].Calculate();
+                var plCheckCellValueCurrentYear = plWorkSheet.Cells["D102"]?.Value?.ToString();
+                plWorkSheet.Cells["G102"].Calculate();
+                var plCheckCellValuePreviousYear = plWorkSheet.Cells["G102"]?.Value?.ToString();
+
+                var plTotal = parsedPdfResult.AllPlRows.FirstOrDefault(r => r.Name.Contains("Adózott eredmény"));
+
 
 
                 if (bsCheckCellValueCurrentYear?.Equals("0", StringComparison.CurrentCultureIgnoreCase) != true)
@@ -1307,6 +1404,15 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                     return false;
                 }
                 if (bsCheckCellValuePreviousYear?.Equals("0", StringComparison.CurrentCultureIgnoreCase) != true)
+                {
+                    return false;
+                }
+
+                if (plCheckCellValueCurrentYear.ToString().Trim() != ((int)plTotal.CurrentYear).ToString())
+                {
+                    return false;
+                }
+                if (plCheckCellValuePreviousYear.ToString().Trim() != ((int)plTotal.PreviousYear).ToString())
                 {
                     return false;
                 }

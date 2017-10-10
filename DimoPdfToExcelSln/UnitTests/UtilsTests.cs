@@ -20,7 +20,7 @@ namespace UnitTests
                 {
                     var result = Utils.ParseHungarianPdf(path);
                     var outputPath = Utils.GetExcelOutputFilePath(WwwRootFolder, path);
-                    var isValid = Utils.IsFinalExcelFileValid(outputPath);
+                    var isValid = Utils.IsFinalExcelFileValid(outputPath, result);
                     Assert.True(isValid);
                 }
                 

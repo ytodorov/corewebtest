@@ -14,6 +14,11 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
         public List<FinancialRow> PlRows { get; set; } = new List<FinancialRow>();
 
+        public List<FinancialRow> AllBsRows { get; set; } = new List<FinancialRow>();
+
+        public List<FinancialRow> AllPlRows { get; set; } = new List<FinancialRow>();
+
+
         public ParsedPdfResult()
         {
         }
