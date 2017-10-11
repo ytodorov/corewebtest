@@ -282,7 +282,8 @@ namespace DimoPdfToExcelWeb.Controllers
             {
                 "ytodorov@ytodorov.com",
                 "statkov.dimo@gmail.com",
-                "statkovdimo@gmail.com"
+                "statkovdimo@gmail.com",
+                "yordan.todorov@mentormate.com"
             };
 
             if (!allowedEmailAddresses.Any(a => a.Equals(emailAddress, StringComparison.InvariantCultureIgnoreCase)))
