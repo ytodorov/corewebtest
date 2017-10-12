@@ -72,6 +72,25 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 fileNameWithExtension = fileNameWithExtension.Replace(invalidChar.ToString(), string.Empty);
             }
 
+            var dirChars = directoryName.ToCharArray();
+            var fileChars = directoryName.ToCharArray();
+
+            foreach (var c in dirChars)
+            {
+                if (!char.IsLetterOrDigit(c) && c.ToString() != "_" && c.ToString() != "." && c.ToString() != " ")
+                {
+                    directoryName = directoryName.Replace(c.ToString(), string.Empty);                    
+                }
+            }
+
+            foreach (var c in fileChars)
+            {
+                if (!char.IsLetterOrDigit(c) && c.ToString() != "_" && c.ToString() != "." && c.ToString() != " ")
+                {
+                    fileNameWithExtension = fileNameWithExtension.Replace(c.ToString(), string.Empty);
+                }
+            }
+
             CloudBlobContainer container = GetCloudDirectoryShare();
             if (fileNameWithExtension.ToUpperInvariant().EndsWith(".xlsm".ToUpperInvariant()))
             {

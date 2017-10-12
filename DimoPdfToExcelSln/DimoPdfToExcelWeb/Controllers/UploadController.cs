@@ -44,8 +44,6 @@ namespace DimoPdfToExcelWeb.Controllers
 
 
             Response.Headers.Add("Content-Disposition", cd.ToString());
-            //Response.AppendHeader("Content-Disposition", cd.ToString());
-            //return File(System.IO.File.ReadAllBytes(lastPhysicalPath), "application/pdf");
 
             string sWebRootFolder = HostingEnvironment.WebRootPath;
 
@@ -55,18 +53,11 @@ namespace DimoPdfToExcelWeb.Controllers
 
             string outputExcelFilePath = Utils.GetExcelOutputFilePath(sWebRootFolder, lastPhysicalPathInput, lastPhysicalPathOutput);
 
-            var test = HttpContext.Session.GetInt32("one");
-            HttpContext.Session.SetInt32("one", 1);
-            test = HttpContext.Session.GetInt32("one");
-
-
             CompanyPdfMetaData cpmd = Utils.GetCompanyPdfMetaData(lastPhysicalPathInput);
             string fileNameInAzure = $"From {cpmd.StartPeriodOfReport.Day}_{cpmd.StartPeriodOfReport.Month}_{cpmd.StartPeriodOfReport.Year} to {cpmd.EndPeriodOfReport.Day}_{cpmd.EndPeriodOfReport.Month}_{cpmd.EndPeriodOfReport.Year}.xlsm";
             string url =
                 AzureFilesUtils.UploadFile(cpmd.CompanyName, fileNameInAzure, outputExcelFilePath);
             HttpContext.Session.SetString("excelUrl", url);
-            //var result = PhysicalFile(outputExcelFilePath, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            //	application/vnd.ms-excel.sheet.macroEnabled.12
             var result = PhysicalFile(outputExcelFilePath, "application/vnd.ms-excel.sheet.macroEnabled.12");
             Response.Headers["Content-Disposition"] = new ContentDispositionHeaderValue("attachment")
             {
@@ -75,10 +66,6 @@ namespace DimoPdfToExcelWeb.Controllers
 
             var result2 = url.ToString();//.EncodeBase64Safe();
             return Json(result2);
-
-            //return result;
-
-            // тест за сваляне
         }
 
         public ActionResult ChunkSave(List<IFormFile> singleFile, List<IFormFile> directoryFiles, string metaData)
