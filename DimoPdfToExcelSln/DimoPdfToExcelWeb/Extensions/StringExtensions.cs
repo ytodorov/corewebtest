@@ -34,6 +34,43 @@ namespace DimoPdfToExcelWeb.Extensions
             return result;
         }
             
+        public static string ExtractTextOnlyFromString3(this string input)
+        {
+            if (input.Contains("."))
+            {
+                var lastIndex = input.LastIndexOf(".");
+                input = input.Substring(lastIndex);
+            }
+            if (string.IsNullOrEmpty(input))
+            {
+                return input;
+            }
+            string result = string.Empty;
+            List<string> stringsToRemove = new List<string>()
+            {
+                " ",
+                ".",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "0"
+            };
+
+            StringBuilder sb = new StringBuilder();
+            foreach (var s in stringsToRemove)
+            {
+                input = input.Replace(s, "");
+            }
+            result = input.ToString();
+            return result;
+        }
+
         public static string ExtractTextOnlyFromString2(this string input)
         {
             if (string.IsNullOrEmpty(input))
@@ -65,8 +102,6 @@ namespace DimoPdfToExcelWeb.Extensions
             result = input.ToString();
             return result;
         }
-
-
 
         /// <summary>
         /// Превръша съответния string в long. Ако не успее превръщането се връща резултат 0.

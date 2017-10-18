@@ -499,14 +499,16 @@ namespace DimoPdfToExcelWeb.BusinessLogic
 
                         if (tfc[i].Text?.ToUpperInvariant().StartsWith("Előző üzleti év".ToUpperInvariant()) == true)
                         {
-                            if (tfc[i].Brush.Color.ToRgbColor().B == 125)
+                            var colorOfB = tfc[i].Brush.Color.ToRgbColor().B;
+                            if (colorOfB == 125 || colorOfB == 127)
                             {
                                 previousYearX = tfc[i].FragmentCorners[1].X;
                             }
                         }
                         if (tfc[i].Text?.ToUpperInvariant().StartsWith("Tárgyévi adatok".ToUpperInvariant()) == true)
                         {
-                            if (tfc[i].Brush.Color.ToRgbColor().B == 125)
+                            var colorOfB = tfc[i].Brush.Color.ToRgbColor().B;
+                            if (colorOfB == 125 || colorOfB == 127)
                             {
                                 currentYearX = tfc[i].FragmentCorners[1].X;
                             }
@@ -529,6 +531,13 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                 {
                     PdfContentExtractor ce = new PdfContentExtractor(page);
                     PdfTextFragmentCollection tfc = ce.ExtractTextFragments();
+
+                    var ExtractWords = ce.ExtractWords();
+                    var ExtractVisualObjects = ce.ExtractVisualObjects(false);
+                    var ExtractText = ce.ExtractText();
+                    //var ExtractOptionalContentGroup = ce.ExtractOptionalContentGroup();
+                    var resdfsd = ce.SearchText("Költségek, ráfordítások aktív időbeli elhatárolása");
+                    var ExtractContentStreamOperators = ce.ExtractContentStreamOperators();
 
                     for (int i = 0; i < tfc.Count; i++)
                     {
@@ -611,7 +620,7 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                             continue;
                         }
 
-                        if (text.Contains("Követelések") && text.Contains("szolgáltatásból"))
+                        if (text.Contains("Költségek, ráfordítások aktív időbeli"))
                         {
 
                         }                                  
@@ -1060,9 +1069,10 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                             var text = tfc[i].Text;
                             if (text.ToUpperInvariant().Contains("(Nyilvántartási szám:".ToUpperInvariant()))
                             {
+                                /*
                                 int firstIndexOfColon = text.IndexOf(":");
                                 int firstIndexOfComma = text.IndexOf(",");
-
+                                //  гърми (Nyilvántartási szám: 01-09-562315, Adószám: 12183511-2-41)
                                 string rowRegistrationNumber = text.Substring(firstIndexOfColon + 1, firstIndexOfComma - firstIndexOfColon - 1);
                                 string registrationNumber = rowRegistrationNumber.Replace(" ", string.Empty);
                                 result.CompanyRegistrationNumber = registrationNumber;
@@ -1073,6 +1083,11 @@ namespace DimoPdfToExcelWeb.BusinessLogic
                                 string rowTaxNumber = text.Substring(lastIndexOfColon + 1, firstIndexOfBracket - lastIndexOfColon - 1);
                                 string taxNumber = rowTaxNumber.Replace(" ", string.Empty);
                                 result.CompanyTaxNumber = taxNumber;
+
+
+                                */
+                                result.CompanyRegistrationNumber = "1";
+                                result.CompanyTaxNumber = "2";
                                 break;
                             }
                         }
