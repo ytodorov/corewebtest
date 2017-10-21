@@ -2,14 +2,15 @@
 <html>
 <head>
     <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-  ga('create', 'UA-43988280-6', 'auto');
-  ga('send', 'pageview');
-
+        ga('create', 'UA-43988280-6', 'auto');
+        ga('send', 'pageview');
     </script>
     <meta charset="utf-8" />
     <title>finXpro</title>
@@ -21,7 +22,7 @@
     <meta name="viewport" content="width=device-width, maximum-scale=1, initial-scale=1, user-scalable=0" />
 
     <environment include="Development">
- 
+
         <!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
         <!-- WEB FONTS : use %7C instead of | (pipe) -->
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600%7CRaleway:300,400,500,600,700%7CLato:300,400,400italic,600,700" rel="stylesheet" type="text/css" />
@@ -36,11 +37,10 @@
         <!-- PAGE LEVEL SCRIPTS -->
         <link href="~/assets/css/header-1.css" rel="stylesheet" type="text/css" />
         <link href="~/assets/css/color_scheme/green.css" rel="stylesheet" type="text/css" id="color_scheme" />
-        
 
         @*<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.3.913/styles/kendo.common-fiori.min.css" />
-        <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.3.913/styles/kendo.fiori.min.css" />
-        <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.3.913/styles/kendo.fiori.mobile.min.css" />*@
+            <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.3.913/styles/kendo.fiori.min.css" />
+            <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.3.913/styles/kendo.fiori.mobile.min.css" />*@
         @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />*@
         <link href="~/lib/PACE/themes/green/pace-theme-minimal.css" rel="stylesheet" />
         <link rel="stylesheet" href="~/css/site.css" />
@@ -50,14 +50,12 @@
                 crossorigin="anonymous"
                 integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
         </script>
-
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
-
     </environment>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet" />
 </head>
@@ -94,13 +92,10 @@
                         <li><b>Email:</b> <a href="mailto:support@yourname.com">support@yourname.com</a></li>
                     </ul>
                 </div>
-
             </div>
-
         </div>
 
         <a class="slidetop-toggle" href="#"><!-- toggle button --></a>
-
     </div>
     <!-- /SLIDE TOP -->
     <!-- wrapper -->
@@ -122,10 +117,6 @@
                     @await Html.PartialAsync("_LoginPartial")
                     <!--<li><a href="page-register-1.html">REGISTER</a></li>-->
                 </ul>
-
-              
-                
-
             </div>
         </div>
 
@@ -198,41 +189,32 @@
                                     <a asp-action="Index" asp-controller="Home">
                                         HOME
                                     </a>
-
                                 </li>
                                 <li class="dropdown">
                                     <!-- PAGES -->
                                     <a asp-action="Index" asp-controller="Convert">
                                         CONVERT
                                     </a>
-
                                 </li>
                                 <li class="dropdown">
                                     <!-- PAGES -->
                                     <a asp-action="Index" asp-controller="Faq">
                                         FAQ
                                     </a>
-
                                 </li>
                                 <li class="dropdown">
                                     <!-- PAGES -->
                                     <a asp-action="Index" asp-controller="ContactUs">
                                         CONTACT US
                                     </a>
-
                                 </li>
-
                             </ul>
-
                         </nav>
                     </div>
-
                 </div>
             </header>
             <!-- /Top Nav -->
-
         </div>
-
 
         <!--
             PAGE HEADER
@@ -258,13 +240,11 @@
                 <h1>PAGE TITLE</h1>
                 <span class="font-lato size-18 weight-300">We believe in Simple &amp; Creative</span>
 
-
                 <ol class="breadcrumb">
                     <li><a href="#">Home</a></li>
                     <li><a href="#">Features</a></li>
                     <li class="active">Page Title</li>
                 </ol>
-
             </div>
         </section>-->
         <!-- /PAGE HEADER -->
@@ -277,68 +257,52 @@
 
                     <div class="col-md-3">
                         <!-- Footer Logo -->
-                        <img class="footer-logo" src="~/assets/images/_smarty/logo-footer.png" alt="" />
-
-                        <!-- Small Description -->
-                        <p>Integer posuere erat a ante venenatis dapibus posuere velit aliquet.</p>
-
                         <!-- Contact Address -->
+                        <h4 class="letter-spacing-1">ADDRESS</h4>
                         <address>
                             <ul class="list-unstyled">
                                 <li class="footer-sprite address">
-                                    PO Box 21132<br>
-                                    Here Weare St, Melbourne<br>
-                                    Vivas 2355 Australia<br>
+                                    Viena<br>
+                                    Austria<br>
                                 </li>
                                 <li class="footer-sprite phone">
-                                    Phone: 1-800-565-2390
                                 </li>
                                 <li class="footer-sprite email">
-                                    <a href="mailto:support@yourname.com">support@yourname.com</a>
+                                    <a href="mailto:support@yourname.com">support@finxpro.com</a>
                                 </li>
                             </ul>
                         </address>
                         <!-- /Contact Address -->
-
                     </div>
 
                     <div class="col-md-3">
 
-                        <!-- Latest Blog Post -->
                         <h4 class="letter-spacing-1">LATEST NEWS</h4>
                         <ul class="footer-posts list-unstyled">
-                            <li>
-                                <a href="#">Donec sed odio dui. Nulla vitae elit libero, a pharetra augue</a>
-                                <small>29 June 2017</small>
-                            </li>
-                            <li>
-                                <a href="#">Nullam id dolor id nibh ultricies</a>
-                                <small>29 June 2017</small>
-                            </li>
-                            <li>
-                                <a href="#">Duis mollis, est non commodo luctus</a>
-                                <small>29 June 2017</small>
-                            </li>
+                            @*<li>
+                                    <a href="#">Donec sed odio dui. Nulla vitae elit libero, a pharetra augue</a>
+                                    <small>29 June 2017</small>
+                                </li>
+                                <li>
+                                    <a href="#">Nullam id dolor id nibh ultricies</a>
+                                    <small>29 June 2017</small>
+                                </li>
+                                <li>
+                                    <a href="#">Duis mollis, est non commodo luctus</a>
+                                    <small>29 June 2017</small>
+                                </li>*@
                         </ul>
-                        <!-- /Latest Blog Post -->
-
                     </div>
 
                     <div class="col-md-2">
 
-                        <!-- Links -->
-                        <h4 class="letter-spacing-1">EXPLORE SMARTY</h4>
+                        <h4 class="letter-spacing-1">EXPLORE FINXPRO.COM</h4>
                         <ul class="footer-links list-unstyled">
                             <li><a href="#">Home</a></li>
-                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Convert</a></li>
                             <li><a href="#">Our Services</a></li>
-                            <li><a href="#">Our Clients</a></li>
-                            <li><a href="#">Our Pricing</a></li>
-                            <li><a href="#">Smarty Tour</a></li>
-                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Prices</a></li>
                         </ul>
-                        <!-- /Links -->
-
                     </div>
 
                     <div class="col-md-4">
@@ -347,15 +311,6 @@
                         <h4 class="letter-spacing-1">KEEP IN TOUCH</h4>
                         <p>Subscribe to Our Newsletter to get Important News &amp; Offers</p>
 
-                        @*<form class="validate" action="php/newsletter.php" method="post" data-success="Subscribed! Thank you!" data-toastr-position="bottom-right">
-                            <div class="input-group">
-                                <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-                                <input type="email" id="email" name="email" class="form-control required" placeholder="Enter your Email">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-success" type="submit">Subscribe</button>
-                                </span>
-                            </div>
-                        </form>*@
                         <!-- /Newsletter Form -->
                         <!-- Social Icons -->
                         <div class="margin-top-20">
@@ -384,14 +339,10 @@
                                 <i class="icon-rss"></i>
                                 <i class="icon-rss"></i>
                             </a>
-
                         </div>
                         <!-- /Social Icons -->
-
                     </div>
-
                 </div>
-
             </div>
 
             <div class="copyright">
@@ -406,16 +357,10 @@
             </div>
         </footer>
         <!-- /FOOTER -->
-
     </div>
     <!-- /wrapper -->
-    
-     
- 
-
     <!-- SCROLL TO TOP -->
     <a href="#" id="toTop"></a>
-
 
     <!-- PRELOADER -->
     <div id="preloader">
@@ -430,17 +375,13 @@
     <script type="text/javascript" src="~/assets/js/scripts.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-
-
     <environment include="Development">
         @*<script src="~/lib/PACE/pace.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-        <script src="~/js/jszip.min.js"></script>
-        <script src="~/js/kendo.all.min.js"></script>
-        <script src="~/js/kendo.aspnetmvc.min.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>*@
-
-
+            <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+            <script src="~/js/jszip.min.js"></script>
+            <script src="~/js/kendo.all.min.js"></script>
+            <script src="~/js/kendo.aspnetmvc.min.js"></script>
+            <script src="~/js/site.js" asp-append-version="true"></script>*@
     </environment>
     <environment exclude="Development">
         <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
@@ -449,13 +390,10 @@
                 crossorigin="anonymous"
                 integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
         </script>
-       
     </environment>
 
-
     @RenderSection("Scripts", required: false)
-    
+
     @Html.Kendo().DeferredScripts()
 </body>
-
 </html>
