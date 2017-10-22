@@ -12,6 +12,13 @@ namespace DimoPdfToExcelWeb.Controllers
 {
     public class HomeController : BaseController
     {
+        [RouteAttribute(".well-known/pki-validation/F3092F6DCEB9E2E4CE1BAB2C240B5B3B.txt", Name = "F3092F6DCEB9E2E4CE1BAB2C240B5B3B.txt")]
+        public IActionResult Ssl()
+        {
+            var res = Content("D22F8819780A3AE559D19EF6C9AA970D10623EF06E4214E55D9C23124856F1AE comodoca.com 59ecf87c53455");
+            return res;
+        }
+
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
