@@ -36,7 +36,7 @@
 
         <!-- PAGE LEVEL SCRIPTS -->
         <link href="~/assets/css/header-1.css" rel="stylesheet" type="text/css" />
-        <link href="~/assets/css/color_scheme/green.css" rel="stylesheet" type="text/css" id="color_scheme" />
+        <link href="~/assets/css/color_scheme/blue.css" rel="stylesheet" type="text/css" id="color_scheme" />
 
         @*<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.3.913/styles/kendo.common-fiori.min.css" />
             <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.3.913/styles/kendo.fiori.min.css" />
@@ -87,9 +87,8 @@
                 <div class="col-md-4">
                     <h6><i class="icon-envelope"></i> CONTACT INFO</h6>
                     <ul class="list-unstyled">
-                        <li><b>Address:</b> PO Box 21132, Here Weare St, <br /> Melbourne, Vivas 2355 Australia</li>
-                        <li><b>Phone:</b> 1-800-565-2390</li>
-                        <li><b>Email:</b> <a href="mailto:support@yourname.com">support@yourname.com</a></li>
+                        <li><b>Address:</b> Sofia, <br /> Bulgaria</li>
+                        <li><b>Email:</b> <a href="mailto:office@finXpro.com">office@finXpro.com</a></li>
                     </ul>
                 </div>
             </div>
@@ -186,27 +185,19 @@
                             <ul id="topMain" class="nav nav-pills nav-main">
                                 <li class="dropdown">
                                     <!-- HOME -->
-                                    <a asp-action="Index" asp-controller="Home">
-                                        HOME
-                                    </a>
+                                    <a href="/">Home</a>
                                 </li>
                                 <li class="dropdown">
                                     <!-- PAGES -->
-                                    <a asp-action="Index" asp-controller="Convert">
-                                        CONVERT
-                                    </a>
+                                    <a href="/aboutus">About Us</a>
                                 </li>
                                 <li class="dropdown">
                                     <!-- PAGES -->
-                                    <a asp-action="Index" asp-controller="Faq">
-                                        FAQ
-                                    </a>
+                                    <a href="/services">Services</a>
                                 </li>
                                 <li class="dropdown">
                                     <!-- PAGES -->
-                                    <a asp-action="Index" asp-controller="ContactUs">
-                                        CONTACT US
-                                    </a>
+                                    <a href="/convert">FinX Convert</a>
                                 </li>
                             </ul>
                         </nav>
@@ -254,7 +245,8 @@
             <div class="container">
 
                 <div class="row">
-
+                    <div class="col-md-3">
+                    </div>
                     <div class="col-md-3">
                         <!-- Footer Logo -->
                         <!-- Contact Address -->
@@ -262,13 +254,13 @@
                         <address>
                             <ul class="list-unstyled">
                                 <li class="footer-sprite address">
-                                    Viena<br>
-                                    Austria<br>
+                                    Sofia<br>
+                                    Bulgaria<br>
                                 </li>
                                 <li class="footer-sprite phone">
                                 </li>
                                 <li class="footer-sprite email">
-                                    <a href="mailto:support@yourname.com">support@finxpro.com</a>
+                                    <a href="mailto:support@finxpro.com">support@finxpro.com</a>
                                 </li>
                             </ul>
                         </address>
@@ -277,70 +269,15 @@
 
                     <div class="col-md-3">
 
-                        <h4 class="letter-spacing-1">LATEST NEWS</h4>
-                        <ul class="footer-posts list-unstyled">
-                            @*<li>
-                                    <a href="#">Donec sed odio dui. Nulla vitae elit libero, a pharetra augue</a>
-                                    <small>29 June 2017</small>
-                                </li>
-                                <li>
-                                    <a href="#">Nullam id dolor id nibh ultricies</a>
-                                    <small>29 June 2017</small>
-                                </li>
-                                <li>
-                                    <a href="#">Duis mollis, est non commodo luctus</a>
-                                    <small>29 June 2017</small>
-                                </li>*@
-                        </ul>
-                    </div>
-
-                    <div class="col-md-2">
-
                         <h4 class="letter-spacing-1">EXPLORE FINXPRO.COM</h4>
                         <ul class="footer-links list-unstyled">
-                            <li><a href="#">Home</a></li>
-                            <li><a href="#">Convert</a></li>
-                            <li><a href="#">Our Services</a></li>
-                            <li><a href="#">Prices</a></li>
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/aboutus">About Us</a></li>
+                            <li><a href="/services">Services</a></li>
+                            <li><a href="/convert">FinX Convert</a></li>
                         </ul>
                     </div>
-
-                    <div class="col-md-4">
-
-                        <!-- Newsletter Form -->
-                        <h4 class="letter-spacing-1">KEEP IN TOUCH</h4>
-                        <p>Subscribe to Our Newsletter to get Important News &amp; Offers</p>
-
-                        <!-- /Newsletter Form -->
-                        <!-- Social Icons -->
-                        <div class="margin-top-20">
-                            <a href="#" class="social-icon social-icon-border social-facebook pull-left" data-toggle="tooltip" data-placement="top" title="Facebook">
-
-                                <i class="icon-facebook"></i>
-                                <i class="icon-facebook"></i>
-                            </a>
-
-                            <a href="#" class="social-icon social-icon-border social-twitter pull-left" data-toggle="tooltip" data-placement="top" title="Twitter">
-                                <i class="icon-twitter"></i>
-                                <i class="icon-twitter"></i>
-                            </a>
-
-                            <a href="#" class="social-icon social-icon-border social-gplus pull-left" data-toggle="tooltip" data-placement="top" title="Google plus">
-                                <i class="icon-gplus"></i>
-                                <i class="icon-gplus"></i>
-                            </a>
-
-                            <a href="#" class="social-icon social-icon-border social-linkedin pull-left" data-toggle="tooltip" data-placement="top" title="Linkedin">
-                                <i class="icon-linkedin"></i>
-                                <i class="icon-linkedin"></i>
-                            </a>
-
-                            <a href="#" class="social-icon social-icon-border social-rss pull-left" data-toggle="tooltip" data-placement="top" title="Rss">
-                                <i class="icon-rss"></i>
-                                <i class="icon-rss"></i>
-                            </a>
-                        </div>
-                        <!-- /Social Icons -->
+                    <div class="col-md-3">
                     </div>
                 </div>
             </div>
