@@ -58,6 +58,12 @@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet" />
+    <script type="text/javascript">
+ //<![CDATA[
+var tlJsHost = ((window.location.protocol == "https:") ? "https://secure.comodo.com/" : "http://www.trustlogo.com/");
+document.write(unescape("%3Cscript src='" + tlJsHost + "trustlogo/javascript/trustlogo.js' type='text/javascript'%3E%3C/script%3E"));
+//]]>
+    </script>
 </head>
 <body class="smoothscroll enable-animation">
 
@@ -195,6 +201,12 @@
                                 <li class="dropdown">
                                     <a href="/convert">FinX Convert</a>
                                 </li>
+                                <li>
+                                    <script language="JavaScript" type="text/javascript">
+                                            TrustLogo("https://finxpro.com/images/comodo_secure_seal_76x26_transp.png", "CL1", "none");
+                                    </script>
+                                    @*<a href="https://www.positivessl.com/" id="comodoTL">Positive SSL</a>*@
+                                </li>
                             </ul>
                         </nav>
                     </div>
@@ -242,7 +254,7 @@
 
                 <div class="row">
 
-                    <div class="col-md-12 center center-block">
+                    <div class="col-md-6 center center-block">
                         <!-- Footer Logo -->
                         <!-- Contact Address -->
                         <h4 class="letter-spacing-1">ADDRESS</h4>
@@ -260,6 +272,12 @@
                             </ul>
                         </address>
                         <!-- /Contact Address -->
+                    </div>
+                    <div class="col-md-6">
+                        <script language="JavaScript" type="text/javascript">
+                                            TrustLogo("https://finxpro.com/images/comodo_secure_seal_100x85_transp.png", "CL2", "none");
+                        </script>
+                        <a href="https://www.positivessl.com/" id="comodoTL">Positive SSL</a>
                     </div>
                     @*
                         <div class="col-md-3">
@@ -327,5 +345,6 @@
     @RenderSection("Scripts", required: false)
 
     @Html.Kendo().DeferredScripts()
+
 </body>
 </html>
